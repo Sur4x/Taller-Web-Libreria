@@ -1,9 +1,10 @@
 package com.tallerwebi.dominio;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import org.hibernate.mapping.List;
+
+import javax.persistence.*;
+import java.util.Set;
+
 
 @Entity
 public class Usuario {
@@ -15,6 +16,23 @@ public class Usuario {
     private String password;
     private String rol;
     private Boolean activo = false;
+
+    @ManyToMany
+    @JoinTable(
+            name = "user_clubs", // Nombre de la tabla intermedia
+            joinColumns = @JoinColumn(name = "users_id"), // FK a la tabla de usuarios
+            inverseJoinColumns = @JoinColumn(name = "clubs_id") // FK a la tabla de clubes
+    )
+    private Set<Club> club;
+
+
+    public Set<Club> getClub() {
+        return club;
+    }
+
+    public void setClub(Set<Club> club) {
+        this.club = club;
+    }
 
     public Long getId() {
         return id;
@@ -46,11 +64,9 @@ public class Usuario {
     public void setActivo(Boolean activo) {
         this.activo = activo;
     }
-
     public boolean activo() {
         return activo;
     }
-
     public void activar() {
         activo = true;
     }
