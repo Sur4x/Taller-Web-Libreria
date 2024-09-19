@@ -5,6 +5,7 @@ import com.tallerwebi.dominio.ServicioClub;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -21,7 +22,7 @@ public class ClubController {
         this.servicioClub = servicioClub;
     }
 
-    @GetMapping ("/buscar-club")
+    @GetMapping("/buscar-club")
     public String buscarClub(@RequestParam("query") String query, Model model) {
         List<Club> clubes = servicioClub.buscarClubesPorNombre(query);
         model.addAttribute("clubes", clubes);

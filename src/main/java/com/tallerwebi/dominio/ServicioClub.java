@@ -15,4 +15,6 @@ public interface ServicioClub {
     List<Club> buscarClubPorNombre(String nombre) throws NoExisteEseClub;
 
     Club actualizarClub(Club club) throws NoExisteEseClub;
+
+    List<Club> buscarClubesPorNombre(String query);
 }

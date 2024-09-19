@@ -50,4 +50,9 @@ public class ServicioClubImpl implements ServicioClub {
             throw new NoExisteEseClub();
         }
     }
+
+    @Override
+    public List<Club> buscarClubesPorNombre(String query) {
+        return List.of();
+    }
 }
