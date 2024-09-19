@@ -10,7 +10,7 @@ import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import java.sql.Connection;
+import java.util.List;
 
 @Repository("repositorioClub")
 public class RepositorioClubImpl implements RepositorioClub {
@@ -22,9 +22,11 @@ public class RepositorioClubImpl implements RepositorioClub {
         this.sessionFactory = sessionFactory;
     }
 
+    /*
     @Override
-    public Club buscarClub(Long id, String nombre) {
+    public List<Club> buscarClub(String nombre) {
         final Session session = sessionFactory.getCurrentSession();
+
         Criteria criteria = session.createCriteria(Club.class);
 
         criteria.add(Restrictions.eq("id", id));
@@ -32,7 +34,23 @@ public class RepositorioClubImpl implements RepositorioClub {
 
         return (Club) criteria.uniqueResult();
     }
+    */
+    @Override
+    public List<Club> buscarClubPorNombre(String nombre) {
+        final Session session = sessionFactory.getCurrentSession();
 
+        // Crear Criteria para la clase Club
+        Criteria criteria = session.createCriteria(Club.class);
+
+        // Agregar restricción LIKE para buscar nombres que contengan el texto de búsqueda
+        criteria.add(Restrictions.like("nombre", "%" + nombre + "%"));
+
+        return criteria.list();
+    }
+
+    //pe
+    //pepi
+    //pepot
     @Override
     public void guardar(Club club) {
         sessionFactory.getCurrentSession().save(club);
@@ -59,11 +77,17 @@ public class RepositorioClubImpl implements RepositorioClub {
         userCriteria.add(Restrictions.eq("email", emailUsuario));
 
         return (Usuario) userCriteria.uniqueResult();
-
     }
 
     @Override
     public void modificar(Club club) {
         sessionFactory.getCurrentSession().update(club);
+    }
+
+    @Override
+    public List<Club> obtenerTodosLosClubes() {
+        final Session session = sessionFactory.getCurrentSession();
+        Criteria clubCriteria = session.createCriteria(Club.class);
+        return clubCriteria.list();
     }
 }

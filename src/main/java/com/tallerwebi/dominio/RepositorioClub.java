@@ -1,8 +1,13 @@
 package com.tallerwebi.dominio;
 
+import java.util.List;
+
 public interface RepositorioClub {
-    Club buscarClub(Long id, String nombre);
+    List<Club> buscarClubPorNombre(String nombre);
     void guardar(Club club);
     Usuario buscarUsuarioEnClub(String nombreClub, String emailUsuario); //setear bien la busqueda
     void modificar(Club club);
+    List<Club> obtenerTodosLosClubes();
+
+
 }
