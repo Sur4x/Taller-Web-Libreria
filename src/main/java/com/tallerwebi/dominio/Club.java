@@ -9,7 +9,6 @@ import java.util.Set;
 @Entity
 @Table(name = "clubs")
 public class Club {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
@@ -35,8 +34,6 @@ public class Club {
     public void setUsuario(Set<Usuario> usuario) {
         this.usuario = usuario;
     }
-
-
 
     public long getId() {
         return id;

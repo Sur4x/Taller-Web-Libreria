@@ -16,6 +16,12 @@ public class Usuario {
     private String password;
     private String rol;
     private Boolean activo = false;
+    private String Nombre;
+    private String Apellido;
+    private String fechaDeNacimiento;
+
+
+
 
     @ManyToMany
     @JoinTable(
@@ -70,4 +76,28 @@ public class Usuario {
     public void activar() {
         activo = true;
     }
+    public String getNombre() {
+        return Nombre;
+    }
+
+    public void setNombre(String nombre) {
+        Nombre = nombre;
+    }
+
+    public String getApellido() {
+        return Apellido;
+    }
+
+    public void setApellido(String apellido) {
+        Apellido = apellido;
+    }
+
+    public String getFechaDeNacimiento() {
+        return fechaDeNacimiento;
+    }
+
+    public void setFechaDeNacimiento(String fechaDeNacimiento) {
+        this.fechaDeNacimiento = fechaDeNacimiento;
+    }
+
 }
