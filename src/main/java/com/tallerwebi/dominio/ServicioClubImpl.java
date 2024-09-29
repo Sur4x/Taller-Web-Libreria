@@ -2,6 +2,7 @@ package com.tallerwebi.dominio;
 
 import com.tallerwebi.dominio.excepcion.ClubExistente;
 import com.tallerwebi.dominio.excepcion.NoExisteEseClub;
+import com.tallerwebi.dominio.excepcion.NoExistenClubs;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -10,7 +11,7 @@ import java.util.List;
 
 @Service("servicioClub")
 @Transactional
-public class ServicioClubImpl implements ServicioClub {
+public class ServicioClubImpl implements ServicioClub{
 
     private RepositorioClub repositorioClub;
 
@@ -20,39 +21,39 @@ public class ServicioClubImpl implements ServicioClub {
     }
 
     @Override
-    public List<Club> obtenerTodosLosClubes() {
-        return repositorioClub.obtenerTodosLosClubes();
-    }
+    public Boolean addClub(Club club) throws ClubExistente {
+        Boolean agregado = false;
+        Boolean clubRepetido = repositorioClub.searchClub(club);
 
-    /*
-    @Override
-    public Club agregarClub(Club club) throws ClubExistente{
-
-        Club clubExistente = repositorioClub.buscarClub(club.getId(), club.getNombre());
-        if (clubExistente != null) {
+        if (!clubRepetido){
+            agregado = repositorioClub.addClub(club);
+        }else{
             throw new ClubExistente();
         }
-        repositorioClub.guardar(club);
-        return club;
-    }
-*/
-    @Override
-    public List<Club> buscarClubPorNombre(String nombre) throws NoExisteEseClub {
-        return repositorioClub.buscarClubPorNombre(nombre);
+        return agregado;
+
     }
 
     @Override
-    public Club actualizarClub(Club club) throws NoExisteEseClub {
+    public List<Club> obtenerTodosLosClubs() throws NoExistenClubs {
+        List<Club> clubs = repositorioClub.obtenerTodosLosClubs();
+        if (!clubs.isEmpty()){
+            return clubs;
+        }else{
+            throw new NoExistenClubs("No existen clubs para mostrar");
+        }
+
+    }
+
+    @Override
+    public Club buscarClubPor(Long id) throws NoExisteEseClub {
+        Club club = repositorioClub.buscarClubPor(id);
         if (club != null){
-            repositorioClub.modificar(club);
             return club;
         }else{
-            throw new NoExisteEseClub();
+            throw new NoExisteEseClub("No existe ningun club con ese id");
         }
     }
 
-    @Override
-    public List<Club> buscarClubesPorNombre(String query) {
-        return List.of();
-    }
+
 }

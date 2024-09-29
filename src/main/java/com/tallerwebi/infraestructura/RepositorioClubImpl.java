@@ -2,17 +2,16 @@ package com.tallerwebi.infraestructura;
 
 import com.tallerwebi.dominio.Club;
 import com.tallerwebi.dominio.RepositorioClub;
-import com.tallerwebi.dominio.Usuario;
-import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import javax.persistence.Query;
 import java.util.List;
 
-@Repository("repositorioClub")
+@Repository
 public class RepositorioClubImpl implements RepositorioClub {
 
     private SessionFactory sessionFactory;
@@ -22,72 +21,50 @@ public class RepositorioClubImpl implements RepositorioClub {
         this.sessionFactory = sessionFactory;
     }
 
-    /*
     @Override
-    public List<Club> buscarClub(String nombre) {
+    public Boolean searchClub(Club club) {
         final Session session = sessionFactory.getCurrentSession();
+        Club resultado =  (Club) session.createCriteria(Club.class)
+                .add(Restrictions.eq("nombre", club.getNombre()))
+                .add(Restrictions.eq("descripcion", club.getDescripcion()))
+                .uniqueResult();
 
-        Criteria criteria = session.createCriteria(Club.class);
-
-        criteria.add(Restrictions.eq("id", id));
-        criteria.add(Restrictions.eq("nombre", nombre));
-
-        return (Club) criteria.uniqueResult();
-    }
-    */
-    @Override
-    public List<Club> buscarClubPorNombre(String nombre) {
-        final Session session = sessionFactory.getCurrentSession();
-
-        // Crear Criteria para la clase Club
-        Criteria criteria = session.createCriteria(Club.class);
-
-        // Agregar restricción LIKE para buscar nombres que contengan el texto de búsqueda
-        criteria.add(Restrictions.like("nombre", "%" + nombre + "%"));
-
-        return criteria.list();
-    }
-
-    //pe
-    //pepi
-    //pepot
-    @Override
-    public void guardar(Club club) {
-        sessionFactory.getCurrentSession().save(club);
-    }
-
-    @Override
-    public Usuario buscarUsuarioEnClub(String nombreClub, String emailUsuario) {
-        final Session session = sessionFactory.getCurrentSession();
-
-        // Buscar el club por nombre
-        Criteria clubCriteria = session.createCriteria(Club.class);
-        clubCriteria.add(Restrictions.eq("nombre", nombreClub));
-        Club club = (Club) clubCriteria.uniqueResult();
-
-        if (club == null) {
-            // Club no encontrado
-            return null;
+        if (resultado != null) {
+            return true;
+        }else{
+            return false;
         }
-
-        // Buscar el usuario en el club
-        Criteria userCriteria = session.createCriteria(Usuario.class);
-        userCriteria.createAlias("clubs", "club");
-        userCriteria.add(Restrictions.eq("club.id", club.getId()));
-        userCriteria.add(Restrictions.eq("email", emailUsuario));
-
-        return (Usuario) userCriteria.uniqueResult();
     }
 
     @Override
-    public void modificar(Club club) {
-        sessionFactory.getCurrentSession().update(club);
+    public Boolean addClub(Club club) {
+        Session session = sessionFactory.getCurrentSession();
+        try{
+            session.save(club);
+            return true;
+        } catch (Exception e){
+            return false;
+        }
     }
 
     @Override
-    public List<Club> obtenerTodosLosClubes() {
-        final Session session = sessionFactory.getCurrentSession();
-        Criteria clubCriteria = session.createCriteria(Club.class);
-        return clubCriteria.list();
+    public List<Club> obtenerTodosLosClubs() {
+        String hql = "FROM Club";
+        Query query = this.sessionFactory.getCurrentSession().createQuery(hql);
+
+        return query.getResultList();
+
     }
+
+    @Override
+    public Club buscarClubPor(Long id) {
+        String hql = "FROM Club WHERE id = :id";
+        Query query = this.sessionFactory.getCurrentSession().createQuery(hql);
+        query.setParameter("id", id);
+
+        // Si esperas un único resultado
+        return (Club) query.getSingleResult();
+    }
+
 }
+

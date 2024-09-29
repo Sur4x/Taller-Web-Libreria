@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Mostrar usuarios</title>
+
+  <!-- Boostrap core css -->
+  <link rel="stylesheet" th:href="@{/webjars/bootstrap/5.2.0/css/bootstrap.min.css}"/>
+</head>
+<body>
+<h1>Usuarios:</h1>
+<ul th:each="usuario : ${usuarios}">
+  <li>ID: <span th:text="${usuario.id}"></span></li>
+  <li>Email: <span th:text="${usuario.email}"></span></li>
+  <li>Password: <span th:text="${usuario.password}"></span></li>
+  <li>Rol: <span th:text="${usuario.rol}"></span></li>
+</ul>
+</body>
+</html>

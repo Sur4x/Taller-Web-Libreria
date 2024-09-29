@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Detalles del Club</title>
+</head>
+<body>
+  <h1 th:text="${club.nombre}">Nombre del Club</h1>
+  <img th:src="@{/images/{imagen}(imagen=${club.imagen})}" alt="Imagen del club"/>
+  <p th:text="${club.descripcion}">Descripción del Club</p>
+  <p><strong>Género:</strong> <span th:text="${club.genero}"></span></p>
+</body>
+</html>

@@ -4,28 +4,69 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-  <title>TP Taller Web</title>
+  <title>Taller Web I</title>
 
+  <!-- Boostrap core css -->
   <link rel="stylesheet" th:href="@{/webjars/bootstrap/5.2.0/css/bootstrap.min.css}"/>
-
+  <link rel="stylesheet" href="../../../resources/core/css/home.css">
+  <!-- custom style -->
   <link rel="stylesheet" th:href="@{/css/main.css}"/>
 
 </head>
-
 <body>
+<!-- SI EL USUARIO TIENE ROL "ADMIN" MUESTRA TODO ESTO -->
+<div th:if="${usuario.rol == 'ADMIN'}">
+  <h1>Rol del usuario: <span th:text="${usuario.rol}"></span></h1>
+</div>
 
-<nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
-  <a class="navbar-brand" href="home.html">LOGO</a>
-  <a href="login.html" class="btn btn-lg btn-primary btn-block">loginn</a>
-  <a href="registro.html" class="btn btn-lg btn-primary btn-block">Registro</a>
-</nav>
+<!-- SI EL USUARIO TIENE ROL "USUARIO" MUESTRA TODO ESTO-->
+<div th:if="${usuario.rol == 'usuario'}">
+  <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
+    <a class="navbar-brand" href="#">UNLAM</a>
+    <div class="d-flex ms-auto">
+      <a href="crearClub" class="btn btn-lg btn-primary btn-block">Crear nuevo club</a>
 
-<main role="main" class="container">
-  <div class = "container">
-    <h1>De Ultima</h1>
-  </div>
-</main>
+      <div class="dropdown">
+        <button>
+          <img th:src="@{/images/menuDesplegable.png}" alt="Menu Desplegable" class="img-fluid" style="max-width: 50px; height: auto;">
+        </button>
 
-<script type="text/javascript" th:src="@{webjars/bootstrap/5.2.0/js/bootstrap.min.js}"></script>
+        <div class="dropdown-content">
+
+          <a th:href="@{/perfil/{id}(id=${usuario.id})}">Perfil</a>
+          <a href="clubsInscriptos.html" >Mis clubs</a>
+          <a href="login.html" >Cerrar sesión</a>
+        </div>
+      </div>
+    </div>
+  </nav>
+  <main role="main" class="container">
+    <!--
+    <div class = "container">
+       USAR ESTO CUANDO ESTE LOGUEADO COMO ADMIN
+          <a href="busqueda" class="btn btn-lg btn-primary btn-block">Mostrar todos los usuarios</a>
+    </div>
+    -->
+    <div class="club-container">
+      <!-- Bucle para mostrar todos los clubs -->
+      <div th:each="club : ${clubs}" class="club-item">
+        <!-- AGREGAR UN HIPERVINCULO PASANDOLE EL ID A UN CONTROLLER, ESTE VA A BUSCAR EL CLUB Y VA A TRAER TODOS SUS DATOS -->
+        <a th:href="@{/club/{id}(id=${club.id})}" class="club-item">
+
+          <img th:src="@{/images/{imagen}(imagen=${club.imagen})}" alt="Imagen del club">
+
+          <h3 th:text="${club.nombre}">Nombre del club</h3>
+
+          <p th:text="${club.descripcion}">Descripción del club</p>
+        </a>
+
+      </div>
+    </div>
+
+
+  </main>
+</div>
+
+
 </body>
 </html>

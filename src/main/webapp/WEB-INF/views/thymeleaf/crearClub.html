@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Crear Club</title>
+
+    <link rel="stylesheet" th:href="@{/webjars/bootstrap/5.2.0/css/bootstrap.min.css}"/>
+
+</head>
+<body>
+<h1>Cree su nuevo club: </h1>
+
+<form action="#" th:action="@{/crearNuevoClub}" method="POST" th:object="${club}">
+
+    <input th:field="*{imagen}" type="file" placeholder="Suba la imagen de su club">
+
+    <input th:field="*{nombre}" type="text" placeholder="Nombre del club"/>
+
+    <textarea th:field="*{descripcion}" placeholder="Descripcion"></textarea>
+
+    <select th:field="*{genero}">
+        <option value="aventura">Aventura</option>
+        <option value="romance">Romance</option>
+        <option value="misterio">Misterio</option>
+        <option value="terror">Terror</option>
+        <option value="auto-ayuda">Auto-ayuda</option>
+        <option value="ciencia ficcion">Ciencia ficción</option>
+    </select>
+
+    <input type="submit" value="Crear">
+</form>
+</body>
+</html>

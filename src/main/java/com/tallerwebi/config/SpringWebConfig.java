@@ -27,6 +27,13 @@ public class SpringWebConfig implements WebMvcConfigurer {
         registry.addResourceHandler("/css/**").addResourceLocations("/resources/core/css/");
         registry.addResourceHandler("/js/**").addResourceLocations("/resources/core/js/");
         registry.addResourceHandler("/webjars/**").addResourceLocations("/webjars/");
+        //EN TEORIA NECESITO ESTO PARA ACCEDER A LAS IMAGENES EN UNA CARPETA QUE NO SEA ESTATICA:
+        //registry.addResourceHandler("/images/**").addResourceLocations("/resources/core/imagenes/");
+        registry.addResourceHandler("/images/**")
+                .addResourceLocations("file:src/main/webapp/resources/core/imagenes/");
+
+
+
     }
 
     // https://www.thymeleaf.org/doc/tutorials/3.0/thymeleafspring.html

@@ -1,12 +1,16 @@
 package com.tallerwebi.infraestructura;
 
-import com.tallerwebi.dominio.RepositorioUsuario;
+import com.tallerwebi.dominio.Club;
 import com.tallerwebi.dominio.Usuario;
+import com.tallerwebi.dominio.RepositorioUsuario;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+
+import javax.persistence.Query;
+import java.util.List;
 
 @Repository("repositorioUsuario")
 public class RepositorioUsuarioImpl implements RepositorioUsuario {
@@ -45,5 +49,22 @@ public class RepositorioUsuarioImpl implements RepositorioUsuario {
         sessionFactory.getCurrentSession().update(usuario);
     }
 
+    @Override
+    public List<Usuario> buscarTodosLosUsuarios() {
+        String hql = "FROM Usuario";
+        Query query = this.sessionFactory.getCurrentSession().createQuery(hql);
+
+        return query.getResultList();
+    }
+
+    @Override
+    public Usuario buscarUsuarioPor(Long id) {
+        String hql = "FROM Usuario WHERE id = :id";
+        Query query = this.sessionFactory.getCurrentSession().createQuery(hql);
+        query.setParameter("id", id);
+
+        // Si esperas un único resultado
+        return (Usuario) query.getSingleResult();
+    }
 
 }

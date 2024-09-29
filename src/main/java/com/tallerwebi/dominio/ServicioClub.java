@@ -2,19 +2,18 @@ package com.tallerwebi.dominio;
 
 import com.tallerwebi.dominio.excepcion.ClubExistente;
 import com.tallerwebi.dominio.excepcion.NoExisteEseClub;
+import com.tallerwebi.dominio.excepcion.NoExistenClubs;
 
 import java.util.List;
 
 public interface ServicioClub {
-    //buscarClub / guardarClub / buscarUsuarioEnClub / modificarClub
 
-    List<Club> obtenerTodosLosClubes();
+    //public List<Club> listAllClubs();
 
-    //Club agregarClub(Club club) throws ClubExistente;
+    public Boolean addClub(Club club) throws ClubExistente;
 
-    List<Club> buscarClubPorNombre(String nombre) throws NoExisteEseClub;
+    public List<Club> obtenerTodosLosClubs() throws NoExistenClubs;
 
-    Club actualizarClub(Club club) throws NoExisteEseClub;
-
-    List<Club> buscarClubesPorNombre(String query);
+    Club buscarClubPor(Long id) throws NoExisteEseClub;
 }
+

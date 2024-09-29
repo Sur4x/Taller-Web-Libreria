@@ -1,10 +1,7 @@
 package com.tallerwebi.dominio;
 
-import org.hibernate.mapping.List;
-
 import javax.persistence.*;
-import java.util.Set;
-
+import java.util.List;
 
 @Entity
 public class Usuario {
@@ -12,32 +9,36 @@ public class Usuario {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    private String nombreUsuario;
+    private String descripcion;
     private String email;
     private String password;
-    private String rol;
+    private String rol; //Ver si cambiar por un ENUM
     private Boolean activo = false;
-    private String Nombre;
-    private String Apellido;
-    private String fechaDeNacimiento;
-
-
-
-
-    @ManyToMany
+    @ManyToMany // Relación con géneros preferidos
     @JoinTable(
-            name = "user_clubs", // Nombre de la tabla intermedia
-            joinColumns = @JoinColumn(name = "users_id"), // FK a la tabla de usuarios
-            inverseJoinColumns = @JoinColumn(name = "clubs_id") // FK a la tabla de clubes
+            name = "usuario_genero_preferido", // Tabla intermedia
+            joinColumns = @JoinColumn(name = "usuario_id"),
+            inverseJoinColumns = @JoinColumn(name = "genero_id")
     )
-    private Set<Club> club;
+    private List<Genero> generosPreferidos;
+    @ManyToMany // Relación con libros leídos
+    @JoinTable(
+            name = "usuario_libro_leido", // Tabla intermedia
+            joinColumns = @JoinColumn(name = "usuario_id"),
+            inverseJoinColumns = @JoinColumn(name = "libro_id")
+    )
+    private List<Libro> librosLeidos;
+    @ManyToMany(mappedBy = "integrantes")
+    private List<Club> clubsInscriptos;
 
-
-    public Set<Club> getClub() {
-        return club;
-    }
-
-    public void setClub(Set<Club> club) {
-        this.club = club;
+    public Usuario(){};
+    public Usuario( Long id, String email,String password, Boolean activo) {
+        this.id = id;
+        this.email = email;
+        this.password = password;
+        this.rol = "usuario";
+        this.activo = activo;
     }
 
     public Long getId() {
@@ -70,34 +71,12 @@ public class Usuario {
     public void setActivo(Boolean activo) {
         this.activo = activo;
     }
+
     public boolean activo() {
         return activo;
     }
+
     public void activar() {
         activo = true;
     }
-    public String getNombre() {
-        return Nombre;
-    }
-
-    public void setNombre(String nombre) {
-        Nombre = nombre;
-    }
-
-    public String getApellido() {
-        return Apellido;
-    }
-
-    public void setApellido(String apellido) {
-        Apellido = apellido;
-    }
-
-    public String getFechaDeNacimiento() {
-        return fechaDeNacimiento;
-    }
-
-    public void setFechaDeNacimiento(String fechaDeNacimiento) {
-        this.fechaDeNacimiento = fechaDeNacimiento;
-    }
-
 }

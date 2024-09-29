@@ -1,63 +1,48 @@
 <!DOCTYPE HTML>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-    <title>Taller Web I</title>
+  <title>Taller Web I</title>
 
-    <link rel="stylesheet" th:href="@{/webjars/bootstrap/5.2.0/css/bootstrap.min.css}"/>
+  <!-- Boostrap core css -->
+  <link rel="stylesheet" th:href="@{/webjars/bootstrap/5.2.0/css/bootstrap.min.css}"/>
 
-    <link rel="stylesheet" th:href="@{/css/main.css}"/>
-    <style>
-        body {
-            margin: 0;
-            padding: 0;
-        }
-        h2 {
-            color: blue;
-        }
-    </style>
+  <!-- custom style -->
+  <link rel="stylesheet" th:href="@{/css/main.css}"/>
+
 </head>
 
 <body>
-<header class="bg-light">
-    <nav class="navbar navbar-expand-lg navbar-light">
-        <div class="container-fluid">
-            <a class="collapse navbar-collapse justify-content-start" href="home.html">
-                LOGO
-            </a>
-        </div>
-    </nav>
-</header>
 
-<div class="container mt-5">
-    <div class="row justify-content-center">
-        <div class="col-md-6">
-            <h2 class="text-center">Iniciar Sesión</h2>
-            <form action="#" th:action="@{/validar-login}" method="POST" th:object="${datosLogin}">
-                <div class="mb-3">
-                    <label  for="email" class="form-label">Correo Electrónico</label>
-                    <input th:field="*{email}" type="email" class="form-control" id="email" required>
-                </div>
-                <div class="mb-3">
-                    <label for="password" class="form-label">Contraseña</label>
-                    <input th:field="*{password}" type="password" class="form-control" id="password" required>
-                </div>
-                <div class="d-flex justify-content-between align-items-center mt-3">
-                    <button type="submit" class="btn btn-lg btn-primary">Iniciar Sesión</button>
-                    <a href="nuevo-usuario.html" class="nav-link nav-link-blue">Nuevo Usuario</a>
-                </div>
+<nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
+  <a class="navbar-brand" href="#">UNLAM</a>
+</nav>
 
+<main role="main" class="container">
 
-                <p th:if="${error != null}" class="alert alert-danger" th:text="'Error ' + ${error}">
-                </p>
-            </form>
-        </div>
+  <div class = "container">
+    <div id="loginbox" style="margin-top:50px;" class="mainbox col-md-6 col-md-offset-3 col-sm-8 col-sm-offset-2">
+      <form action="#" th:action="@{/validar-login}" method="POST" th:object="${datosLogin}">
+        <h3 class="form-signin-heading">Taller Web I</h3>
+        <hr class="colorgraph"><br>
+
+        <input th:field="*{email}" id="email" type="email" class="form-control" required/>
+        <input th:field="*{password}" type="password" id="password" class="form-control" required/>
+
+        <button id="btn-login" class="btn btn-lg btn-primary btn-block" Type="Submit">Login</button>
+
+        <p th:if="${error != null}" class="alert alert-danger" th:text="'Error ' + ${error}">
+        </p>
+      </form>
+      <a id="ir-a-registrarme" href="registro.html">Registrarme</a>
     </div>
-</div>
+  </div>
+</main>
+<!-- /.container -->
 
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+<!-- Boostrap core js -->
 <script type="text/javascript" th:src="@{webjars/bootstrap/5.2.0/js/bootstrap.min.js}"></script>
 </body>
 </html>

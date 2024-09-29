@@ -17,10 +17,12 @@ public class HibernateConfig {
     @Bean
     public DataSource dataSource() {
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
-        dataSource.setDriverClassName("org.hsqldb.jdbcDriver");
-        dataSource.setUrl("jdbc:hsqldb:mem:db_");
-        dataSource.setUsername("sa");
-        dataSource.setPassword("");
+        //dataSource.setDriverClassName("org.hsqldb.jdbcDriver"); //BDD en memoria
+        dataSource.setDriverClassName("com.mysql.cj.jdbc.Driver"); //BDD propia
+        //dataSource.setUrl("jdbc:hsqldb:mem:db_");//BDD en memoria
+        dataSource.setUrl("jdbc:mysql://localhost:3306/deUltima"); //BDD propia URL + nombre
+        dataSource.setUsername("root"); //cambie el usuario
+        dataSource.setPassword(""); //cambie la contrasenia
         return dataSource;
     }
 
@@ -28,7 +30,7 @@ public class HibernateConfig {
     public LocalSessionFactoryBean sessionFactory(DataSource dataSource) {
         LocalSessionFactoryBean sessionFactory = new LocalSessionFactoryBean();
         sessionFactory.setDataSource(dataSource);
-        sessionFactory.setPackagesToScan("com.tallerwebi.dominio");
+        sessionFactory.setPackagesToScan("com.tallerwebi.dominio"); //Aca busca las entidades para crear las tablas
         sessionFactory.setHibernateProperties(hibernateProperties());
         return sessionFactory;
     }
@@ -40,10 +42,12 @@ public class HibernateConfig {
 
     private Properties hibernateProperties() {
         Properties properties = new Properties();
-        properties.setProperty("hibernate.dialect", "org.hibernate.dialect.HSQLDialect");
-        properties.setProperty("hibernate.show_sql", "true");
+        //properties.setProperty("hibernate.dialect", "org.hibernate.dialect.HSQLDialect");//cambie el dialecto
+        properties.setProperty("hibernate.dialect","org.hibernate.dialect.MySQL8Dialect");//dialecto propio de la BDD
+        properties.setProperty("hibernate.show_sql", "true");//muestra en la consola las sentencias de la tablas
         properties.setProperty("hibernate.format_sql", "true");
-        properties.setProperty("hibernate.hbm2ddl.auto", "create");
+        properties.setProperty("hibernate.hbm2ddl.auto", "update"); //create = cada jetty run crea una nueva BDD.
+        //update = mantiene los datos
         return properties;
     }
 }
