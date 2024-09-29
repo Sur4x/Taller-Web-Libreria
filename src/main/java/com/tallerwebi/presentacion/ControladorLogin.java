@@ -55,6 +55,7 @@ public class ControladorLogin {
 
     @RequestMapping(path = "/registrarme", method = RequestMethod.POST)
     public ModelAndView registrarme(@ModelAttribute("usuario") Usuario usuario) {
+
         ModelMap model = new ModelMap();
         try{
             servicioLogin.registrar(usuario);
