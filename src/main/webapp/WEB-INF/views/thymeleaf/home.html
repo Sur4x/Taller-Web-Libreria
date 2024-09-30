@@ -18,14 +18,59 @@
 <div th:if="${usuario.rol == 'ADMIN'}">
   <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
     <a class="navbar-brand" href="#">UNLAM</a>
-    <h1>Bienvenido ADMIN</h1>
+
 
     <div class="d-flex ms-auto">
-
+          <h1>Bienvenido ADMIN</h1>
           <a href="login.html" >Cerrar sesión</a>
 
     </div>
   </nav>
+
+  <div class="club-container">
+    <!-- Bucle para mostrar todos los clubs -->
+    <table class="table table-striped">
+      <thead>
+      <tr>
+        <th>ID</th>
+        <th>Imagen</th>
+        <th>Nombre del club</th>
+        <th>Descripción</th>
+        <th>Género</th>
+        <th>Acciones</th>
+      </tr>
+      </thead>
+      <tbody>
+      <!-- Bucle para mostrar todos los clubs -->
+      <tr th:each="club : ${clubs}">
+        <!-- ID del club -->
+        <td th:text="${club.id}">1</td>
+
+        <!-- Imagen del club -->
+        <td>
+          <img th:src="@{/images/{imagen}(imagen=${club.imagen})}" alt="Imagen del club" style="width: 50px; height: 50px;">
+        </td>
+
+        <!-- Nombre del club -->
+        <td th:text="${club.nombre}">Nombre del club</td>
+
+        <!-- Descripción del club -->
+        <td th:text="${club.descripcion}">Descripción del club</td>
+
+        <!-- Género del club -->
+        <td th:text="${club.genero}">Género del club</td>
+
+        <!-- Acciones: Reportar y Eliminar -->
+        <td>
+          <a th:href="@{/club/reportar/{id}(id=${club.id})}" class="btn btn-warning btn-sm">Reportar</a>
+          <a th:href="@{/club/eliminar/{id}(id=${club.id})}" class="btn btn-danger btn-sm" onclick="return confirm('¿Estás seguro de que deseas eliminar este club?');">Eliminar</a>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+
+    </div>
+
 </div>
 
 <!-- SI EL USUARIO TIENE ROL "USUARIO" MUESTRA TODO ESTO-->
