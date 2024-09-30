@@ -5,9 +5,45 @@
   <title>Detalles del Club</title>
 </head>
 <body>
-  <h1 th:text="${club.nombre}">Nombre del Club</h1>
-  <img th:src="@{/images/{imagen}(imagen=${club.imagen})}" alt="Imagen del club"/>
-  <p th:text="${club.descripcion}">Descripción del Club</p>
-  <p><strong>Género:</strong> <span th:text="${club.genero}"></span></p>
+<!-- USUARIO ADMIN -->
+  <div th:if="${usuario.rol == 'ADMIN'}">
+    <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
+      <a class="navbar-brand" href="#">UNLAM</a>
+      <h1>Bienvenido ADMIN</h1>
+
+        <div class="d-flex ms-auto">
+
+        <a href="login.html" >Cerrar sesión</a>
+
+      </div>
+    </nav>
+  </div>
+<!-- USUARIO NORMAL -->
+  <div th:if="${usuario.rol == 'usuario'}">
+    <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
+      <a class="navbar-brand" href="#">UNLAM</a>
+        <div class="d-flex ms-auto">
+
+          <div class="dropdown">
+            <button>
+              <img th:src="@{/images/menuDesplegable.png}" alt="Menu Desplegable" class="img-fluid" style="max-width: 50px; height: auto;">
+            </button>
+
+            <div class="dropdown-content">
+
+          <a th:href="@{/perfil/{id}(id=${usuario.id})}">Perfil</a>
+          <a href="clubsInscriptos.html" >Mis clubs</a>
+          <a href="login.html" >Cerrar sesión</a>
+            </div>
+          </div>
+      </div>
+    </nav>
+  </div>
+
+  <main>
+
+
+  </main>
+
 </body>
 </html>

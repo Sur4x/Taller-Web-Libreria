@@ -13,8 +13,12 @@ public class Usuario {
     private String descripcion;
     private String email;
     private String password;
-    private String rol; //Ver si cambiar por un ENUM
-    private Boolean activo = false;
+
+    @Transient //ESTO HACE QUE ESTE ATRIBUTO NO SE GUARDE EN LA BDD
+    private String confirmPassword;
+
+    private String rol;
+
     @ManyToMany // Relación con géneros preferidos
     @JoinTable(
             name = "usuario_genero_preferido", // Tabla intermedia
@@ -22,6 +26,7 @@ public class Usuario {
             inverseJoinColumns = @JoinColumn(name = "genero_id")
     )
     private List<Genero> generosPreferidos;
+
     @ManyToMany // Relación con libros leídos
     @JoinTable(
             name = "usuario_libro_leido", // Tabla intermedia
@@ -29,16 +34,15 @@ public class Usuario {
             inverseJoinColumns = @JoinColumn(name = "libro_id")
     )
     private List<Libro> librosLeidos;
+
     @ManyToMany(mappedBy = "integrantes")
     private List<Club> clubsInscriptos;
 
     public Usuario(){};
-    public Usuario( Long id, String email,String password, Boolean activo) {
-        this.id = id;
+    public Usuario(String nombreUsuario, String email,String password) {
+        this.nombreUsuario = nombreUsuario;
         this.email = email;
         this.password = password;
-        this.rol = "usuario";
-        this.activo = activo;
     }
 
     public Long getId() {
@@ -65,18 +69,52 @@ public class Usuario {
     public void setRol(String rol) {
         this.rol = rol;
     }
-    public Boolean getActivo() {
-        return activo;
-    }
-    public void setActivo(Boolean activo) {
-        this.activo = activo;
+
+    public String getNombreUsuario() {
+        return nombreUsuario;
     }
 
-    public boolean activo() {
-        return activo;
+    public void setNombreUsuario(String nombreUsuario) {
+        this.nombreUsuario = nombreUsuario;
     }
 
-    public void activar() {
-        activo = true;
+    public String getConfirmPassword() {
+        return confirmPassword;
+    }
+
+    public void setConfirmPassword(String confirmPassword) {
+        this.confirmPassword = confirmPassword;
+    }
+
+    public String getDescripcion() {
+        return descripcion;
+    }
+
+    public void setDescripcion(String descripcion) {
+        this.descripcion = descripcion;
+    }
+
+    public List<Genero> getGenerosPreferidos() {
+        return generosPreferidos;
+    }
+
+    public void setGenerosPreferidos(List<Genero> generosPreferidos) {
+        this.generosPreferidos = generosPreferidos;
+    }
+
+    public List<Libro> getLibrosLeidos() {
+        return librosLeidos;
+    }
+
+    public void setLibrosLeidos(List<Libro> librosLeidos) {
+        this.librosLeidos = librosLeidos;
+    }
+
+    public List<Club> getClubsInscriptos() {
+        return clubsInscriptos;
+    }
+
+    public void setClubsInscriptos(List<Club> clubsInscriptos) {
+        this.clubsInscriptos = clubsInscriptos;
     }
 }

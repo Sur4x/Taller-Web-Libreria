@@ -1,11 +1,9 @@
 package com.tallerwebi.presentacion;
 
-import com.tallerwebi.dominio.Club;
-import com.tallerwebi.dominio.ServicioClub;
-import com.tallerwebi.dominio.ServicioLogin;
-import com.tallerwebi.dominio.Usuario;
+import com.tallerwebi.dominio.*;
 import com.tallerwebi.dominio.excepcion.ClubExistente;
 import com.tallerwebi.dominio.excepcion.NoExisteEseClub;
+import com.tallerwebi.dominio.excepcion.NoExisteEseUsuario;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -15,18 +13,22 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.servlet.http.HttpSession;
+
 @Controller
 public class ControladorClub {
 
     private ServicioClub servicioClub;
 
     @Autowired
+    private ServicioUsuario servicioUsuario;
+    @Autowired
     public ControladorClub(ServicioClub servicioClub){
         this.servicioClub = servicioClub;
     }
 
+    //MOVER A CONTROLADOR HOME
     @RequestMapping(path = "/crearClub")
-    //ARREGLAR ESTE METODO
     public ModelAndView irACrearNuevoClub() {
         Club nuevoClub = new Club(); // Crea una nueva instancia del objeto Club
         ModelAndView modelAndView = new ModelAndView("crearClub");
@@ -36,12 +38,15 @@ public class ControladorClub {
 
 
     @RequestMapping(path = "/crearNuevoClub", method = RequestMethod.POST)
-    public ModelAndView crearNuevoClub(@ModelAttribute("club") Club club) throws ClubExistente {
-        Boolean agregado = false;
+    public ModelAndView crearNuevoClub(@ModelAttribute("club") Club club, HttpSession sesion) throws ClubExistente, NoExisteEseUsuario {
+        Long idUsuario = (Long) sesion.getAttribute("id");
+        ModelMap model = new ModelMap();
 
-        agregado = servicioClub.addClub(club);
+        Boolean agregado = servicioClub.addClub(club);
 
-        if (agregado){
+        if (agregado && idUsuario != null){
+            Usuario usuario = servicioUsuario.buscarUsuarioPor(idUsuario);
+            model.put("usuario", usuario);
             return new ModelAndView("redirect:/home");
         }else{
             return new ModelAndView("redirect:/home");
