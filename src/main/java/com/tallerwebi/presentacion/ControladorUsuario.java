@@ -1,14 +1,13 @@
 package com.tallerwebi.presentacion;
 
-import com.tallerwebi.dominio.Club;
-import com.tallerwebi.dominio.ServicioLogin;
-import com.tallerwebi.dominio.ServicioUsuario;
-import com.tallerwebi.dominio.Usuario;
+import com.tallerwebi.dominio.*;
 import com.tallerwebi.dominio.excepcion.NoExisteEseClub;
 import com.tallerwebi.dominio.excepcion.NoExisteEseUsuario;
 import com.tallerwebi.dominio.excepcion.NoExistenUsuarios;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,11 +15,14 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
 
+import javax.servlet.http.HttpSession;
 import java.util.List;
 
 @Controller
 public class ControladorUsuario {
 
+    @Autowired
+    private ServicioClub servicioClub;
     private ServicioUsuario servicioUsuario;
 
     @Autowired
@@ -48,6 +50,7 @@ public class ControladorUsuario {
             return new ModelAndView("Redirect: /home", model);
         }
     }
+
 }
 
 

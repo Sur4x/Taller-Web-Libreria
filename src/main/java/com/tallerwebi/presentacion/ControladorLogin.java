@@ -44,8 +44,7 @@ public class ControladorLogin {
         Usuario usuarioBuscado = servicioLogin.consultarUsuario(datosLogin.getEmail());
         if (usuarioBuscado != null) {
             //Agregar al model usuarioBuscado y retonarlo en el ModelAndView
-            request.getSession().setAttribute("rol", usuarioBuscado.getRol());
-            request.getSession().setAttribute("id", usuarioBuscado.getId()); //aca seteo el id de la sesion
+            request.getSession().setAttribute("usuario", usuarioBuscado);
             return new ModelAndView("redirect:/home");
         } else {
             model.put("error", "Usuario o clave incorrecta");
@@ -77,17 +76,18 @@ public class ControladorLogin {
     }
 
     @RequestMapping(path = "/home", method = RequestMethod.GET)
-    public ModelAndView irAHome(HttpSession sesion) throws NoExistenClubs, NoExisteEseUsuario {
-        Long id = (Long) sesion.getAttribute("id"); //apenas el usuario entra al home obtengo su id
+    public ModelAndView irAHome(HttpServletRequest request) throws NoExistenClubs, NoExisteEseUsuario {
+        Usuario usuario = (Usuario) request.getSession().getAttribute("usuario");
+
         //String rol = (String) session.getAttribute("rol");
         ModelMap model = new ModelMap();
 
         List<Club> clubs = servicioClub.obtenerTodosLosClubs(); //ESTO ES LOGICA DEL CLUB NO DEL LOGIN MOVERLO
         model.put("clubs",clubs);
 
-        if (id != null){
-            Usuario usuario = servicioUsuario.buscarUsuarioPor(id);
-            model.put("usuario", usuario);
+        if (usuario != null){
+            Usuario usuarioBuscado = servicioUsuario.buscarUsuarioPor(usuario.getId());
+            model.put("usuario", usuarioBuscado);
         }else{
             model.put("usuario", null);
         }

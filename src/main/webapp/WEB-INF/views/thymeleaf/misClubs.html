@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>Clubs Inscritos</title>
+</head>
+<body>
+<h1>Clubs Inscritos</h1>
+<div th:if="${clubs != null}">
+  <ul>
+    <li th:each="club : ${clubs}" th:text="${club.nombre}"></li>
+  </ul>
+</div>
+</body>
+</html>

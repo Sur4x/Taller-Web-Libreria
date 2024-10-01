@@ -10,10 +10,12 @@ public interface ServicioClub {
 
     //public List<Club> listAllClubs();
 
-    public Boolean addClub(Club club) throws ClubExistente;
+    public Boolean agregar(Club club) throws ClubExistente;
 
     public List<Club> obtenerTodosLosClubs() throws NoExistenClubs;
 
     Club buscarClubPor(Long id) throws NoExisteEseClub;
+
+
 }
 

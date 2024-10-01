@@ -3,31 +3,68 @@
 <head>
     <meta charset="UTF-8">
     <title>Crear Club</title>
-
+    <link rel="stylesheet" href="../../../resources/core/css/main.css">
     <link rel="stylesheet" th:href="@{/webjars/bootstrap/5.2.0/css/bootstrap.min.css}"/>
-
+    <link rel="stylesheet" th:href="@{/css/main.css}"/>
 </head>
 <body>
-<h1>Cree su nuevo club: </h1>
+<nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
+    <a class="navbar-brand" th:href="@{/home}">UNLAM</a>
 
-<form action="#" th:action="@{/crearNuevoClub}" method="POST" th:object="${club}">
+    <div class="d-flex ms-auto">
+        <a th:href="@{/crearClub}" class="btn btn-lg btn-primary btn-block">Crear nuevo club</a>
 
-    <input th:field="*{imagen}" type="file" placeholder="Suba la imagen de su club">
+        <div class="dropdown">
+            <button>
+                <img th:src="@{/images/menuDesplegable.png}" alt="Menu Desplegable" class="img-fluid" style="max-width: 50px; height: auto;">
+            </button>
 
-    <input th:field="*{nombre}" type="text" placeholder="Nombre del club"/>
+            <div class="dropdown-content">
 
-    <textarea th:field="*{descripcion}" placeholder="Descripcion"></textarea>
+                <a th:href="@{/perfil/{id}(id=${usuario.id})}">Perfil</a>
+                <a th:href="@{/misClubs/{usuarioId}(usuarioId=${usuario.id})}" >Mis clubs</a>
+                <a href="login.html" >Cerrar sesión</a>
+            </div>
+        </div>
+    </div>
+</nav>
 
-    <select th:field="*{genero}">
-        <option value="aventura">Aventura</option>
-        <option value="romance">Romance</option>
-        <option value="misterio">Misterio</option>
-        <option value="terror">Terror</option>
-        <option value="auto-ayuda">Auto-ayuda</option>
-        <option value="ciencia ficcion">Ciencia ficción</option>
-    </select>
+<div class="container mt-5 pt-5">
+    <h1 class="text-center mb-4">Cree su nuevo club</h1>
 
-    <input type="submit" value="Crear">
-</form>
+    <form action="#" th:action="@{/crearNuevoClub}" method="POST" th:object="${club}" enctype="multipart/form-data">
+        <div class="mb-3">
+            <label for="imagen" class="form-label">Imagen del Club</label>
+            <input id="imagen" th:field="*{imagen}" type="file" class="form-control" placeholder="Suba la imagen de su club" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="nombre" class="form-label">Nombre del Club</label>
+            <input id="nombre" th:field="*{nombre}" type="text" class="form-control" placeholder="Nombre del club" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="descripcion" class="form-label">Descripción</label>
+            <textarea id="descripcion" th:field="*{descripcion}" class="form-control" placeholder="Descripción" rows="3" required></textarea>
+        </div>
+
+        <div class="mb-3">
+            <label for="genero" class="form-label">Género</label>
+            <select id="genero" th:field="*{genero}" class="form-select" required>
+                <option value="" disabled selected>Seleccione un género</option>
+                <option value="aventura">Aventura</option>
+                <option value="romance">Romance</option>
+                <option value="misterio">Misterio</option>
+                <option value="terror">Terror</option>
+                <option value="auto-ayuda">Auto-ayuda</option>
+                <option value="ciencia ficcion">Ciencia ficción</option>
+            </select>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Crear</button>
+    </form>
+</div>
+
+<script th:src="@{/webjars/bootstrap/5.2.0/js/bootstrap.bundle.min.js}"></script>
 </body>
 </html>

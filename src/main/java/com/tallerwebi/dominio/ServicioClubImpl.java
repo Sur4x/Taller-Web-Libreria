@@ -13,6 +13,8 @@ import java.util.List;
 @Transactional
 public class ServicioClubImpl implements ServicioClub{
 
+    @Autowired
+    private RepositorioUsuario repositorioUsuario;
     private RepositorioClub repositorioClub;
 
     @Autowired
@@ -21,12 +23,13 @@ public class ServicioClubImpl implements ServicioClub{
     }
 
     @Override
-    public Boolean addClub(Club club) throws ClubExistente {
+    public Boolean agregar(Club club) throws ClubExistente {
         Boolean agregado = false;
         Boolean clubRepetido = repositorioClub.searchClub(club);
 
         if (!clubRepetido){
-            agregado = repositorioClub.addClub(club);
+            agregado = true;
+            repositorioClub.guardar(club);
         }else{
             throw new ClubExistente();
         }
@@ -54,6 +57,8 @@ public class ServicioClubImpl implements ServicioClub{
             throw new NoExisteEseClub("No existe ningun club con ese id");
         }
     }
+
+
 
 
 }

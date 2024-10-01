@@ -14,11 +14,44 @@
 
 </head>
 <body>
+<!-- SI EL USUARIO NO ESTA LOGUEADO HACE ESTO -->
+<div th:if="${usuario == null}">
+  <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
+    <a class="navbar-brand" th:href="@{/home}">UNLAM</a>
+
+    <!-- Colocar el botón a la derecha -->
+    <div class="d-flex ms-auto">
+      <!-- Botón de registrarse -->
+      <a th:href="@{/login}" class="btn btn-lg btn-primary btn-block">Iniciar sesión</a>
+      <a th:href="@{/registro}" class="btn btn-lg btn-primary btn-block">Registrarse</a>
+    </div>
+  </nav>
+  <main role="main" class="container">
+
+    <div class="club-container">
+      <!-- Bucle para mostrar todos los clubs -->
+      <div th:each="club : ${clubs}" class="club-item">
+        <!-- AGREGAR UN HIPERVINCULO PASANDOLE EL ID A UN CONTROLLER, ESTE VA A BUSCAR EL CLUB Y VA A TRAER TODOS SUS DATOS -->
+        <a th:href="@{/club/{id}(id=${club.id})}" class="club-item">
+
+          <img th:src="@{/images/{imagen}(imagen=${club.imagen})}" alt="Imagen del club">
+
+          <h3 th:text="${club.nombre}">Nombre del club</h3>
+
+          <p th:text="${club.descripcion}">Descripción del club</p>
+        </a>
+
+      </div>
+    </div>
+
+
+  </main>
+</div>
 <!-- SI EL USUARIO TIENE ROL "ADMIN" MUESTRA TODO ESTO -->
+<div th:if="${usuario != null}">
 <div th:if="${usuario.rol == 'ADMIN'}">
   <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
-    <a class="navbar-brand" href="#">UNLAM</a>
-
+    <a class="navbar-brand" th:href="@{/home}">UNLAM</a>
 
     <div class="d-flex ms-auto">
           <h1>Bienvenido ADMIN</h1>
@@ -76,9 +109,10 @@
 <!-- SI EL USUARIO TIENE ROL "USUARIO" MUESTRA TODO ESTO-->
 <div th:if="${usuario.rol == 'usuario'}">
   <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
-    <a class="navbar-brand" href="#">UNLAM</a>
+    <a class="navbar-brand" th:href="@{/home}">UNLAM</a>
+
     <div class="d-flex ms-auto">
-      <a href="crearClub" class="btn btn-lg btn-primary btn-block">Crear nuevo club</a>
+      <a th:href="@{/crearClub}" class="btn btn-lg btn-primary btn-block">Crear nuevo club</a>
 
       <div class="dropdown">
         <button>
@@ -88,7 +122,7 @@
         <div class="dropdown-content">
 
           <a th:href="@{/perfil/{id}(id=${usuario.id})}">Perfil</a>
-          <a href="clubsInscriptos.html" >Mis clubs</a>
+          <a th:href="@{/misClubs/{usuarioId}(usuarioId=${usuario.id})}" >Mis clubs</a>
           <a href="login.html" >Cerrar sesión</a>
         </div>
       </div>
@@ -120,7 +154,6 @@
 
   </main>
 </div>
-
 
 </body>
 </html>

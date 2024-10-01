@@ -12,6 +12,8 @@ import java.util.List;
 @Transactional
 public class ServicioUsuarioImpl implements ServicioUsuario{
 
+    @Autowired
+    private RepositorioClub repositorioClub;
     private RepositorioUsuario repositorioUsuario;
 
     @Autowired
@@ -39,4 +41,6 @@ public class ServicioUsuarioImpl implements ServicioUsuario{
         }
 
     }
+
+
 }

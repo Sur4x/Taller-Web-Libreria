@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.Query;
+import javax.transaction.Transactional;
 import java.util.List;
 
 @Repository
@@ -36,16 +37,6 @@ public class RepositorioClubImpl implements RepositorioClub {
         }
     }
 
-    @Override
-    public Boolean addClub(Club club) {
-        Session session = sessionFactory.getCurrentSession();
-        try{
-            session.save(club);
-            return true;
-        } catch (Exception e){
-            return false;
-        }
-    }
 
     @Override
     public List<Club> obtenerTodosLosClubs() {
@@ -53,17 +44,23 @@ public class RepositorioClubImpl implements RepositorioClub {
         Query query = this.sessionFactory.getCurrentSession().createQuery(hql);
 
         return query.getResultList();
-
     }
 
     @Override
+    @Transactional
     public Club buscarClubPor(Long id) {
         String hql = "FROM Club WHERE id = :id";
         Query query = this.sessionFactory.getCurrentSession().createQuery(hql);
         query.setParameter("id", id);
 
-        // Si esperas un único resultado
         return (Club) query.getSingleResult();
+    }
+
+
+
+    @Override
+    public void guardar(Club club) {
+        sessionFactory.getCurrentSession().save(club);
     }
 
 }

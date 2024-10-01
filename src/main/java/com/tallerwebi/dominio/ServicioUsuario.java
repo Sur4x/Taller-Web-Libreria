@@ -10,4 +10,6 @@ public interface ServicioUsuario {
     public List<Usuario> mostrarTodosLosUsuarios() throws NoExistenUsuarios;
 
     Usuario buscarUsuarioPor(Long id) throws NoExisteEseUsuario;
+
+
 }

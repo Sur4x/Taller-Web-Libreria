@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 @Controller
@@ -30,23 +31,24 @@ public class ControladorClub {
     //MOVER A CONTROLADOR HOME
     @RequestMapping(path = "/crearClub")
     public ModelAndView irACrearNuevoClub() {
-        Club nuevoClub = new Club(); // Crea una nueva instancia del objeto Club
-        ModelAndView modelAndView = new ModelAndView("crearClub");
-        modelAndView.addObject("club", nuevoClub); // Agrega el objeto al modelo
-        return modelAndView;
+        ModelMap modelo = new ModelMap();
+        modelo.put("club", new Club());
+        modelo.put("usuario", new Usuario());
+
+        return new ModelAndView("crearClub", modelo);
     }
 
 
     @RequestMapping(path = "/crearNuevoClub", method = RequestMethod.POST)
-    public ModelAndView crearNuevoClub(@ModelAttribute("club") Club club, HttpSession sesion) throws ClubExistente, NoExisteEseUsuario {
-        Long idUsuario = (Long) sesion.getAttribute("id");
+    public ModelAndView crearNuevoClub(@ModelAttribute("club") Club club, HttpServletRequest request) throws ClubExistente, NoExisteEseUsuario {
+        Usuario usuario = (Usuario) request.getSession().getAttribute("usuario");
         ModelMap model = new ModelMap();
 
-        Boolean agregado = servicioClub.addClub(club);
+        Boolean agregado = servicioClub.agregar(club);
 
-        if (agregado && idUsuario != null){
-            Usuario usuario = servicioUsuario.buscarUsuarioPor(idUsuario);
-            model.put("usuario", usuario);
+        if (agregado && usuario != null){
+            Usuario usuarioEncontrado = servicioUsuario.buscarUsuarioPor(usuario.getId());
+            model.put("usuario", usuarioEncontrado);
             return new ModelAndView("redirect:/home");
         }else{
             return new ModelAndView("redirect:/home");
@@ -60,6 +62,7 @@ public class ControladorClub {
         ModelMap model = new ModelMap();
         if (club != null){
             model.put("club",club);
+            model.put("usuario", new Usuario());
             return new ModelAndView("detalleClub", model);
         }else{
             return new ModelAndView("Redirect: /home", model);

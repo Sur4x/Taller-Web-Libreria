@@ -5,6 +5,34 @@
   <title>Detalles del Club</title>
 </head>
 <body>
+<!-- USUARIO SIN LOGUEAR -->
+<div th:if="${usuario == null}">
+  <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
+    <a class="navbar-brand" th:href="@{/home}">UNLAM</a>
+
+    <!-- Colocar el botón a la derecha -->
+    <div class="d-flex ms-auto">
+      <!-- Botón de registrarse -->
+      <a th:href="@{/login}" class="btn btn-lg btn-primary btn-block">Iniciar sesión</a>
+      <a th:href="@{/registro}" class="btn btn-lg btn-primary btn-block">Registrarse</a>
+    </div>
+  </nav>
+</div>
+
+
+  <!-- nombre / descripcion / genero / imagen / integrantes-->
+  <p th:text="${club.nombre}">Nombre del usuario</p>
+  <p th:text="${club.descripcion}">descripcion</p>
+  <p th:text="${club.genero}">genero</p>
+  <img th:src="@{/images/{imagen}(imagen=${club.imagen})}" alt="Imagen del usuario">
+
+  <!-- DESCOMENTAR ESTO PARA RECORRER EL ARRAY DE INTEGRANTES DEL CLUB
+   <ul>
+     <li th:each="integrante : ${club.integrantes}" th:text="${integrante}">Nombre del integrante</li>
+   </ul>
+  -->
+
+
 <!-- USUARIO ADMIN -->
   <div th:if="${usuario.rol == 'ADMIN'}">
     <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
@@ -40,10 +68,22 @@
     </nav>
   </div>
 
-  <main>
+
+    <!-- nombre / descripcion / genero / imagen / integrantes-->
+     <p th:text="${club.nombre}">Nombre del usuario</p>
+     <p th:text="${club.descripcion}">descripcion</p>
+     <p th:text="${club.genero}">genero</p>
+     <img th:src="@{/images/{imagen}(imagen=${club.imagen})}" alt="Imagen del usuario">
+
+    <form th:action="@{/club/{clubId}/anotarse(clubId=${club.id})}" method="post">
+      <button type="submit">Inscribirse en el Club</button>
+    </form>
+    <!-- DESCOMENTAR ESTO PARA RECORRER EL ARRAY DE INTEGRANTES DEL CLUB
+     <ul>
+       <li th:each="integrante : ${club.integrantes}" th:text="${integrante}">Nombre del integrante</li>
+     </ul>
+    -->
 
 
-  </main>
-
-</body>
-</html>
+ </body>
+ </html>

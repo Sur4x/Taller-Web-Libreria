@@ -1,6 +1,7 @@
 package com.tallerwebi.dominio;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -15,12 +16,8 @@ public class Club {
     private String genero;
     //private Libro libro; AGREGAR ESTE ATRIBUTO
     private String imagen;
-    @ManyToMany // Relación muchos a muchos
-    @JoinTable(
-            name = "club_usuario", // Nombre de la tabla intermedia
-            joinColumns = @JoinColumn(name = "club_id"), // Columna para la tabla Club
-            inverseJoinColumns = @JoinColumn(name = "usuario_id") // Columna para la tabla Usuario
-    )
+
+    @ManyToMany(mappedBy = "clubsInscriptos", fetch = FetchType.EAGER)
     private List<Usuario> integrantes;
 
     public Club(){}
@@ -30,7 +27,7 @@ public class Club {
         this.descripcion = descripcion;
         this.genero = genero;
         this.imagen = imagen;
-        this.integrantes = integrantes;
+        this.integrantes = new ArrayList<>();
     }
 
     public Long getId() {

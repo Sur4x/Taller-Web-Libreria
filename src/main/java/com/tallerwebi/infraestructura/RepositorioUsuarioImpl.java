@@ -67,4 +67,6 @@ public class RepositorioUsuarioImpl implements RepositorioUsuario {
         return (Usuario) query.getSingleResult();
     }
 
+
+
 }

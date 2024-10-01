@@ -1,6 +1,7 @@
 package com.tallerwebi.dominio;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -13,12 +14,18 @@ public class Usuario {
     private String descripcion;
     private String email;
     private String password;
-
+    @ManyToMany(fetch = FetchType.EAGER) // Puede ser EAGER si prefieres cargar los clubes siempre
+    @JoinTable(
+            name = "usuario_club",
+            joinColumns = @JoinColumn(name = "usuario_id"),
+            inverseJoinColumns = @JoinColumn(name = "club_id")
+    )
+    private List<Club> clubsInscriptos;
     @Transient //ESTO HACE QUE ESTE ATRIBUTO NO SE GUARDE EN LA BDD
     private String confirmPassword;
 
     private String rol;
-
+/*
     @ManyToMany // Relación con géneros preferidos
     @JoinTable(
             name = "usuario_genero_preferido", // Tabla intermedia
@@ -34,15 +41,15 @@ public class Usuario {
             inverseJoinColumns = @JoinColumn(name = "libro_id")
     )
     private List<Libro> librosLeidos;
+*/
 
-    @ManyToMany(mappedBy = "integrantes")
-    private List<Club> clubsInscriptos;
 
     public Usuario(){};
     public Usuario(String nombreUsuario, String email,String password) {
         this.nombreUsuario = nombreUsuario;
         this.email = email;
         this.password = password;
+        this.clubsInscriptos = new ArrayList<>();
     }
 
     public Long getId() {
@@ -93,7 +100,7 @@ public class Usuario {
     public void setDescripcion(String descripcion) {
         this.descripcion = descripcion;
     }
-
+/*
     public List<Genero> getGenerosPreferidos() {
         return generosPreferidos;
     }
@@ -109,7 +116,7 @@ public class Usuario {
     public void setLibrosLeidos(List<Libro> librosLeidos) {
         this.librosLeidos = librosLeidos;
     }
-
+*/
     public List<Club> getClubsInscriptos() {
         return clubsInscriptos;
     }
