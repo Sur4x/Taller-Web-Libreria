@@ -81,9 +81,12 @@ public class ControladorLogin {
 
         //String rol = (String) session.getAttribute("rol");
         ModelMap model = new ModelMap();
-
-        List<Club> clubs = servicioClub.obtenerTodosLosClubs(); //ESTO ES LOGICA DEL CLUB NO DEL LOGIN MOVERLO
-        model.put("clubs",clubs);
+        try {
+            List<Club> clubs = servicioClub.obtenerTodosLosClubs(); //ESTO ES LOGICA DEL CLUB NO DEL LOGIN MOVERLO
+            model.put("clubs",clubs);
+        }catch (NoExistenClubs e){
+            model.put("error", "No existen clubs para mostrar");
+        }
 
         if (usuario != null){
             Usuario usuarioBuscado = servicioUsuario.buscarUsuarioPor(usuario.getId());

@@ -26,26 +26,6 @@
       <a th:href="@{/registro}" class="btn btn-lg btn-primary btn-block">Registrarse</a>
     </div>
   </nav>
-  <main role="main" class="container">
-
-    <div class="club-container">
-      <!-- Bucle para mostrar todos los clubs -->
-      <div th:each="club : ${clubs}" class="club-item">
-        <!-- AGREGAR UN HIPERVINCULO PASANDOLE EL ID A UN CONTROLLER, ESTE VA A BUSCAR EL CLUB Y VA A TRAER TODOS SUS DATOS -->
-        <a th:href="@{/club/{id}(id=${club.id})}" class="club-item">
-
-          <img th:src="@{/images/{imagen}(imagen=${club.imagen})}" alt="Imagen del club">
-
-          <h3 th:text="${club.nombre}">Nombre del club</h3>
-
-          <p th:text="${club.descripcion}">Descripción del club</p>
-        </a>
-
-      </div>
-    </div>
-
-
-  </main>
 </div>
 <!-- SI EL USUARIO TIENE ROL "ADMIN" MUESTRA TODO ESTO -->
 <div th:if="${usuario != null}">
@@ -128,6 +108,9 @@
       </div>
     </div>
   </nav>
+</div>
+  </div>
+
   <main role="main" class="container">
     <!--
     <div class = "container">
@@ -137,23 +120,23 @@
     -->
     <div class="club-container">
       <!-- Bucle para mostrar todos los clubs -->
-      <div th:each="club : ${clubs}" class="club-item">
-        <!-- AGREGAR UN HIPERVINCULO PASANDOLE EL ID A UN CONTROLLER, ESTE VA A BUSCAR EL CLUB Y VA A TRAER TODOS SUS DATOS -->
-        <a th:href="@{/club/{id}(id=${club.id})}" class="club-item">
-
-          <img th:src="@{/images/{imagen}(imagen=${club.imagen})}" alt="Imagen del club">
-
-          <h3 th:text="${club.nombre}">Nombre del club</h3>
-
-          <p th:text="${club.descripcion}">Descripción del club</p>
-        </a>
-
+      <div th:if="${clubs} == NULL">
+        <p th:if="${error != null}" class="alert alert-danger mt-3" th:text="'Error: ' + ${error}"></p>
       </div>
+      <div th:if="${clubs} != NULL">
+        <div th:each="club : ${clubs}" class="club-item">
+          <!-- AGREGAR UN HIPERVINCULO PASANDOLE EL ID A UN CONTROLLER, ESTE VA A BUSCAR EL CLUB Y VA A TRAER TODOS SUS DATOS -->
+          <a th:href="@{/club/{id}(id=${club.id})}" class="club-item">
+
+            <img th:src="@{/images/{imagen}(imagen=${club.imagen})}" alt="Imagen del club">
+
+            <h3 th:text="${club.nombre}">Nombre del club</h3>
+
+            <p th:text="${club.descripcion}">Descripción del club</p>
+          </a>
+        </div>
     </div>
-
-
+  </div>
   </main>
-</div>
-
 </body>
 </html>

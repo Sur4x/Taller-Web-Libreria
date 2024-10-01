@@ -20,7 +20,7 @@ public class HibernateConfig {
         //dataSource.setDriverClassName("org.hsqldb.jdbcDriver"); //BDD en memoria
         dataSource.setDriverClassName("com.mysql.cj.jdbc.Driver"); //BDD propia
         //dataSource.setUrl("jdbc:hsqldb:mem:db_");//BDD en memoria
-        dataSource.setUrl("jdbc:mysql://localhost:3306/deUltima"); //BDD propia URL + nombre
+        dataSource.setUrl("jdbc:mysql://localhost:3306/deUltima?createDatabaseIfNotExist=true"); //BDD propia URL + nombre
         dataSource.setUsername("root"); //cambie el usuario
         dataSource.setPassword(""); //cambie la contrasenia
         return dataSource;
