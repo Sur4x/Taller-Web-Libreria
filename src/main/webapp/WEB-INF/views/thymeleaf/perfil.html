@@ -42,24 +42,33 @@
 </head>
 <body>
 <div class="container">
-    <h1>Perfil del Usuario</h1>
-
     <div class="profile-info">
-        <h2>Información General</h2>
-        <h3>Id:</h3>
-        <p th:text="${usuario.id}"></p>
+        <h1>Perfil del Usuario</h1>
 
-        <h3>Nombre:</h3>
-        <p th:text="${usuario.nombreUsuario}"></p>
+        <div class="profile-info">
+            <h2>Información General</h2>
+            <!--
+            <h3>Id:</h3>
+            <p th:text="${usuario.id}"></p>
+            -->
+            <h3>Nombre:</h3>
+            <p th:text="${usuario.nombreUsuario}"></p>
 
-        <h3>Correo:</h3>
-        <p th:text="${usuario.email}"></p>
+            <h3>Correo:</h3>
+            <p th:text="${usuario.email}"></p>
 
-        <h3>Rol:</h3>
-        <p th:text="${usuario.rol}"></p>
+            <!--
+            <h3>Rol:</h3>
+            <p th:text="${usuario.rol}"></p>
+            -->
 
-        <h3>Clubes de Lectura Asociados: </h3>
-        <p th:text="${usuario.clubsInscriptos}"></p>
+            <h3>Clubes de Lectura Asociados: </h3>
+            <ul>
+                <li th:each="club : ${usuario.clubsInscriptos}">
+                    <p th:text="${club.nombre}">Nombre del club</p>
+                </li>
+            </ul>
+        </div>
     </div>
 
     <a class="btn" th:href="@{/home}"> Volver atras</a>

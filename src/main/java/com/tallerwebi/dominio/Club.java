@@ -17,8 +17,8 @@ public class Club {
     //private Libro libro; AGREGAR ESTE ATRIBUTO
     private String imagen;
 
-    @ManyToMany(mappedBy = "clubsInscriptos", fetch = FetchType.EAGER)
-    private List<Usuario> integrantes;
+    @ManyToMany(mappedBy = "clubsInscriptos", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.EAGER)
+    private List<Usuario> integrantes = new ArrayList<>();
 
     public Club(){}
     public Club(Long id, String nombre, String descripcion, String genero, String imagen, List<Usuario> integrantes) {
@@ -27,7 +27,7 @@ public class Club {
         this.descripcion = descripcion;
         this.genero = genero;
         this.imagen = imagen;
-        this.integrantes = new ArrayList<>();
+        this.integrantes = integrantes;
     }
 
     public Long getId() {
@@ -76,6 +76,21 @@ public class Club {
 
     public void setIntegrantes(List<Usuario> integrantes) {
         this.integrantes = integrantes;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Club club = (Club) o;
+
+        return id != null ? id.equals(club.id) : club.id == null;
+    }
+
+    @Override
+    public int hashCode() {
+        return id != null ? id.hashCode() : 0;
     }
 }
 
