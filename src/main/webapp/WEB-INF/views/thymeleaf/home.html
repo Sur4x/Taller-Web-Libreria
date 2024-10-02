@@ -6,62 +6,75 @@
 
   <title>Taller Web I</title>
 
-  <!-- Boostrap core css -->
+  <!-- Bootstrap core CSS -->
   <link rel="stylesheet" th:href="@{/webjars/bootstrap/5.2.0/css/bootstrap.min.css}"/>
   <link rel="stylesheet" href="../../../resources/core/css/home.css">
-  <!-- custom style -->
+  <!-- Custom styles -->
   <link rel="stylesheet" th:href="@{/css/main.css}"/>
-
 </head>
 <body>
-<!-- SI EL USUARIO NO ESTA LOGUEADO HACE ESTO -->
-<div th:if="${usuario == null}">
-  <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
-    <a class="navbar-brand" th:href="@{/home}">UNLAM</a>
 
-    <!-- Colocar el botón a la derecha -->
-    <div class="d-flex ms-auto">
-      <!-- Botón de registrarse -->
+<!-- Barra de navegación común para todos los usuarios -->
+<nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
+  <a class="navbar-brand" th:href="@{/home}">UNLAM</a>
+
+  <!-- Formulario de búsqueda común a todos -->
+  <form th:action="@{/buscar}" method="GET" class="d-flex ms-auto">
+    <input type="text" name="query" class="form-control me-2" placeholder="Buscar Club" aria-label="Buscar">
+    <button type="submit" class="btn btn-outline-light">Buscar</button>
+  </form>
+
+  <!-- Opciones de la barra de navegación -->
+  <div class="d-flex ms-auto">
+    <!-- Si el usuario no está logueado -->
+    <div th:if="${usuario == null}">
       <a th:href="@{/login}" class="btn btn-lg btn-primary btn-block">Iniciar sesión</a>
       <a th:href="@{/registro}" class="btn btn-lg btn-primary btn-block">Registrarse</a>
     </div>
-  </nav>
-  <main role="main" class="container">
 
-    <div class="club-container">
-      <!-- Bucle para mostrar todos los clubs -->
-      <div th:each="club : ${clubs}" class="club-item">
-        <!-- AGREGAR UN HIPERVINCULO PASANDOLE EL ID A UN CONTROLLER, ESTE VA A BUSCAR EL CLUB Y VA A TRAER TODOS SUS DATOS -->
-        <a th:href="@{/club/{id}(id=${club.id})}" class="club-item">
+    <!-- Si el usuario está logueado -->
+    <div th:if="${usuario != null}">
+      <!-- Mostrar "Crear nuevo club" -->
+      <a th:href="@{/crearClub}" class="btn btn-lg btn-primary btn-block me-2">Crear nuevo club</a>
 
-          <img th:src="@{/images/{imagen}(imagen=${club.imagen})}" alt="Imagen del club">
-
-          <h3 th:text="${club.nombre}">Nombre del club</h3>
-
-          <p th:text="${club.descripcion}">Descripción del club</p>
-        </a>
-
+      <!-- Opciones en un menú desplegable -->
+      <div class="dropdown">
+        <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+          Opciones
+        </button>
+        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+          <li><a th:href="@{/perfil/{id}(id=${usuario.id})}" class="dropdown-item">Perfil</a></li>
+          <li><a th:href="@{/misClubs/{usuarioId}(usuarioId=${usuario.id})}" class="dropdown-item">Mis clubs</a></li>
+          <li><a th:href="@{/logout}" class="dropdown-item">Cerrar sesión</a></li>
+        </ul>
       </div>
     </div>
+  </div>
+</nav>
 
+<!-- Contenido principal -->
+<main role="main" class="container" style="padding-top: 80px;"> <!-- Añadimos padding para ajustar con la barra superior fija -->
+  <div th:if="${noResultados}" class="alert alert-warning">
+    No se encontró ningún club con ese nombre.
+  </div>
 
-  </main>
-</div>
-<!-- SI EL USUARIO TIENE ROL "ADMIN" MUESTRA TODO ESTO -->
-<div th:if="${usuario != null}">
-<div th:if="${usuario.rol == 'ADMIN'}">
-  <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
-    <a class="navbar-brand" th:href="@{/home}">UNLAM</a>
-
-    <div class="d-flex ms-auto">
-          <h1>Bienvenido ADMIN</h1>
-          <a href="login.html" >Cerrar sesión</a>
-
+  <!-- Mostrar contenido según el rol del usuario -->
+  <div th:if="${usuario == null}">
+    <!-- Usuarios no logueados -->
+    <div class="club-container">
+      <div th:each="club : ${clubs}" class="club-item">
+        <a th:href="@{/club/{id}(id=${club.id})}" class="club-item">
+          <img th:src="@{/images/{imagen}(imagen=${club.imagen})}" alt="Imagen del club">
+          <h3 th:text="${club.nombre}">Nombre del club</h3>
+          <p th:text="${club.descripcion}">Descripción del club</p>
+        </a>
+      </div>
     </div>
-  </nav>
+  </div>
 
-  <div class="club-container">
-    <!-- Bucle para mostrar todos los clubs -->
+  <!-- Usuarios logueados con rol "ADMIN" -->
+  <div th:if="${usuario != null && usuario.rol == 'ADMIN'}">
+    <h1 class="mb-4">Bienvenido ADMIN</h1>
     <table class="table table-striped">
       <thead>
       <tr>
@@ -74,26 +87,14 @@
       </tr>
       </thead>
       <tbody>
-      <!-- Bucle para mostrar todos los clubs -->
       <tr th:each="club : ${clubs}">
-        <!-- ID del club -->
-        <td th:text="${club.id}">1</td>
-
-        <!-- Imagen del club -->
+        <td th:text="${club.id}"></td>
         <td>
           <img th:src="@{/images/{imagen}(imagen=${club.imagen})}" alt="Imagen del club" style="width: 50px; height: 50px;">
         </td>
-
-        <!-- Nombre del club -->
-        <td th:text="${club.nombre}">Nombre del club</td>
-
-        <!-- Descripción del club -->
-        <td th:text="${club.descripcion}">Descripción del club</td>
-
-        <!-- Género del club -->
-        <td th:text="${club.genero}">Género del club</td>
-
-        <!-- Acciones: Reportar y Eliminar -->
+        <td th:text="${club.nombre}"></td>
+        <td th:text="${club.descripcion}"></td>
+        <td th:text="${club.genero}"></td>
         <td>
           <a th:href="@{/club/reportar/{id}(id=${club.id})}" class="btn btn-warning btn-sm">Reportar</a>
           <a th:href="@{/club/eliminar/{id}(id=${club.id})}" class="btn btn-danger btn-sm" onclick="return confirm('¿Estás seguro de que deseas eliminar este club?');">Eliminar</a>
@@ -101,59 +102,24 @@
       </tr>
       </tbody>
     </table>
+  </div>
 
-    </div>
-
-</div>
-
-<!-- SI EL USUARIO TIENE ROL "USUARIO" MUESTRA TODO ESTO-->
-<div th:if="${usuario.rol == 'usuario'}">
-  <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
-    <a class="navbar-brand" th:href="@{/home}">UNLAM</a>
-
-    <div class="d-flex ms-auto">
-      <a th:href="@{/crearClub}" class="btn btn-lg btn-primary btn-block">Crear nuevo club</a>
-
-      <div class="dropdown">
-        <button>
-          <img th:src="@{/images/menuDesplegable.png}" alt="Menu Desplegable" class="img-fluid" style="max-width: 50px; height: auto;">
-        </button>
-
-        <div class="dropdown-content">
-
-          <a th:href="@{/perfil/{id}(id=${usuario.id})}">Perfil</a>
-          <a th:href="@{/misClubs/{usuarioId}(usuarioId=${usuario.id})}" >Mis clubs</a>
-          <a href="login.html" >Cerrar sesión</a>
-        </div>
-      </div>
-    </div>
-  </nav>
-  <main role="main" class="container">
-    <!--
-    <div class = "container">
-       USAR ESTO CUANDO ESTE LOGUEADO COMO ADMIN
-          <a href="busqueda" class="btn btn-lg btn-primary btn-block">Mostrar todos los usuarios</a>
-    </div>
-    -->
+  <!-- Usuarios logueados con rol "usuario" -->
+  <div th:if="${usuario != null && usuario.rol == 'usuario'}">
     <div class="club-container">
-      <!-- Bucle para mostrar todos los clubs -->
       <div th:each="club : ${clubs}" class="club-item">
-        <!-- AGREGAR UN HIPERVINCULO PASANDOLE EL ID A UN CONTROLLER, ESTE VA A BUSCAR EL CLUB Y VA A TRAER TODOS SUS DATOS -->
         <a th:href="@{/club/{id}(id=${club.id})}" class="club-item">
-
           <img th:src="@{/images/{imagen}(imagen=${club.imagen})}" alt="Imagen del club">
-
           <h3 th:text="${club.nombre}">Nombre del club</h3>
-
           <p th:text="${club.descripcion}">Descripción del club</p>
         </a>
-
       </div>
     </div>
+  </div>
 
+</main>
 
-  </main>
-</div>
-
+<!-- Bootstrap JS -->
+<script th:src="@{/webjars/bootstrap/5.2.0/js/bootstrap.bundle.min.js}"></script>
 </body>
 </html>

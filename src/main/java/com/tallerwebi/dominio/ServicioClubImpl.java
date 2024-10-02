@@ -5,60 +5,50 @@ import com.tallerwebi.dominio.excepcion.NoExisteEseClub;
 import com.tallerwebi.dominio.excepcion.NoExistenClubs;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import javax.transaction.Transactional;
 import java.util.List;
 
-@Service("servicioClub")
-@Transactional
-public class ServicioClubImpl implements ServicioClub{
+@Service
+public class ServicioClubImpl implements ServicioClub {
 
     @Autowired
-    private RepositorioUsuario repositorioUsuario;
     private RepositorioClub repositorioClub;
 
-    @Autowired
-    public ServicioClubImpl(RepositorioClub repositorioClub){
-        this.repositorioClub = repositorioClub;
-    }
-
     @Override
+    @Transactional  // Aseguramos que este método esté dentro de una transacción
     public Boolean agregar(Club club) throws ClubExistente {
-        Boolean agregado = false;
-        Boolean clubRepetido = repositorioClub.searchClub(club);
-
-        if (!clubRepetido){
-            agregado = true;
-            repositorioClub.guardar(club);
-        }else{
-            throw new ClubExistente();
+        Boolean clubExistente = repositorioClub.searchClub(club);
+        if (clubExistente) {
+            throw new ClubExistente("El club ya existe");
         }
-        return agregado;
-
+        repositorioClub.guardar(club);
+        return true;
     }
 
     @Override
+    @Transactional(readOnly = true)  // La lectura de datos también debe estar dentro de una transacción
     public List<Club> obtenerTodosLosClubs() throws NoExistenClubs {
         List<Club> clubs = repositorioClub.obtenerTodosLosClubs();
-        if (!clubs.isEmpty()){
-            return clubs;
-        }else{
-            throw new NoExistenClubs("No existen clubs para mostrar");
+        if (clubs.isEmpty()) {
+            throw new NoExistenClubs("No existen clubs registrados");
         }
-
+        return clubs;
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Club buscarClubPor(Long id) throws NoExisteEseClub {
         Club club = repositorioClub.buscarClubPor(id);
-        if (club != null){
-            return club;
-        }else{
-            throw new NoExisteEseClub("No existe ningun club con ese id");
+        if (club == null) {
+            throw new NoExisteEseClub("No existe un club con ese ID");
         }
+        return club;
     }
 
-
-
-
+    @Override
+    @Transactional(readOnly = true)
+    public List<Club> buscarClubPorNombre(String nombre) {
+        return repositorioClub.buscarClubPorNombre(nombre);
+    }
 }

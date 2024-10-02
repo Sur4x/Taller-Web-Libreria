@@ -8,14 +8,12 @@ import java.util.List;
 
 public interface ServicioClub {
 
-    //public List<Club> listAllClubs();
+    Boolean agregar(Club club) throws ClubExistente;
 
-    public Boolean agregar(Club club) throws ClubExistente;
-
-    public List<Club> obtenerTodosLosClubs() throws NoExistenClubs;
+    List<Club> obtenerTodosLosClubs() throws NoExistenClubs;
 
     Club buscarClubPor(Long id) throws NoExisteEseClub;
 
-
+    // Método para buscar clubes por nombre o coincidencia parcial
+    List<Club> buscarClubPorNombre(String nombre);
 }
-
