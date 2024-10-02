@@ -1,13 +1,69 @@
-<!DOCTYPE html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>Perfil</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Perfil del Usuario</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1, h2 {
+            color: #333;
+        }
+        .profile-info {
+            margin-bottom: 20px;
+        }
+        .profile-info h3 {
+            color: #555;
+        }
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+        .btn:hover {
+            background-color: #0056b3;
+        }
+    </style>
 </head>
 <body>
-<h1>Id:</h1>
-<h1 th:text="${usuario.id}"></h1>
-<h1>Correo:</h1>
-<h1 th:text="${usuario.email}">Usuario: </h1>
+<div class="container">
+    <h1>Perfil del Usuario</h1>
+
+    <div class="profile-info">
+        <h2>Información General</h2>
+        <h3>Id:</h3>
+        <p th:text="${usuario.id}"></p>
+
+        <h3>Nombre:</h3>
+        <p th:text="${usuario.nombreUsuario}"></p>
+
+        <h3>Correo:</h3>
+        <p th:text="${usuario.email}"></p>
+
+        <h3>Rol:</h3>
+        <p th:text="${usuario.rol}"></p>
+
+        <h3>Clubes de Lectura Asociados: </h3>
+        <p th:text="${usuario.clubsInscriptos}"></p>
+    </div>
+
+    <a class="btn" th:href="@{/home}"> Volver atras</a>
+</div>
 </body>
+</html>
 </html>

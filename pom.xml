@@ -178,7 +178,7 @@
                         <port>8080</port>
                     </httpConnector>
                     <webApp>
-                        <contextPath>/spring</contextPath>
+                        <contextPath>/club</contextPath>
                     </webApp>
                 </configuration>
             </plugin>
