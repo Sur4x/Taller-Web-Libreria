@@ -54,9 +54,6 @@
 
 <!-- Contenido principal -->
 <main role="main" class="container" style="padding-top: 80px;"> <!-- Añadimos padding para ajustar con la barra superior fija -->
-  <div th:if="${noResultados}" class="alert alert-warning">
-    No se encontró ningún club con ese nombre.
-  </div>
 
   <!-- Mostrar contenido según el rol del usuario -->
   <div th:if="${usuario == null}">
