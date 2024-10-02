@@ -1,10 +1,7 @@
 package com.tallerwebi.presentacion;
 
 import com.tallerwebi.dominio.*;
-import com.tallerwebi.dominio.excepcion.ClubExistente;
-import com.tallerwebi.dominio.excepcion.NoExisteEseClub;
-import com.tallerwebi.dominio.excepcion.NoExisteEseUsuario;
-import com.tallerwebi.dominio.excepcion.NoExistenClubs;
+import com.tallerwebi.dominio.excepcion.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -85,5 +82,21 @@ public class ControladorClub {
         }
 
         return new ModelAndView("home", model);
+    }
+
+
+    @RequestMapping(path = "/club/{clubId}/anotarse", method = RequestMethod.POST)
+    public ModelAndView anotarUsuarioAClub(@PathVariable("clubId") Long id, HttpServletRequest request) throws YaFormaParteDelClub, NoExisteEseClub, NoExisteEseUsuario {
+        Usuario usuario = (Usuario) request.getSession().getAttribute("usuario");
+        List<Club> clubs = usuario.getClubsInscriptos();
+        Club club = servicioClub.buscarClubPor(id);
+
+        if (clubs.contains(club)) {
+            throw new YaFormaParteDelClub("El usuario ya forma parte del club");
+        }
+        usuario.getClubsInscriptos().add(club);
+        club.getIntegrantes().add(usuario);
+        servicioUsuario.guardarUsuario(usuario);
+        return new ModelAndView("redirect:/home");
     }
 }

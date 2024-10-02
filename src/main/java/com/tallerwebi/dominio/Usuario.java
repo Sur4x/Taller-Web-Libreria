@@ -14,13 +14,13 @@ public class Usuario {
     private String descripcion;
     private String email;
     private String password;
-    @ManyToMany(fetch = FetchType.EAGER) // Puede ser EAGER si prefieres cargar los clubes siempre
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.EAGER)
     @JoinTable(
             name = "usuario_club",
             joinColumns = @JoinColumn(name = "usuario_id"),
             inverseJoinColumns = @JoinColumn(name = "club_id")
     )
-    private List<Club> clubsInscriptos;
+    private List<Club> clubsInscriptos = new ArrayList<>();
     @Transient //ESTO HACE QUE ESTE ATRIBUTO NO SE GUARDE EN LA BDD
     private String confirmPassword;
 
@@ -45,11 +45,11 @@ public class Usuario {
 
 
     public Usuario(){};
-    public Usuario(String nombreUsuario, String email,String password) {
+    public Usuario(String nombreUsuario, String email,String password, List<Club> clubsInscriptos) {
         this.nombreUsuario = nombreUsuario;
         this.email = email;
         this.password = password;
-        this.clubsInscriptos = new ArrayList<>();
+        this.clubsInscriptos = clubsInscriptos;
     }
 
     public Long getId() {
