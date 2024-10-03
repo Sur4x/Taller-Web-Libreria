@@ -3,6 +3,8 @@
     <meta charset="UTF-8">
     <title>Perfil</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" th:href="@{/webjars/bootstrap/5.2.0/css/bootstrap.min.css}"/>
     <title>Perfil del Usuario</title>
     <style>
         body {
@@ -13,8 +15,8 @@
         }
         .container {
             max-width: 600px;
-            margin: 0 auto;
             background-color: #fff;
+            margin-top: 100px;
             padding: 20px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
@@ -41,6 +43,27 @@
     </style>
 </head>
 <body>
+<header>
+    <nav style="padding: 15px;" class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
+        <a class="navbar-brand" th:href="@{/home}">UNLAM</a>
+        <div class="d-flex ms-auto align-items-center">
+            <a th:href="@{/crearClub}" class="btn btn-primary me-2">Crear nuevo club</a>
+            <div class="dropdown">
+                <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton"
+                        data-bs-toggle="dropdown" aria-expanded="false">
+                    Menú
+                </button>
+                <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                    <li><a class="dropdown-item" th:href="@{/perfil/{id}(id=${usuario.id})}">Perfil</a></li>
+                    <li><a class="dropdown-item" th:href="@{/misClubs/{usuarioId}(usuarioId=${usuario.id})}">Mis clubs</a>
+                    </li>
+                    <li><a class="dropdown-item" th:href="@{/logout}">Cerrar sesión</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+</header>
+<main>
 <div class="container">
     <div class="profile-info">
         <h1>Perfil del Usuario</h1>
@@ -51,7 +74,7 @@
             <h3>Id:</h3>
             <p th:text="${usuario.id}"></p>
             -->
-            <h3>Nombre:</h3>
+            <h3>Nombre de usuario:</h3>
             <p th:text="${usuario.nombreUsuario}"></p>
 
             <h3>Correo:</h3>
@@ -73,6 +96,9 @@
 
     <a class="btn" th:href="@{/home}"> Volver atras</a>
 </div>
+
+</main>
+<script th:src="@{/webjars/bootstrap/5.2.0/js/bootstrap.bundle.min.js}"></script>
 </body>
 </html>
 </html>

@@ -79,10 +79,25 @@
     </div>
 
   <div th:if="${usuario != null}">
-    <div th:if="${usuario.rol == 'usuario' or usuario.rol == 'admin'}">
-    <form th:action="@{/club/{clubId}/anotarse(clubId=${club.id})}" method="post" class="text-center mt-4">
-      <button type="submit" class="btn btn-success btn-lg">Inscribirse en el Club</button>
-    </form>
+    <!-- Recorremos los clubes a los que el usuario está inscripto -->
+    <div th:each="clubsInscripto : ${usuario.clubsInscriptos}">
+      <!-- Si el usuario está inscripto en este club, mostramos el botón de abandonar -->
+      <div th:if="${clubsInscripto.id == club.id}">
+        <div th:if="${usuario.rol == 'usuario' or usuario.rol == 'admin'}">
+          <form th:action="@{/club/{clubId}/abandonar(clubId=${club.id})}" method="post" class="text-center mt-4">
+            <button type="submit" class="btn btn-success btn-lg">Abandonar Club</button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Si el usuario NO está inscripto en este club, mostramos el botón de inscribirse -->
+    <div th:if="${#lists.isEmpty(usuario.clubsInscriptos) or !usuario.clubsInscriptos.contains(club)}">
+      <div th:if="${usuario.rol == 'usuario' or usuario.rol == 'admin'}">
+        <form th:action="@{/club/{clubId}/anotarse(clubId=${club.id})}" method="post" class="text-center mt-4">
+          <button type="submit" class="btn btn-success btn-lg">Inscribirse en el Club</button>
+        </form>
+      </div>
     </div>
   </div>
 

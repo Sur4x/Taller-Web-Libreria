@@ -99,4 +99,19 @@ public class ControladorClub {
         servicioUsuario.guardarUsuario(usuario);
         return new ModelAndView("redirect:/home");
     }
+
+    @RequestMapping(path = "/club/{clubId}/abandonar", method = RequestMethod.POST)
+    public ModelAndView abandonarClub(@PathVariable("clubId") Long id, HttpServletRequest request) throws YaFormaParteDelClub, NoExisteEseClub, NoExisteEseUsuario {
+        Usuario usuario = (Usuario) request.getSession().getAttribute("usuario");
+        List<Club> clubs = usuario.getClubsInscriptos();
+        Club club = servicioClub.buscarClubPor(id);
+
+        if (!clubs.contains(club)) {
+            throw new YaFormaParteDelClub("El usuario no forma parte del club");
+        }
+        usuario.getClubsInscriptos().remove(club);
+        club.getIntegrantes().remove(usuario);
+        servicioUsuario.guardarUsuario(usuario);
+        return new ModelAndView("redirect:/home");
+    }
 }

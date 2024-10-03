@@ -58,6 +58,16 @@ public class ControladorUsuario {
         return new ModelAndView("redirect:/login");
     }
 
+    @RequestMapping(path = "/misClubs/{usuarioId}")
+    public ModelAndView irAMisClubs(@PathVariable("usuarioId") Long id) throws NoExisteEseUsuario {
+        Usuario usuario = servicioUsuario.buscarUsuarioPor(id);
+        ModelMap model = new ModelMap();
+
+        model.addAttribute("usuario", usuario);
+
+        return new ModelAndView("misClubs", model);
+
+    }
 }
 
 
