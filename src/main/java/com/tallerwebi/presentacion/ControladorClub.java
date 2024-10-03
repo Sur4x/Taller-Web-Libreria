@@ -42,26 +42,26 @@ public class ControladorClub {
 
         Boolean agregado = servicioClub.agregar(club);
 
-        if (agregado && usuario != null) {
-            Usuario usuarioEncontrado = servicioUsuario.buscarUsuarioPor(usuario.getId());
-            model.put("usuario", usuarioEncontrado);
+        if (agregado && usuario != null){
+            model.put("usuario", usuario);
             return new ModelAndView("redirect:/home");
-        } else {
+        }else{
             return new ModelAndView("redirect:/home");
         }
     }
 
     // Muestra los detalles de un club específico
     @RequestMapping(path = "/club/{id}")
-    public ModelAndView irADetalleClub(@PathVariable("id") Long id) throws NoExisteEseClub {
+    public ModelAndView irADetalleClub(@PathVariable("id") Long id, HttpServletRequest request) throws NoExisteEseClub {
+        Usuario usuario = (Usuario) request.getSession().getAttribute("usuario");
         Club club = servicioClub.buscarClubPor(id);
         ModelMap model = new ModelMap();
-        if (club != null) {
-            model.put("club", club);
-            model.put("usuario", new Usuario());
+        if (club != null){
+            model.put("club",club);
+            model.put("usuario", usuario);
             return new ModelAndView("detalleClub", model);
-        } else {
-            return new ModelAndView("redirect:/home");
+        }else{
+            return new ModelAndView("Redirect: /home", model);
         }
     }
 

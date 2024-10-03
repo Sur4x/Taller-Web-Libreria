@@ -3,87 +3,92 @@
 <head>
   <meta charset="UTF-8">
   <title>Detalles del Club</title>
+
+  <link rel="stylesheet" th:href="@{/webjars/bootstrap/5.2.0/css/bootstrap.min.css}"/>
+  <link rel="stylesheet" th:href="@{/css/main.css}"/>
+
 </head>
 <body>
 <!-- USUARIO SIN LOGUEAR -->
+<header>
 <div th:if="${usuario == null}">
   <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
-    <a class="navbar-brand" th:href="@{/home}">Club de Lectura</a>
+    <a class="navbar-brand" th:href="@{/home}">UNLAM</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
 
-    <!-- Colocar el botón a la derecha -->
-    <div class="d-flex ms-auto">
-      <!-- Botón de registrarse -->
-      <a th:href="@{/login}" class="btn btn-lg btn-primary btn-block">Iniciar sesión</a>
-      <a th:href="@{/registro}" class="btn btn-lg btn-primary btn-block">Registrarse</a>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <div class="d-flex ms-auto">
+        <a th:href="@{/login}" class="btn btn-primary me-2">Iniciar sesión</a>
+        <a th:href="@{/registro}" class="btn btn-primary">Registrarse</a>
+      </div>
     </div>
   </nav>
 </div>
 
-
-  <!-- nombre / descripcion / genero / imagen / integrantes-->
-  <p th:text="${club.nombre}">Nombre del usuario</p>
-  <p th:text="${club.descripcion}">descripcion</p>
-  <p th:text="${club.genero}">genero</p>
-  <img th:src="@{/images/{imagen}(imagen=${club.imagen})}" alt="Imagen del usuario">
-
-  <!-- DESCOMENTAR ESTO PARA RECORRER EL ARRAY DE INTEGRANTES DEL CLUB
-   <ul>
-     <li th:each="integrante : ${club.integrantes}" th:text="${integrante}">Nombre del integrante</li>
-   </ul>
-  -->
-
-
-<!-- USUARIO ADMIN -->
-  <div th:if="${usuario.rol == 'ADMIN'}">
+  <!-- USUARIO ADMIN -->
+  <div th:if="${usuario != null and usuario.rol == 'admin'}">
     <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
-      <a class="navbar-brand" href="#">UNLAM</a>
+      <a class="navbar-brand" th:href="@{/home}">UNLAM</a>
       <h1>Bienvenido ADMIN</h1>
 
-        <div class="d-flex ms-auto">
+      <div class="d-flex ms-auto">
 
-        <a href="login.html" >Cerrar sesión</a>
+        <a th:href="@{/logout}">Cerrar sesión</a>
 
       </div>
     </nav>
   </div>
-<!-- USUARIO NORMAL -->
-  <div th:if="${usuario.rol == 'usuario'}">
+
+  <!-- USUARIO NORMAL -->
+  <div th:if="${usuario != null and usuario.rol == 'usuario'}">
     <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
-      <a class="navbar-brand" href="#">UNLAM</a>
-        <div class="d-flex ms-auto">
-
-          <div class="dropdown">
-            <button>
-              <img th:src="@{/images/menuDesplegable.png}" alt="Menu Desplegable" class="img-fluid" style="max-width: 50px; height: auto;">
-            </button>
-
-            <div class="dropdown-content">
-
-          <a th:href="@{/perfil/{id}(id=${usuario.id})}">Perfil</a>
-          <a href="clubsInscriptos.html" >Mis clubs</a>
-          <a href="login.html" >Cerrar sesión</a>
-            </div>
-          </div>
+      <a class="navbar-brand" th:href="@{/home}">UNLAM</a>
+      <div class="d-flex ms-auto align-items-center">
+        <a th:href="@{/crearClub}" class="btn btn-primary me-2">Crear nuevo club</a>
+        <div class="dropdown">
+          <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton"
+                  data-bs-toggle="dropdown" aria-expanded="false">
+            Menú
+          </button>
+          <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+            <li><a class="dropdown-item" th:href="@{/perfil/{id}(id=${usuario.id})}">Perfil</a></li>
+            <li><a class="dropdown-item" th:href="@{/misClubs/{usuarioId}(usuarioId=${usuario.id})}">Mis
+              clubs</a></li>
+            <li><a class="dropdown-item" th:href="@{/logout}">Cerrar sesión</a></li>
+          </ul>
+        </div>
       </div>
     </nav>
   </div>
 
+</header>
+<main>
 
-    <!-- nombre / descripcion / genero / imagen / integrantes-->
-     <p th:text="${club.nombre}">Nombre del usuario</p>
-     <p th:text="${club.descripcion}">descripcion</p>
-     <p th:text="${club.genero}">genero</p>
-     <img th:src="@{/images/{imagen}(imagen=${club.imagen})}" alt="Imagen del usuario">
+    <div class="container mt-5 pt-5">
+      <h1 class="text-center mb-4" th:text="${club.nombre}"></h1>
+      <p class="text-center text-muted" th:text="${club.genero}"></p>
+      <p class="lead text-center" th:text="${club.descripcion}"></p>
 
-    <form th:action="@{/club/{clubId}/anotarse(clubId=${club.id})}" method="post">
-      <button type="submit">Inscribirse en el Club</button>
+      <div class="text-center">
+         <!-- Imagen con tamaño fijo -->
+        <img th:src="@{/images/{imagen}(imagen=${club.imagen})}" alt="Imagen del club" class="img-fluid rounded" style="max-width: 300px; height: auto;">
+      </div>
+    </div>
+
+  <div th:if="${usuario != null}">
+    <div th:if="${usuario.rol == 'usuario' or usuario.rol == 'admin'}">
+    <form th:action="@{/club/{clubId}/anotarse(clubId=${club.id})}" method="post" class="text-center mt-4">
+      <button type="submit" class="btn btn-success btn-lg">Inscribirse en el Club</button>
     </form>
-    <!-- DESCOMENTAR ESTO PARA RECORRER EL ARRAY DE INTEGRANTES DEL CLUB
-     <ul>
-       <li th:each="integrante : ${club.integrantes}" th:text="${integrante}">Nombre del integrante</li>
-     </ul>
-    -->
+    </div>
+  </div>
 
 
- </body>
- </html>
+</main>
+
+<script th:src="@{/webjars/bootstrap/5.2.0/js/bootstrap.bundle.min.js}"></script>
+</body>
+</html>
