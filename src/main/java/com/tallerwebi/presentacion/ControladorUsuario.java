@@ -55,7 +55,7 @@ public class ControladorUsuario {
     @RequestMapping(path = "/logout", method = RequestMethod.GET)
     public ModelAndView logout(HttpServletRequest request) {
         request.getSession().invalidate();
-        return new ModelAndView("redirect:/login");
+        return new ModelAndView("redirect:/home");
     }
 
     @RequestMapping(path = "/misClubs/{usuarioId}")

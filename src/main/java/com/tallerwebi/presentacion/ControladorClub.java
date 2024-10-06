@@ -17,21 +17,26 @@ public class ControladorClub {
 
     private ServicioClub servicioClub;
 
-    @Autowired
     private ServicioUsuario servicioUsuario;
 
     @Autowired
-    public ControladorClub(ServicioClub servicioClub) {
+    public ControladorClub(ServicioClub servicioClub,ServicioUsuario servicioUsuario) {
         this.servicioClub = servicioClub;
+        this.servicioUsuario = servicioUsuario;
     }
 
     // Muestra el formulario para crear un nuevo club
     @RequestMapping(path = "/crearClub")
-    public ModelAndView irACrearNuevoClub() {
+    public ModelAndView irACrearNuevoClub(HttpServletRequest request) {
+        Usuario usuario = (Usuario) request.getSession().getAttribute("usuario");
         ModelMap modelo = new ModelMap();
-        modelo.put("club", new Club());
-        modelo.put("usuario", new Usuario());
-        return new ModelAndView("crearClub", modelo);
+        if(usuario != null) {
+            modelo.put("club", new Club());
+            modelo.put("usuario", usuario);
+            return new ModelAndView("crearClub", modelo);
+        }else{
+            return new ModelAndView("redirect:/login");
+        }
     }
 
     // Crea un nuevo club

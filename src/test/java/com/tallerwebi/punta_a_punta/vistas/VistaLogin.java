@@ -14,7 +14,7 @@ public class VistaLogin extends VistaWeb {
     }
 
     public String obtenerMensajeDeError(){
-        return this.obtenerTextoDelElemento("p.alert.alert-danger");
+        return this.obtenerTextoDelElemento("p.alert.alert-danger.mt-3");
     }
 
     public void escribirEMAIL(String email){
