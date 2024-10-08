@@ -1,21 +1,20 @@
 package com.tallerwebi.presentacion;
 
-import com.tallerwebi.dominio.Club;
-import com.tallerwebi.dominio.ServicioClub;
-import com.tallerwebi.dominio.ServicioUsuario;
-import com.tallerwebi.dominio.Usuario;
+import com.tallerwebi.dominio.*;
+import com.tallerwebi.dominio.excepcion.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.text.IsEqualIgnoringCase.equalToIgnoringCase;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 public class ControladorClubTest {
 
@@ -23,46 +22,81 @@ public class ControladorClubTest {
     private HttpSession sessionMock;
     private ServicioClub servicioClubMock;
     private ServicioUsuario servicioUsuarioMock;
-    private Club clubMock;
     private ControladorClub controladorClub;
     private Usuario usuarioMock;
 
     @BeforeEach
     public void init() {
-        requestMock = mock(HttpServletRequest.class); //mockeo el request
-        sessionMock = mock(HttpSession.class); //aca mockeo la sesion
-        servicioClubMock = mock(ServicioClub.class);
-        servicioUsuarioMock = mock(ServicioUsuario.class);
-        clubMock = mock(Club.class);
-        controladorClub = new ControladorClub(servicioClubMock, servicioUsuarioMock);
-        usuarioMock = mock(Usuario.class);
+        requestMock = mock(HttpServletRequest.class); // Mock del request
+        sessionMock = mock(HttpSession.class); // Mock de la sesión
+        servicioClubMock = mock(ServicioClub.class); // Mock del servicio de club
+        servicioUsuarioMock = mock(ServicioUsuario.class); // Mock del servicio de usuario
+        controladorClub = new ControladorClub(servicioClubMock, servicioUsuarioMock); // Controlador con mocks
+        usuarioMock = mock(Usuario.class); // Mock de un usuario
     }
 
     @Test
-    public void DadoCuandoUtilizoElMetodoIrACrearNuevoClubMeDireccionaALaVistaCrearClubConUnUsuarioYUnClubEnElModelo(){
-
-        when(requestMock.getSession()).thenReturn(sessionMock); //primero mockeo la sesion
-        when(requestMock.getSession().getAttribute("usuario")).thenReturn(usuarioMock); //despues moqueo el getAttribute
+    public void dadoQueElUsuarioEstaEnSesionIrACrearNuevoClubDebeDevolverVistaCrearClub() {
+        when(requestMock.getSession()).thenReturn(sessionMock);
+        when(sessionMock.getAttribute("usuario")).thenReturn(usuarioMock);
 
         ModelAndView model = controladorClub.irACrearNuevoClub(requestMock);
 
         assertThat(model.getViewName(), equalToIgnoringCase("crearClub"));
         assertThat(model.getModel().get("usuario"), equalTo(usuarioMock));
-        assertThat(model.getModel().get("club"), equalTo(new Club()));
+        assertThat(model.getModel().get("club") instanceof Club, equalTo(true));
+    }
+
+    @Test
+    public void dadoQueElUsuarioNoEstaEnSesionIrACrearNuevoClubDebeRedirigirALogin() {
+        when(requestMock.getSession()).thenReturn(sessionMock);
+        when(sessionMock.getAttribute("usuario")).thenReturn(null);
+
+        ModelAndView model = controladorClub.irACrearNuevoClub(requestMock);
+
+        assertThat(model.getViewName(), equalToIgnoringCase("redirect:/login"));
+    }
+
+    @Test
+    public void dadoQueElClubSeCreaCorrectamenteClubDebeRedirigirAHome() throws ClubExistente, NoExisteEseUsuario {
+        when(requestMock.getSession()).thenReturn(sessionMock);
+        when(sessionMock.getAttribute("usuario")).thenReturn(usuarioMock);
+        when(servicioClubMock.agregar(any(Club.class))).thenReturn(true);
+
+        ModelAndView model = controladorClub.crearNuevoClub(new Club(), requestMock);
+        assertThat(model.getViewName(), equalToIgnoringCase("redirect:/home"));
 
     }
 
     @Test
-    public void DadoCuandoUtilizoElMetodoIrACrearNuevoClubMeDireccionaALaVistaLoginConUnUsuarioNull(){
+    public void dadoQueElClubNoSeCreaCorrectamenteCreaNuevoClubDebeRedirigirAHome() throws ClubExistente, NoExisteEseUsuario {
+        when(requestMock.getSession()).thenReturn(sessionMock);
+        when(sessionMock.getAttribute("usuario")).thenReturn(usuarioMock);
+        when(servicioClubMock.agregar(any(Club.class))).thenReturn(false);
 
-        when(requestMock.getSession()).thenReturn(sessionMock); //primero mockeo la sesion
-        when(requestMock.getSession().getAttribute("usuario")).thenReturn(null); //despues moqueo el getAttribute
-
-        ModelAndView model = controladorClub.irACrearNuevoClub(requestMock);
-
-        assertThat(model.getViewName(), equalToIgnoringCase("Redirect:/login"));
-        assertThat(model.getModel().get("usuario"), equalTo(null));
-
+        ModelAndView model = controladorClub.crearNuevoClub( new Club(), requestMock);
+        assertThat(model.getViewName(), equalToIgnoringCase("redirect:/home"));
     }
 
-}
+    @Test
+    public void dadoQueElClubExisteIrADetalleClubTieneQueDarElDetalleDelClub() throws NoExisteEseClub {
+        when(requestMock.getSession()).thenReturn(sessionMock);
+        when(sessionMock.getAttribute("usuario")).thenReturn(usuarioMock);
+        Club clubMock = mock(Club.class);
+        when(servicioClubMock.buscarClubPor(1L)).thenReturn(clubMock);
+
+        ModelAndView model =  controladorClub.irADetalleClub(1L, requestMock);
+        assertThat(model.getViewName(), equalToIgnoringCase("detalleClub"));
+        assertThat(model.getModel().get("club"), equalTo(clubMock));
+        assertThat(model.getModel().get("usuario"), equalTo(usuarioMock));
+    }
+    @Test
+    public void dadoQueElClubNoExisteIrADetalleClubRedirigirAlHome() throws NoExisteEseClub {
+        when(requestMock.getSession()).thenReturn(sessionMock);
+        when(sessionMock.getAttribute("usuario")).thenReturn(usuarioMock);
+        when(servicioClubMock.buscarClubPor(1L)).thenReturn(null);
+        ModelAndView model = controladorClub.irADetalleClub(1L, requestMock);
+        assertThat(model.getViewName(), equalToIgnoringCase("Redirect: /home"));
+    }
+
+    }
