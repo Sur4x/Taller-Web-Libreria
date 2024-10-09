@@ -14,6 +14,12 @@ public class Usuario {
     private String descripcion;
     private String email;
     private String password;
+
+    @Transient //ESTO HACE QUE ESTE ATRIBUTO NO SE GUARDE EN LA BDD
+    private String confirmPassword;
+
+    private String rol;
+
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.EAGER)
     @JoinTable(
             name = "usuario_club",
@@ -21,27 +27,9 @@ public class Usuario {
             inverseJoinColumns = @JoinColumn(name = "club_id")
     )
     private List<Club> clubsInscriptos = new ArrayList<>();
-    @Transient //ESTO HACE QUE ESTE ATRIBUTO NO SE GUARDE EN LA BDD
-    private String confirmPassword;
 
-    private String rol;
-/*
-    @ManyToMany // Relación con géneros preferidos
-    @JoinTable(
-            name = "usuario_genero_preferido", // Tabla intermedia
-            joinColumns = @JoinColumn(name = "usuario_id"),
-            inverseJoinColumns = @JoinColumn(name = "genero_id")
-    )
-    private List<Genero> generosPreferidos;
-
-    @ManyToMany // Relación con libros leídos
-    @JoinTable(
-            name = "usuario_libro_leido", // Tabla intermedia
-            joinColumns = @JoinColumn(name = "usuario_id"),
-            inverseJoinColumns = @JoinColumn(name = "libro_id")
-    )
-    private List<Libro> librosLeidos;
-*/
+    @OneToMany(mappedBy = "autor", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Comentario> comentarios = new ArrayList<>();
 
 
     public Usuario(){};

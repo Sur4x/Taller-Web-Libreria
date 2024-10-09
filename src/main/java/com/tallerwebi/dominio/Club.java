@@ -20,14 +20,20 @@ public class Club {
     @ManyToMany(mappedBy = "clubsInscriptos", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.EAGER)
     private List<Usuario> integrantes = new ArrayList<>();
 
-    public Club(){}
-    public Club(Long id, String nombre, String descripcion, String genero, String imagen, List<Usuario> integrantes) {
+    @OneToMany(mappedBy = "club", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Publicacion> publicaciones = new ArrayList<>();
+
+    public Club() {
+    }
+
+    public Club(Long id, String nombre, String descripcion, String genero, String imagen, List<Usuario> integrantes, List<Publicacion> publicaciones) {
         this.id = id;
         this.nombre = nombre;
         this.descripcion = descripcion;
         this.genero = genero;
         this.imagen = imagen;
         this.integrantes = integrantes;
+        this.publicaciones = publicaciones;
     }
 
     public Long getId() {
@@ -78,6 +84,14 @@ public class Club {
         this.integrantes = integrantes;
     }
 
+    public List<Publicacion> getPublicaciones() {
+        return publicaciones;
+    }
+
+    public void setPublicaciones(List<Publicacion> publicaciones) {
+        this.publicaciones = publicaciones;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -92,5 +106,7 @@ public class Club {
     public int hashCode() {
         return id != null ? id.hashCode() : 0;
     }
+
+
 }
 

@@ -16,4 +16,15 @@ public interface ServicioClub {
 
     // Método para buscar clubes por nombre o coincidencia parcial
     List<Club> buscarClubPorNombre(String nombre);
+
+    void registrarUsuarioEnElClub(Usuario usuario, Club club);
+
+    //void agregarNuevaPublicacion(Publicacion publicacion, Long id, Usuario usuario) throws NoExisteEseClub;
+    void agregarNuevaPublicacion(Publicacion publicacion, Long id) throws NoExisteEseClub;
+
+    void eliminarPublicacion(Publicacion publicacion, Club club);
+
+    void agregarNuevoComentario(Publicacion publicacion, Long idClub, Long idPublicacion) throws NoExisteEseClub;
+
+    void borrarRegistroUsuarioEnElClub(Usuario usuario, Club club);
 }

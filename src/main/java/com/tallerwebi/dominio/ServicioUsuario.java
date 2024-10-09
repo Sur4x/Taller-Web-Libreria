@@ -11,6 +11,6 @@ public interface ServicioUsuario {
 
     Usuario buscarUsuarioPor(Long id) throws NoExisteEseUsuario;
 
-    public void guardarUsuario(Usuario usuario) throws NoExisteEseUsuario;
+
 
 }

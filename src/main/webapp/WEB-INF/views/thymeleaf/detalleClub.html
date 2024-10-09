@@ -65,6 +65,7 @@
   </div>
 
 </header>
+
 <main>
 
     <div class="container mt-5 pt-5">
@@ -76,6 +77,7 @@
          <!-- Imagen con tamaño fijo -->
         <img th:src="@{/images/{imagen}(imagen=${club.imagen})}" alt="Imagen del club" class="img-fluid rounded" style="max-width: 300px; height: auto;">
       </div>
+
     </div>
 
   <div th:if="${usuario != null}">
@@ -100,6 +102,34 @@
       </div>
     </div>
   </div>
+
+  <div class="text-center mb-4">
+    <a th:href="@{/club/{clubId}/irANuevaPublicacion(clubId=${club.id})}" class="btn btn-primary mt-4">Crear nueva publicación</a>
+  </div>
+
+
+
+  <h1 class="mb-4 text-center">Foro y sus Publicaciones</h1>
+
+  <p th:if="${#lists.isEmpty(club.publicaciones)}" class="alert alert-warning text-center">No hay publicaciones disponibles.</p>
+
+  <table class="table table-striped table-bordered" th:if="${club.publicaciones != null && !#lists.isEmpty(club.publicaciones)}">
+    <thead class="thead-dark">
+    <tr>
+      <th>Título</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="publicacion : ${club.publicaciones}">
+      <td>
+        <a th:href="@{/club/{clubId}/detallePublicacion/{publicacionId}(clubId=${club.id}, publicacionId=${publicacion.id})}" th:text="${publicacion.titulo}" class="text-decoration-none"></a>
+      </td>
+    </tr>
+    </tbody>
+  </table>
+
+
+
 
 
 </main>
