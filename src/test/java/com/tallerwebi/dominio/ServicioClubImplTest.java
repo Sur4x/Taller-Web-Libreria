@@ -1,6 +1,7 @@
 package com.tallerwebi.dominio;
 
 import com.tallerwebi.dominio.excepcion.ClubExistente;
+import com.tallerwebi.dominio.excepcion.NoExisteEseClub;
 import com.tallerwebi.dominio.excepcion.NoExistenClubs;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -13,6 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.hamcrest.Matchers.is;
@@ -23,8 +25,8 @@ public class ServicioClubImplTest {
     private RepositorioClub repositorioClub;
     @InjectMocks
     private ServicioClubImpl serviceClubImpl;
-
     private Club club;
+
     @BeforeEach
     public void init() {
         club = mock(Club.class);
@@ -73,4 +75,40 @@ public class ServicioClubImplTest {
 
         verify(repositorioClub, times(1)).obtenerTodosLosClubs();
     }
+
+    @Test
+    public void debeImpedirQueSePuedaBuscarUnClubYaQueNoExisteNingunoRegistrado(){
+
+        Mockito.when(repositorioClub.buscarClubPor(anyLong())).thenReturn(null);
+
+        assertThrows(NoExisteEseClub.class, ()-> serviceClubImpl.buscarClubPor(4L));
+    }
+
+    @Test
+    public void debePermitirQueSePuedaBuscarUnClubPorId() throws NoExisteEseClub {
+
+        Mockito.when(repositorioClub.buscarClubPor(anyLong())).thenReturn(club);
+
+        Club resultado = serviceClubImpl.buscarClubPor(1L);
+
+        assertThat(resultado, is(notNullValue()));
+
+        verify(repositorioClub, times(1)).buscarClubPor(1L);
+    }
+
+    @Test
+    public void debePermitirQueSePuedaBuscarClubesPorNombre() {
+
+        List<Club> listaConClubes = new ArrayList<Club>();
+        listaConClubes.add(club);
+
+        Mockito.when(repositorioClub.buscarClubPorNombre(anyString())).thenReturn(listaConClubes);
+
+        List<Club> resultado = serviceClubImpl.buscarClubPorNombre("Velez");
+
+        assertThat(resultado.size(), is(1));
+
+        verify(repositorioClub, times(1)).buscarClubPorNombre("Velez");
+    }
+
 }
