@@ -27,4 +27,7 @@ public interface ServicioClub {
     void agregarNuevoComentario(Publicacion publicacion, Long idClub, Long idPublicacion) throws NoExisteEseClub;
 
     void borrarRegistroUsuarioEnElClub(Usuario usuario, Club club);
+
+    void eliminarClub(Long id) throws NoExisteEseClub;
+
 }

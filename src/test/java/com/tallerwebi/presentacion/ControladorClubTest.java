@@ -97,4 +97,15 @@ public class ControladorClubTest {
         assertThat(model.getViewName(), equalToIgnoringCase("Redirect: /home"));
     }
 
+    @Test
+    public void dadoQueElClubExisteEliminarClub ()  throws NoExisteEseClub {
+        Long clubId = 1L;
+        when(requestMock.getSession()).thenReturn(sessionMock);
+        when(sessionMock.getAttribute("usuario")).thenReturn(usuarioMock);
+        doNothing().when(servicioClubMock).eliminarClub(clubId); //do Nothing hace que no haga haga nada cuando llama al servicio
+        ModelAndView model = controladorClub.eliminarClub(clubId);
+        assertThat(model.getViewName(), equalToIgnoringCase("redirect:/home"));
+        verify(servicioClubMock).eliminarClub(clubId);
+    }
+
     }

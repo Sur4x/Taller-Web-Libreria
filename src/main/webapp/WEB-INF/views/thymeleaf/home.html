@@ -107,103 +107,103 @@
 
 <main>
   <div th:if="${usuario == null or usuario.rol == 'usuario'}">
-      <div class="container mt-5 pt-5">
-        <div class="club-container">
-          <div th:if="${clubs} == null">
-            <h1 style="align-content: center;text-align: center;">No hay clubes registrados</h1>
-          </div>
+    <div class="container mt-5 pt-5">
+      <div class="club-container">
+        <div th:if="${clubs} == null">
+          <h1 style="align-content: center;text-align: center;">No hay clubes registrados</h1>
+        </div>
 
-          <div th:if="${clubs} != null" class="row row-cols-4 g-4">
-            <div th:each="club : ${clubs}" class="club-item">
-              <div class="card h-100">
-                <a th:href="@{/club/{id}(id=${club.id})}">
-                  <img th:src="@{/images/{imagen}(imagen=${club.imagen})}" class="card-img-top" alt="Imagen del club">
-                </a>
-                <div class="card-body">
-                  <h5 class="card-title">
-                    <a th:href="@{/club/{id}(id=${club.id})}" th:text="${club.nombre}">Nombre del club</a>
-                  </h5>
-                </div>
+        <div th:if="${clubs} != null" class="row row-cols-4 g-4">
+          <div th:each="club : ${clubs}" class="club-item">
+            <div class="card h-100">
+              <a th:href="@{/club/{id}(id=${club.id})}">
+                <img th:src="@{/images/{imagen}(imagen=${club.imagen})}" class="card-img-top" alt="Imagen del club">
+              </a>
+              <div class="card-body">
+                <h5 class="card-title">
+                  <a th:href="@{/club/{id}(id=${club.id})}" th:text="${club.nombre}">Nombre del club</a>
+                </h5>
               </div>
             </div>
           </div>
         </div>
+      </div>
 
-        <p class="alert alert-info mt-3">Explora nuestros clubs de Terror</p>
-          <div class="club-container">
-            <div th:if="${clubs} == null">
-              <p th:if="${error != null}" class="alert alert-danger mt-3" th:text="'Error: ' + ${error}"></p>
-            </div>
+      <p class="alert alert-info mt-3">Explora nuestros clubs de Terror</p>
+      <div class="club-container">
+        <div th:if="${clubs} == null">
+          <p th:if="${error != null}" class="alert alert-danger mt-3" th:text="'Error: ' + ${error}"></p>
+        </div>
 
-            <div th:if="${clubs} != null" class="row row-cols-4 g-4">
-              <!-- Filtrar clubs con genero igual a "terror" -->
-              <div th:each="club : ${clubs}" th:if="${club.genero == 'terror'}" class="club-item">
-                <div class="card h-100">
-                  <a th:href="@{/club/{id}(id=${club.id})}">
-                    <img th:src="@{/images/{imagen}(imagen=${club.imagen})}" class="card-img-top" alt="Imagen del club">
-                  </a>
-                  <div class="card-body">
-                    <h5 class="card-title">
-                      <a th:href="@{/club/{id}(id=${club.id})}" th:text="${club.nombre}">Nombre del club</a>
-                    </h5>
-                    <p class="card-text" th:text="${club.descripcion}">Descripción del club</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-        <p class="alert alert-info mt-3">Explora nuestros clubs de Romance</p>
-        <div class="club-container">
-          <div th:if="${clubs} == null">
-            <p th:if="${error != null}" class="alert alert-danger mt-3" th:text="'Error: ' + ${error}"></p>
-          </div>
-
-          <div th:if="${clubs} != null" class="row row-cols-4 g-4">
-            <!-- Filtrar clubs con genero igual a "terror" -->
-            <div th:each="club : ${clubs}" th:if="${club.genero == 'romance'}" class="club-item">
-              <div class="card h-100">
-                <a th:href="@{/club/{id}(id=${club.id})}">
-                  <img th:src="@{/images/{imagen}(imagen=${club.imagen})}" class="card-img-top" alt="Imagen del club">
-                </a>
-                <div class="card-body">
-                  <h5 class="card-title">
-                    <a th:href="@{/club/{id}(id=${club.id})}" th:text="${club.nombre}">Nombre del club</a>
-                  </h5>
-                  <p class="card-text" th:text="${club.descripcion}">Descripción del club</p>
-                </div>
+        <div th:if="${clubs} != null" class="row row-cols-4 g-4">
+          <!-- Filtrar clubs con genero igual a "terror" -->
+          <div th:each="club : ${clubs}" th:if="${club.genero == 'terror'}" class="club-item">
+            <div class="card h-100">
+              <a th:href="@{/club/{id}(id=${club.id})}">
+                <img th:src="@{/images/{imagen}(imagen=${club.imagen})}" class="card-img-top" alt="Imagen del club">
+              </a>
+              <div class="card-body">
+                <h5 class="card-title">
+                  <a th:href="@{/club/{id}(id=${club.id})}" th:text="${club.nombre}">Nombre del club</a>
+                </h5>
+                <p class="card-text" th:text="${club.descripcion}">Descripción del club</p>
               </div>
             </div>
           </div>
         </div>
+      </div>
 
-        <p class="alert alert-info mt-3">Explora nuestros clubs de Aventura</p>
-        <div class="club-container">
-          <div th:if="${clubs} == null">
-            <p th:if="${error != null}" class="alert alert-danger mt-3" th:text="'Error: ' + ${error}"></p>
-          </div>
+      <p class="alert alert-info mt-3">Explora nuestros clubs de Romance</p>
+      <div class="club-container">
+        <div th:if="${clubs} == null">
+          <p th:if="${error != null}" class="alert alert-danger mt-3" th:text="'Error: ' + ${error}"></p>
+        </div>
 
-          <div th:if="${clubs} != null" class="row row-cols-4 g-4">
-            <!-- Filtrar clubs con genero igual a "terror" -->
-            <div th:each="club : ${clubs}" th:if="${club.genero == 'aventura'}" class="club-item">
-              <div class="card h-100">
-                <a th:href="@{/club/{id}(id=${club.id})}">
-                  <img th:src="@{/images/{imagen}(imagen=${club.imagen})}" class="card-img-top" alt="Imagen del club">
-                </a>
-                <div class="card-body">
-                  <h5 class="card-title">
-                    <a th:href="@{/club/{id}(id=${club.id})}" th:text="${club.nombre}">Nombre del club</a>
-                  </h5>
-                  <p class="card-text" th:text="${club.descripcion}">Descripción del club</p>
-                </div>
+        <div th:if="${clubs} != null" class="row row-cols-4 g-4">
+          <!-- Filtrar clubs con genero igual a "terror" -->
+          <div th:each="club : ${clubs}" th:if="${club.genero == 'romance'}" class="club-item">
+            <div class="card h-100">
+              <a th:href="@{/club/{id}(id=${club.id})}">
+                <img th:src="@{/images/{imagen}(imagen=${club.imagen})}" class="card-img-top" alt="Imagen del club">
+              </a>
+              <div class="card-body">
+                <h5 class="card-title">
+                  <a th:href="@{/club/{id}(id=${club.id})}" th:text="${club.nombre}">Nombre del club</a>
+                </h5>
+                <p class="card-text" th:text="${club.descripcion}">Descripción del club</p>
               </div>
             </div>
           </div>
         </div>
+      </div>
+
+      <p class="alert alert-info mt-3">Explora nuestros clubs de Aventura</p>
+      <div class="club-container">
+        <div th:if="${clubs} == null">
+          <p th:if="${error != null}" class="alert alert-danger mt-3" th:text="'Error: ' + ${error}"></p>
         </div>
+
+        <div th:if="${clubs} != null" class="row row-cols-4 g-4">
+          <!-- Filtrar clubs con genero igual a "terror" -->
+          <div th:each="club : ${clubs}" th:if="${club.genero == 'aventura'}" class="club-item">
+            <div class="card h-100">
+              <a th:href="@{/club/{id}(id=${club.id})}">
+                <img th:src="@{/images/{imagen}(imagen=${club.imagen})}" class="card-img-top" alt="Imagen del club">
+              </a>
+              <div class="card-body">
+                <h5 class="card-title">
+                  <a th:href="@{/club/{id}(id=${club.id})}" th:text="${club.nombre}">Nombre del club</a>
+                </h5>
+                <p class="card-text" th:text="${club.descripcion}">Descripción del club</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 
-  <div th:if="${usuario != null and usuario.rol == 'admin'}">
+  <div th:if="${usuario != null and usuario.rol == 'ADMIN'}">
     <div class="container mt-5 pt-5">
       <table class="table table-striped table-responsive">
         <thead>
@@ -229,7 +229,11 @@
             <div class="d-flex justify-content-between">
               <a th:href="@{/club/{id}(id=${club.id})}" class="btn btn-primary btn-sm">Ver</a>
               <a th:href="@{/club/reportar/{id}(id=${club.id})}" class="btn btn-warning btn-sm">Reportar</a>
-              <a th:href="@{/club/eliminar/{id}(id=${club.id})}" class="btn btn-danger btn-sm" onclick="return confirm('¿Estás seguro de que deseas eliminar este club?');">Eliminar</a>
+              <form th:action="@{/club/eliminar/{id}(id=${club.id})}" method="post" style="display: inline;">
+                <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('¿Estás seguro de que deseas eliminar este club?');">
+                  Eliminar
+                </button>
+              </form>
             </div>
           </td>
         </tr>
@@ -237,7 +241,7 @@
       </table>
     </div>
   </div>
-  </main>
+</main>
 
 
 <!-- Scripts de Bootstrap -->

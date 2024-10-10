@@ -192,4 +192,14 @@ public class ControladorClub {
         }
         return new ModelAndView("redirect:/club/" + clubId  + "/detallePublicacion"+ "/" + publicacionId);
     }
+
+    @RequestMapping(path = "/club/eliminar/{id}", method = RequestMethod.POST)
+    public ModelAndView eliminarClub(@PathVariable("id") Long id) {
+        try {
+            servicioClub.eliminarClub(id);
+            return new ModelAndView("redirect:/home");
+        } catch (NoExisteEseClub e) {
+            return new ModelAndView("redirect:/home", "error", e.getMessage());
+        }
+    }
 }

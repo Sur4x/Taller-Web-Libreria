@@ -81,6 +81,16 @@ public class ServicioClubImpl implements ServicioClub {
 
     @Override
     @Transactional
+    public void eliminarClub(Long id) throws NoExisteEseClub {
+        Club club = repositorioClub.buscarClubPor(id);
+        if (club == null) {
+            throw new NoExisteEseClub("No existe un club con el ID proporcionado.");
+        }
+        repositorioClub.eliminar(id);
+    }
+
+    @Override
+    @Transactional
     public void agregarNuevaPublicacion(Publicacion publicacion, Long id) throws NoExisteEseClub {
         Club club = buscarClubPor(id);
         publicacion.setClub(club);

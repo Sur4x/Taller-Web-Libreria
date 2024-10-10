@@ -88,4 +88,17 @@ public class RepositorioClubImplTest {
         Club resultado = (Club) query.getSingleResult();
         assertThat(resultado.getNombre(), equalTo(club1.getNombre()));
     }
+
+    @Test
+    public void dadoQueExistaElClubEliminarlo () {
+
+        Club club1 = new Club();
+        club1.setNombre("Club 1");
+        repositorioClub.guardar(club1);
+        repositorioClub.eliminar(club1.getId());
+
+        Club resultado = repositorioClub.buscarClubPor(club1.getId());
+        assertThat(resultado, is(nullValue()));
+
+    }
 }
