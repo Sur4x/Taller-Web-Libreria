@@ -12,8 +12,7 @@ import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 public class ServicioClubTest {
@@ -23,9 +22,12 @@ public class ServicioClubTest {
     private RepositorioClub repositorioClubMock;
     private  Club clubMock;
 
+    private RepositorioUsuario repositorioUsuarioMock;
+
     @BeforeEach
     public void init(){
         repositorioClubMock = mock(RepositorioClub.class);
+        repositorioUsuarioMock = mock(RepositorioUsuario.class);
         this.servicioClub = new ServicioClubImpl(repositorioClubMock);
         clubMock = mock(Club.class);
     }
@@ -118,4 +120,23 @@ public class ServicioClubTest {
         verify(repositorioClubMock, times(1)).buscarClubPorNombre("test");
     }
 
+    @Test
+    public void dadoQueVoyAEliminarUnClubPeroNoExisteYLanzaExcepcion() {
+
+        when(repositorioClubMock.buscarClubPor(anyLong())).thenReturn(null);
+
+        Exception exception = assertThrows(NoExisteEseClub.class, () -> servicioClub.eliminarClub(1L));
+
+        assertEquals(exception.getMessage(), "No existe un club con el ID proporcionado.");
+    }
+
+    @Test
+    public void dadoQueVoyAEliminarUnClubConExisto() throws NoExisteEseClub {
+
+        when(repositorioClubMock.buscarClubPor(anyLong())).thenReturn(clubMock);
+
+        servicioClub.eliminarClub(1L);
+
+        verify(repositorioClubMock,times(1)).eliminar(1L);
+    }
 }
