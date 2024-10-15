@@ -1,6 +1,7 @@
 package com.tallerwebi.dominio;
 
 import com.tallerwebi.dominio.excepcion.ClubExistente;
+import com.tallerwebi.dominio.excepcion.ClubReportado;
 import com.tallerwebi.dominio.excepcion.NoExisteEseClub;
 import com.tallerwebi.dominio.excepcion.NoExistenClubs;
 
@@ -29,5 +30,7 @@ public interface ServicioClub {
     void borrarRegistroUsuarioEnElClub(Usuario usuario, Club club);
 
     void eliminarClub(Long id) throws NoExisteEseClub;
+
+    void reportarClub(Long id) throws Exception;
 
 }

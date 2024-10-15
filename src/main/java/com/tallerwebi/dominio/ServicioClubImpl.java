@@ -1,11 +1,11 @@
 package com.tallerwebi.dominio;
 
 import com.tallerwebi.dominio.excepcion.ClubExistente;
+import com.tallerwebi.dominio.excepcion.ClubReportado;
 import com.tallerwebi.dominio.excepcion.NoExisteEseClub;
 import com.tallerwebi.dominio.excepcion.NoExistenClubs;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -113,6 +113,24 @@ public class ServicioClubImpl implements ServicioClub {
     @Override
     @Transactional
     public void agregarNuevoComentario(Publicacion publicacion, Long idclub, Long idPublicacion) throws NoExisteEseClub {
+
+    }
+
+    @Override
+    @Transactional
+    public void reportarClub(Long idClub) throws Exception {
+        try{
+            Club club = buscarClubPor(idClub);
+
+            if(club.getCantidadDeReportes() == 3){
+                throw new ClubReportado("El club ya ha sido reportado.");
+            }
+
+            repositorioClub.reportarClub(club.getId());
+
+        } catch (Exception e) {
+            throw e;
+        }
 
     }
 }

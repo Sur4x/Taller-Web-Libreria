@@ -13,7 +13,7 @@
 <header>
 <div th:if="${usuario == null}">
   <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
-    <a class="navbar-brand" th:href="@{/home}">UNLAM</a>
+    <a class="navbar-brand" th:href="@{/home}">Club de Lectura</a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
             aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
@@ -31,7 +31,7 @@
   <!-- USUARIO ADMIN -->
   <div th:if="${usuario != null and usuario.rol == 'admin'}">
     <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
-      <a class="navbar-brand" th:href="@{/home}">UNLAM</a>
+      <a class="navbar-brand" th:href="@{/home}">Club de Lectura</a>
       <h1>Bienvenido ADMIN</h1>
 
       <div class="d-flex ms-auto">
@@ -45,7 +45,7 @@
   <!-- USUARIO NORMAL -->
   <div th:if="${usuario != null and usuario.rol == 'usuario'}">
     <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
-      <a class="navbar-brand" th:href="@{/home}">UNLAM</a>
+      <a class="navbar-brand" th:href="@{/home}">Club de Lectura</a>
       <div class="d-flex ms-auto align-items-center">
         <a th:href="@{/crearClub}" class="btn btn-primary me-2">Crear nuevo club</a>
         <div class="dropdown">
@@ -72,6 +72,7 @@
       <h1 class="text-center mb-4" th:text="${club.nombre}"></h1>
       <p class="text-center text-muted" th:text="${club.genero}"></p>
       <p class="lead text-center" th:text="${club.descripcion}"></p>
+      <p class="lead text-center" th:text="${club.estaReportado}"></p>
 
       <div class="text-center">
          <!-- Imagen con tamaño fijo -->
@@ -101,6 +102,10 @@
         </form>
       </div>
     </div>
+  </div>
+
+  <div class="text-center mb-4">
+    <a th:href="@{/club/reportar/{id}(id=${club.id})}" class="btn btn-primary mt-4">Reportar Club</a>
   </div>
 
   <div class="text-center mb-4">

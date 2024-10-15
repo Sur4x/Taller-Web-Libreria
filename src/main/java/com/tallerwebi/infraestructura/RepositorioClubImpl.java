@@ -2,8 +2,6 @@ package com.tallerwebi.infraestructura;
 
 import com.tallerwebi.dominio.Club;
 import com.tallerwebi.dominio.RepositorioClub;
-import com.tallerwebi.dominio.Usuario;
-import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Restrictions;
@@ -61,4 +59,22 @@ public class RepositorioClubImpl implements RepositorioClub {
             session.delete(club);
         }
     }
+
+    @Override
+    public void reportarClub(Long id) {
+        Session session = sessionFactory.getCurrentSession();
+        Club club = session.get(Club.class, id);
+
+        if (club != null) {
+            Integer cantidadDeReportes = club.getCantidadDeReportes();
+            club.setCantidadDeReportes(cantidadDeReportes + 1);
+
+            if(club.getCantidadDeReportes() == 3){
+                club.setEstaReportado("CLUB REPORTADO");
+            }
+
+            session.update(club);
+        }
+    }
+
 }

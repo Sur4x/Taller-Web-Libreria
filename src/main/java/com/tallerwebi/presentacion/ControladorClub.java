@@ -202,4 +202,26 @@ public class ControladorClub {
             return new ModelAndView("redirect:/home", "error", e.getMessage());
         }
     }
+    @RequestMapping(path = "/club/reportar/{id}")
+    @Transactional
+    public ModelAndView reportarClub(@PathVariable("id") Long id, HttpServletRequest request) throws Exception {
+        Usuario usuario = (Usuario) request.getSession().getAttribute("usuario");
+        try {
+            servicioClub.reportarClub(id);
+
+            Club club = servicioClub.buscarClubPor(id);
+
+            ModelMap model = new ModelMap();
+           if(club != null) {
+               Hibernate.initialize(club.getPublicaciones());
+               model.put("club", club);
+               model.put("usuario", usuario);
+           }
+            return new ModelAndView("detalleClub", model);
+
+        } catch (Exception e) {
+        return new ModelAndView("redirect:/home", "error", e.getMessage());
+        }
+    }
+
 }
