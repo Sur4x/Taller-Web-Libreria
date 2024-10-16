@@ -16,28 +16,30 @@ public class Club {
     private String genero;
     //private Libro libro; AGREGAR ESTE ATRIBUTO
     private String imagen;
-    private Integer cantidadDeReportes;
+
     private String estaReportado;
 
     @ManyToMany(mappedBy = "clubsInscriptos", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.EAGER)
-    private List<Usuario> integrantes = new ArrayList<>();
+    private List<Usuario> integrantes;
 
     @OneToMany(mappedBy = "club", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Publicacion> publicaciones = new ArrayList<>();
+    private List<Publicacion> publicaciones;
+    @OneToMany(mappedBy = "club", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Reporte> reportes;
 
     public Club() {
     }
 
-    public Club(Long id, String nombre, String descripcion, String genero, String imagen, Integer cantidadDeReportes, String estaReportado,List<Usuario> integrantes, List<Publicacion> publicaciones) {
+    public Club(Long id, String nombre, String descripcion, String genero, String imagen, String estaReportado, List<Usuario> integrantes, List<Publicacion> publicaciones, List<Reporte> reportes) {
         this.id = id;
         this.nombre = nombre;
         this.descripcion = descripcion;
         this.genero = genero;
         this.imagen = imagen;
-        this.cantidadDeReportes = cantidadDeReportes;
+        this.integrantes = new ArrayList<>();
+        this.publicaciones = new ArrayList<>();
         this.estaReportado = estaReportado;
-        this.integrantes = integrantes;
-        this.publicaciones = publicaciones;
+        this.reportes = new ArrayList<>();
     }
 
     public Long getId() {
@@ -80,14 +82,6 @@ public class Club {
         this.imagen = imagen;
     }
 
-    public Integer getCantidadDeReportes() {
-        return cantidadDeReportes;
-    }
-
-    public void setCantidadDeReportes(Integer reportes) {
-        this.cantidadDeReportes = reportes;
-    }
-
     public String getEstaReportado() {
         return estaReportado;
     }
@@ -110,6 +104,14 @@ public class Club {
 
     public void setPublicaciones(List<Publicacion> publicaciones) {
         this.publicaciones = publicaciones;
+    }
+
+    public List<Reporte> getReportes() {
+        return reportes;
+    }
+
+    public void setReportes(List<Reporte> reportes) {
+        this.reportes = reportes;
     }
 
     @Override

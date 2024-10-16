@@ -14,6 +14,5 @@ public interface RepositorioClub {
 
     void eliminar(Long id);
 
-    void reportarClub(Long id);
 }
 

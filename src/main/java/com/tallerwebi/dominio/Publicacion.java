@@ -1,6 +1,7 @@
 package com.tallerwebi.dominio;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 @Entity
 public class Publicacion {
@@ -29,7 +30,7 @@ public class Publicacion {
         this.club = club;
         this.titulo = titulo;
         this.mensaje = mensaje;
-        this.comentarios = comentarios;
+        this.comentarios = new ArrayList<>();
     }
 
     public Long getId() {

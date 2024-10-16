@@ -31,6 +31,8 @@ public interface ServicioClub {
 
     void eliminarClub(Long id) throws NoExisteEseClub;
 
-    void reportarClub(Long id) throws Exception;
+    void agregarNuevoReporteAlClub(Long id, Reporte reporte) throws Exception;
+
+    void obtenerTodosLosReportesDeUnClub(Club club);
 
 }

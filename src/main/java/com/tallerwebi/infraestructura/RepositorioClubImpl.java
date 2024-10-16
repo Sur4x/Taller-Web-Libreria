@@ -60,21 +60,4 @@ public class RepositorioClubImpl implements RepositorioClub {
         }
     }
 
-    @Override
-    public void reportarClub(Long id) {
-        Session session = sessionFactory.getCurrentSession();
-        Club club = session.get(Club.class, id);
-
-        if (club != null) {
-            Integer cantidadDeReportes = club.getCantidadDeReportes();
-            club.setCantidadDeReportes(cantidadDeReportes + 1);
-
-            if(club.getCantidadDeReportes() == 3){
-                club.setEstaReportado("CLUB REPORTADO");
-            }
-
-            session.update(club);
-        }
-    }
-
 }

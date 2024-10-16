@@ -1,9 +1,6 @@
 package com.tallerwebi.dominio;
 
-import com.tallerwebi.dominio.excepcion.ClubExistente;
-import com.tallerwebi.dominio.excepcion.ClubReportado;
-import com.tallerwebi.dominio.excepcion.NoExisteEseClub;
-import com.tallerwebi.dominio.excepcion.NoExistenClubs;
+import com.tallerwebi.dominio.excepcion.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,6 +16,8 @@ public class ServicioClubImpl implements ServicioClub {
     private RepositorioPublicacion repositorioPublicacion;
     @Autowired
     private RepositorioUsuario repositorioUsuario;
+    @Autowired
+    private RepositorioReporte repositorioReporte;
 
     @Autowired
     public ServicioClubImpl(RepositorioClub repositorioClub) {
@@ -118,15 +117,32 @@ public class ServicioClubImpl implements ServicioClub {
 
     @Override
     @Transactional
-    public void reportarClub(Long idClub) throws Exception {
+    public void obtenerTodosLosReportesDeUnClub(Club club) {
+
+        List<Reporte> listaReportes = repositorioReporte.obtenerTodosLosReportesDeUnClub(club);
+
+        if(listaReportes.size() >= 2){
+            club.setEstaReportado("CLUB REPORTADO");
+        }else{
+            club.setEstaReportado("CLUB ACCESIBLE");
+        }
+        repositorioClub.guardar(club);
+    }
+
+    @Override
+    @Transactional
+    public void agregarNuevoReporteAlClub(Long idClub, Reporte reporte) throws Exception {
         try{
             Club club = buscarClubPor(idClub);
 
-            if(club.getCantidadDeReportes() == 3){
-                throw new ClubReportado("El club ya ha sido reportado.");
+            if(repositorioReporte.buscarReportePorId(reporte.getId()) != null){
+                throw new ReporteExistente("El reporte ya existe");
             }
 
-            repositorioClub.reportarClub(club.getId());
+            reporte.setClub(club);
+            club.getReportes().add(reporte);
+
+            repositorioReporte.guardar(reporte);
 
         } catch (Exception e) {
             throw e;
