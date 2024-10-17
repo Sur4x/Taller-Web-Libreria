@@ -9,8 +9,13 @@ import org.springframework.stereotype.Repository;
 @Repository
 public class RepositorioComentarioImpl implements RepositorioComentario {
 
-    @Autowired
+
     private SessionFactory sessionFactory;
+
+    @Autowired
+    public RepositorioComentarioImpl(SessionFactory sessionFactory) {
+        this.sessionFactory = sessionFactory;
+    }
 
     @Override
     public void guardar(Comentario comentario){
