@@ -19,7 +19,7 @@ public class ServicioClubImpl implements ServicioClub {
     public ServicioClubImpl(RepositorioClub repositorioClub, RepositorioPublicacion repositorioPublicacion, RepositorioUsuario repositorioUsuario, RepositorioReporte repositorioReporte) {
         this.repositorioClub = repositorioClub;
         this.repositorioPublicacion = repositorioPublicacion;
-        this. repositorioUsuario = repositorioUsuario;
+        this.repositorioUsuario = repositorioUsuario;
         this.repositorioReporte = repositorioReporte;
     }
 
@@ -141,22 +141,14 @@ public class ServicioClubImpl implements ServicioClub {
 
     @Override
     @Transactional
-    public void agregarNuevoReporteAlClub(Long idClub, Reporte reporte) throws Exception {
-        try{
-            Club club = buscarClubPor(idClub); //si el club existe
+    public void agregarNuevoReporteAlClub(Long idClub, Reporte reporte) throws ReporteExistente, NoExisteEseClub {
 
-            if(repositorioReporte.buscarReportePorId(reporte.getId()) != null){ //si el reporte existe
+        Club club = buscarClubPor(idClub); //si el club existe
+        if(repositorioReporte.buscarReportePorId(reporte.getId()) != null){ //si el reporte existe
                 throw new ReporteExistente("El reporte ya existe");
-            }
-
-            reporte.setClub(club);
-            club.getReportes().add(reporte);
-
-            repositorioReporte.guardar(reporte);
-
-        } catch (Exception e) {
-            throw e;
         }
-
+        reporte.setClub(club);
+        club.getReportes().add(reporte);
+        repositorioReporte.guardar(reporte);
     }
 }

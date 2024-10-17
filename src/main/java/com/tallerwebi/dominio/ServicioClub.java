@@ -1,9 +1,6 @@
 package com.tallerwebi.dominio;
 
-import com.tallerwebi.dominio.excepcion.ClubExistente;
-import com.tallerwebi.dominio.excepcion.ClubReportado;
-import com.tallerwebi.dominio.excepcion.NoExisteEseClub;
-import com.tallerwebi.dominio.excepcion.NoExistenClubs;
+import com.tallerwebi.dominio.excepcion.*;
 
 import java.util.List;
 
@@ -29,7 +26,7 @@ public interface ServicioClub {
 
     void eliminarClub(Club club) throws NoExisteEseClub;
 
-    void agregarNuevoReporteAlClub(Long id, Reporte reporte) throws Exception;
+    void agregarNuevoReporteAlClub(Long id, Reporte reporte) throws ReporteExistente, NoExisteEseClub;
 
     void obtenerTodosLosReportesDeUnClub(Club club);
 

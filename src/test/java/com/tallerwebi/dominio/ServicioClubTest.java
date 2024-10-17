@@ -1,9 +1,6 @@
 package com.tallerwebi.dominio;
 
-import com.tallerwebi.dominio.excepcion.ClubExistente;
-import com.tallerwebi.dominio.excepcion.NoExisteEseClub;
-import com.tallerwebi.dominio.excepcion.NoExistenClubs;
-import com.tallerwebi.dominio.excepcion.UsuarioExistente;
+import com.tallerwebi.dominio.excepcion.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -275,17 +272,41 @@ public class ServicioClubTest {
     }
 
     @Test
-    public void dadoElMetodoAgregarNuevoReporteAlClubCuandoIntentoCrearUnReporteAUnClubInexistenteLanzaUnaExcepcion(){
+    public void dadoElMetodoagregarNuevoReporteAlClubSiFuncionaAgregaElReporteCorrectamente() throws ReporteExistente, NoExisteEseClub {
+        Club club = new Club();
+        club.setId(1L);
+        club.setReportes(new ArrayList<>());
+        Reporte reporte = new Reporte();
 
+
+        when(repositorioClubMock.buscarClubPor(anyLong())).thenReturn(club);
+        when(repositorioReporteMock.buscarReportePorId(anyLong())).thenReturn(null);
+        servicioClub.agregarNuevoReporteAlClub(club.getId(),reporte);
+
+        assertThat(club.getReportes(), contains(reporte));
+        verify(repositorioReporteMock,times(1)).guardar(reporte);
     }
 
     @Test
-    public void dadoElMetodoAgregarNuevoReporteAlClubCuandoIntentoCrearUnReporteAUnClubExistenteRealizaElMetodoGuardar(){
+    public void dadoElMetodoagregarNuevoReporteAlClubCuandoElClubNoExisteLanzaLaExcepcion(){
+        Reporte reporte = new Reporte();
 
+        when(repositorioClubMock.buscarClubPor(1L)).thenReturn(null);
+
+        assertThrows(NoExisteEseClub.class, () -> servicioClub.agregarNuevoReporteAlClub(1L,reporte));
+        verify(repositorioReporteMock,times(0)).guardar(reporte);
     }
 
+    @Test
+    public void dadoElMetodoagregarNuevoReporteAlClubCuandoElReporteExisteLanzaLaExcepcion(){
+        Club club = new Club();
+        Reporte reporte = new Reporte();
+        reporte.setId(1L);
 
+        when(repositorioClubMock.buscarClubPor(anyLong())).thenReturn(club);
+        when(repositorioReporteMock.buscarReportePorId(anyLong())).thenReturn(reporte);
 
-
-
+        assertThrows(ReporteExistente.class, () -> servicioClub.agregarNuevoReporteAlClub(1L,reporte));
+        verify(repositorioReporteMock,times(0)).guardar(reporte);
+    }
 }

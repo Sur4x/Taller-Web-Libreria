@@ -11,22 +11,22 @@
 <body>
 <!-- USUARIO SIN LOGUEAR -->
 <header>
-<div th:if="${usuario == null}">
-  <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
-    <a class="navbar-brand" th:href="@{/home}">Club de Lectura</a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
-            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
+  <div th:if="${usuario == null}">
+    <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
+      <a class="navbar-brand" th:href="@{/home}">Club de Lectura</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+              aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
 
-    <div class="collapse navbar-collapse" id="navbarNav">
-      <div class="d-flex ms-auto">
-        <a th:href="@{/login}" class="btn btn-primary me-2">Iniciar sesión</a>
-        <a th:href="@{/registro}" class="btn btn-primary">Registrarse</a>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <div class="d-flex ms-auto">
+          <a th:href="@{/login}" class="btn btn-primary me-2">Iniciar sesión</a>
+          <a th:href="@{/registro}" class="btn btn-primary">Registrarse</a>
+        </div>
       </div>
-    </div>
-  </nav>
-</div>
+    </nav>
+  </div>
 
   <!-- USUARIO ADMIN -->
   <div th:if="${usuario != null and usuario.rol == 'admin'}">
@@ -40,6 +40,9 @@
 
       </div>
     </nav>
+
+    <p class="lead text-center" th:text="${club.estaReportado}" style="padding-top: 75px;"></p>
+
   </div>
 
   <!-- USUARIO NORMAL -->
@@ -68,18 +71,18 @@
 
 <main>
 
-    <div class="container mt-5 pt-5">
-      <h1 class="text-center mb-4" th:text="${club.nombre}"></h1>
-      <p class="text-center text-muted" th:text="${club.genero}"></p>
-      <p class="lead text-center" th:text="${club.descripcion}"></p>
-      <p class="lead text-center" th:text="${club.estaReportado}"></p>
+  <div class="container mt-5 pt-5">
+    <h1 class="text-center mb-4" th:text="${club.nombre}"></h1>
+    <p class="text-center text-muted" th:text="${club.genero}"></p>
+    <p class="lead text-center" th:text="${club.descripcion}"></p>
 
-      <div class="text-center">
-         <!-- Imagen con tamaño fijo -->
-        <img th:src="@{/images/{imagen}(imagen=${club.imagen})}" alt="Imagen del club" class="img-fluid rounded" style="max-width: 300px; height: auto;">
-      </div>
 
+    <div class="text-center">
+      <!-- Imagen con tamaño fijo -->
+      <img th:src="@{/images/{imagen}(imagen=${club.imagen})}" alt="Imagen del club" class="img-fluid rounded" style="max-width: 300px; height: auto;">
     </div>
+
+  </div>
 
   <div th:if="${usuario != null}">
     <!-- Recorremos los clubes a los que el usuario está inscripto -->
@@ -132,10 +135,6 @@
     </tr>
     </tbody>
   </table>
-
-
-
-
 
 </main>
 
