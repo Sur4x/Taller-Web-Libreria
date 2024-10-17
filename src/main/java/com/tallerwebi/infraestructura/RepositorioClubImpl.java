@@ -2,13 +2,14 @@ package com.tallerwebi.infraestructura;
 
 import com.tallerwebi.dominio.Club;
 import com.tallerwebi.dominio.RepositorioClub;
-import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.Query;
 import java.util.List;
 
 @Repository
@@ -20,26 +21,20 @@ public class RepositorioClubImpl implements RepositorioClub {
     public RepositorioClubImpl(SessionFactory sessionFactory) {
         this.sessionFactory = sessionFactory;
     }
-
-    @Override
-    public Boolean searchClub(Club club) {
-        final Session session = sessionFactory.getCurrentSession();
-        Criteria criteria = session.createCriteria(Club.class);
-        criteria.add(Restrictions.eq("nombre", club.getNombre()));
-        return criteria.uniqueResult() != null;
-    }
-
     @Override
     public List<Club> obtenerTodosLosClubs() {
-        final Session session = sessionFactory.getCurrentSession();
-        Criteria criteria = session.createCriteria(Club.class);
-        return criteria.list();
+        String hql = "FROM Club";
+        Query query = this.sessionFactory.getCurrentSession().createQuery(hql);
+
+        return query.getResultList();
     }
 
     @Override
+    @Transactional
     public Club buscarClubPor(Long id) {
-        final Session session = sessionFactory.getCurrentSession();
-        return session.get(Club.class, id);
+        return (Club) sessionFactory.getCurrentSession().createCriteria(Club.class)
+                .add(Restrictions.eq("id", id))
+                .uniqueResult();
     }
 
     @Override
@@ -49,9 +44,16 @@ public class RepositorioClubImpl implements RepositorioClub {
 
     @Override
     public List<Club> buscarClubPorNombre(String nombre) {
-        final Session session = sessionFactory.getCurrentSession();
-        Criteria criteria = session.createCriteria(Club.class);
-        criteria.add(Restrictions.ilike("nombre", "%" + nombre + "%")); // Coincidencia parcial
-        return criteria.list();
+        String hql = "FROM Club c WHERE LOWER(c.nombre) LIKE LOWER(:nombre)";
+        Query query = this.sessionFactory.getCurrentSession().createQuery(hql);
+        query.setParameter("nombre", "%" + nombre + "%"); // Coincidencia parcial
+
+        return query.getResultList();
     }
+
+    @Override
+    public void eliminar(Club club) {
+        sessionFactory.getCurrentSession().delete(club);
+    }
+
 }

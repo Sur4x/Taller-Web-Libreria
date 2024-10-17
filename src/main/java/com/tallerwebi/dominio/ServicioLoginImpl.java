@@ -18,13 +18,13 @@ public class ServicioLoginImpl implements ServicioLogin {
     }
 
     @Override
-    public Usuario consultarUsuario (String email) {
-        return repositorioUsuario.buscarUsuario(email);
+    public Usuario consultarUsuario (String email, String password) {
+        return repositorioUsuario.buscarUsuario(email, password);
     }
 
     @Override
     public void registrar(Usuario usuario) throws UsuarioExistente {
-        Usuario usuarioEncontrado = repositorioUsuario.buscarUsuario(usuario.getEmail());
+        Usuario usuarioEncontrado = repositorioUsuario.buscarUsuario(usuario.getEmail(), usuario.getPassword());
         if(usuarioEncontrado == null && usuario.getPassword().equals(usuario.getConfirmPassword())){
             usuario.setRol("usuario");
             usuario.setDescripcion("");

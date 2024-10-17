@@ -7,9 +7,7 @@ import java.util.List;
 
 public interface ServicioUsuario {
 
-    public List<Usuario> mostrarTodosLosUsuarios() throws NoExistenUsuarios;
-
     Usuario buscarUsuarioPor(Long id) throws NoExisteEseUsuario;
 
-
+    boolean esAdmin(Usuario usuario);
 }

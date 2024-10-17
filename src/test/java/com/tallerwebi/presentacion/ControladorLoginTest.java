@@ -38,7 +38,7 @@ public class ControladorLoginTest {
 	@Test
 	public void loginConUsuarioYPasswordInorrectosDeberiaLlevarALoginNuevamente(){
 		// preparacion
-		when(servicioLoginMock.consultarUsuario(anyString())).thenReturn(null);
+		when(servicioLoginMock.consultarUsuario(anyString(), anyString())).thenReturn(null);
 
 		// ejecucion
 		ModelAndView modelAndView = controladorLogin.validarLogin(datosLoginMock, requestMock);
@@ -56,14 +56,14 @@ public class ControladorLoginTest {
 		when(usuarioEncontradoMock.getRol()).thenReturn("admin");
 
 		when(requestMock.getSession()).thenReturn(sessionMock);
-		when(servicioLoginMock.consultarUsuario(anyString())).thenReturn(usuarioEncontradoMock);
+		when(servicioLoginMock.consultarUsuario(anyString(), anyString())).thenReturn(usuarioEncontradoMock);
 		
 		// ejecucion
 		ModelAndView modelAndView = controladorLogin.validarLogin(datosLoginMock, requestMock);
 		
 		// validacion
 		assertThat(modelAndView.getViewName(), equalToIgnoringCase("redirect:/home"));
-		verify(sessionMock, times(1)).setAttribute("rol", usuarioEncontradoMock.getRol());
+		verify(sessionMock, times(1)).setAttribute("usuario", usuarioEncontradoMock);
 	}
 
 	@Test

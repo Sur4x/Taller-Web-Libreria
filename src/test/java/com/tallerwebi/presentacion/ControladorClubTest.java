@@ -1,122 +1,366 @@
 package com.tallerwebi.presentacion;
 
-import com.tallerwebi.dominio.ServicioClub;
-import com.tallerwebi.dominio.ServicioUsuario;
-import com.tallerwebi.dominio.Club;
-import com.tallerwebi.dominio.Usuario;
+import com.tallerwebi.dominio.*;
+import com.tallerwebi.dominio.excepcion.*;
+import org.hibernate.Session;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.servlet.view.InternalResourceViewResolver;
+import org.springframework.ui.Model;
+import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.Arrays;
-import java.util.Collections;
+import javax.servlet.http.HttpSession;
+
+import java.util.ArrayList;
 import java.util.List;
 
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.text.IsEqualIgnoringCase.equalToIgnoringCase;
+import static org.mockito.Mockito.*;
 
-class ControladorClubTest {
+public class ControladorClubTest {
 
-    private MockMvc mockMvc;
-
-    @Mock
-    private ServicioClub servicioClub;
-
-    @Mock
-    private ServicioUsuario servicioUsuario;
-
-    @InjectMocks
+    private HttpServletRequest requestMock;
+    private HttpSession sessionMock;
+    private ServicioClub servicioClubMock;
+    private ServicioUsuario servicioUsuarioMock;
     private ControladorClub controladorClub;
+    private Usuario usuarioMock;
+    private Club clubMock;
+    private ServicioPublicacion servicioPublicacionMock;
+    private ServicioComentario servicioComentarioMock;
+    private ServicioReporte servicioReporteMock;
 
     @BeforeEach
-    void setUp() {
-        MockitoAnnotations.openMocks(this);
+    public void init() {
+        requestMock = mock(HttpServletRequest.class); // Mock del request
+        sessionMock = mock(HttpSession.class); // Mock de la sesión
+        servicioClubMock = mock(ServicioClub.class); // Mock del servicio de club
+        servicioUsuarioMock = mock(ServicioUsuario.class); // Mock del servicio de usuario
+        servicioPublicacionMock = mock(ServicioPublicacion.class);
+        servicioComentarioMock = mock(ServicioComentario.class);
+        servicioReporteMock = mock(ServicioReporte.class);
+        controladorClub = new ControladorClub(servicioClubMock, servicioUsuarioMock, servicioPublicacionMock, servicioComentarioMock, servicioReporteMock); // Controlador con mocks
+        usuarioMock = mock(Usuario.class); // Mock de un usuario
+        clubMock = mock(Club.class);
 
-        // Configuramos un ViewResolver para las pruebas
-        InternalResourceViewResolver viewResolver = new InternalResourceViewResolver();
-        viewResolver.setPrefix("/WEB-INF/views/");
-        viewResolver.setSuffix(".html");
 
-        // Inicializamos MockMvc con el controlador y el ViewResolver
-        mockMvc = MockMvcBuilders.standaloneSetup(controladorClub)
-                .setViewResolvers(viewResolver)
-                .build();
     }
 
-    // Test para irACrearNuevoClub
     @Test
-    void irACrearNuevoClub() throws Exception {
-        mockMvc.perform(get("/crearClub"))
-                .andExpect(status().isOk())
-                .andExpect(view().name("crearClub"))
-                .andExpect(model().attributeExists("club"))
-                .andExpect(model().attributeExists("usuario"));
+    public void dadoElMetodoIrACrearNuevoClubCuandoEstoyLogueadoDebeDevolvermeLaVistaCrearClub() {
+        when(requestMock.getSession()).thenReturn(sessionMock);
+        when(sessionMock.getAttribute("usuario")).thenReturn(usuarioMock);
+
+        ModelAndView model = controladorClub.irACrearNuevoClub(requestMock);
+
+        assertThat(model.getViewName(), equalToIgnoringCase("crearClub"));
+        assertThat(model.getModel().get("usuario"), equalTo(usuarioMock));
+        assertThat(model.getModel().get("club") instanceof Club, equalTo(true));
     }
 
-    // Test para crearNuevoClub
     @Test
-    void crearNuevoClub() throws Exception {
-        when(servicioClub.agregar(new Club())).thenReturn(true);
+    public void dadoElMetodoIrACrearNuevoClubCuandoNoEstoyLogueadoDebeDevolvermeLaVistaCrearClub() {
+        when(requestMock.getSession()).thenReturn(sessionMock);
+        when(sessionMock.getAttribute("usuario")).thenReturn(null);
 
-        mockMvc.perform(post("/crearNuevoClub")
-                        .param("nombre", "Club Test")
-                        .sessionAttr("usuario", new Usuario())) // Simula que el usuario está en la sesión
-                .andExpect(redirectedUrl("/home"))
-                .andExpect(status().is3xxRedirection());
+        ModelAndView model = controladorClub.irACrearNuevoClub(requestMock);
+
+        assertThat(model.getViewName(), equalToIgnoringCase("redirect:/login"));
     }
 
-    // Test para irADetalleClub
     @Test
-    void irADetalleClub() throws Exception {
+    public void dadoElMetodoCrearNuevoClubCuandoSeCreaCorrectamenteMeRedirireccionaAlaVistaDelClubEspecifico() throws ClubExistente, NoExisteEseUsuario {
+        when(requestMock.getSession()).thenReturn(sessionMock);
+        when(sessionMock.getAttribute("usuario")).thenReturn(usuarioMock);
+        when(servicioClubMock.agregar(any(Club.class))).thenReturn(true);
+
+        ModelAndView model = controladorClub.crearNuevoClub(new Club(), requestMock);
+        assertThat(model.getViewName(), equalToIgnoringCase("redirect:/club/{clubId}"));
+
+    }
+
+    @Test
+    public void dadoElMetodoCrearNuevoClubCuandoNoSeCreaCorrectamenteMeRedirireccionaAlaVistaHome() throws ClubExistente, NoExisteEseUsuario {
+        when(requestMock.getSession()).thenReturn(sessionMock);
+        when(sessionMock.getAttribute("usuario")).thenReturn(usuarioMock);
+        when(servicioClubMock.agregar(any(Club.class))).thenReturn(false);
+
+        ModelAndView model = controladorClub.crearNuevoClub(new Club(), requestMock);
+        assertThat(model.getViewName(), equalToIgnoringCase("redirect:/home"));
+    }
+
+    @Test
+    public void dadoElMetodoIrADetalleClubSiElClubExisteDebeRedireccionarmeALaVistaDetalleClub() throws NoExisteEseClub {
+        when(requestMock.getSession()).thenReturn(sessionMock);
+        when(sessionMock.getAttribute("usuario")).thenReturn(usuarioMock);
+        Club clubMock = mock(Club.class);
+        when(servicioClubMock.buscarClubPor(1L)).thenReturn(clubMock);
+
+        ModelAndView model = controladorClub.irADetalleClub(1L, requestMock);
+        assertThat(model.getViewName(), equalToIgnoringCase("detalleClub"));
+        assertThat(model.getModel().get("club"), equalTo(clubMock));
+        assertThat(model.getModel().get("usuario"), equalTo(usuarioMock));
+    }
+
+    @Test
+    public void dadoElMetodoIrADetalleClubSiElClubNOExisteDebeRedireccionarmeALaVistaDetalleClub() throws NoExisteEseClub {
+        when(requestMock.getSession()).thenReturn(sessionMock);
+        when(sessionMock.getAttribute("usuario")).thenReturn(usuarioMock);
+        when(servicioClubMock.buscarClubPor(1L)).thenReturn(null);
+        ModelAndView model = controladorClub.irADetalleClub(1L, requestMock);
+        assertThat(model.getViewName(), equalToIgnoringCase("Redirect: /home"));
+    }
+
+    @Test
+    public void dadoElMetodoIrANuevaPublicacionFuncionaCorretamenteMeDirijeANuevaPublicacion() throws NoExisteEseClub {
+        when(requestMock.getSession()).thenReturn(sessionMock);
+        when(sessionMock.getAttribute("usuario")).thenReturn(usuarioMock);
+        ModelAndView modelo = controladorClub.irANuevaPublicacion(1L, requestMock);
+        assertThat(modelo.getModel().get("usuario"), equalTo(usuarioMock));
+        assertThat(modelo.getViewName(), equalToIgnoringCase("nuevaPublicacion"));
+    }
+
+    @Test
+    public void dadoElMetodoIrANuevaPublicacionSiElUsuarioNoEstaLogueadoMeDirijeALogin() throws NoExisteEseClub {
+        when(requestMock.getSession()).thenReturn(sessionMock);
+        when(sessionMock.getAttribute("usuario")).thenReturn(null);
+        ModelAndView modelo = controladorClub.irANuevaPublicacion(1L, requestMock);
+        assertThat(modelo.getModel().get("usuario"), equalTo(null));
+        assertThat(modelo.getViewName(), equalToIgnoringCase("redirect:/login"));
+    }
+
+    @Test
+    public void dadoElMetodoRealizarPublicacionAlAgregarUnaNuevaPublicacionMeDirijeALogin() throws NoExisteEseClub {
         Club club = new Club();
         club.setId(1L);
-        when(servicioClub.buscarClubPor(1L)).thenReturn(club);
+        when(requestMock.getSession()).thenReturn(sessionMock);
+        Publicacion publicacion = new Publicacion();
 
-        mockMvc.perform(get("/club/1"))
-                .andExpect(status().isOk())
-                .andExpect(view().name("detalleClub"))
-                .andExpect(model().attributeExists("club"))
-                .andExpect(model().attribute("club", club))
-                .andExpect(model().attributeExists("usuario"));
+        ModelAndView modelo = controladorClub.realizarPublicacion(club.getId(),publicacion, requestMock);
+
+        assertThat(modelo.getViewName(), equalToIgnoringCase("redirect:/club/{clubId}"));
     }
 
-    // Test para buscarClub
     @Test
-    void buscarClub() throws Exception {
-        List<Club> clubs = Arrays.asList(new Club(), new Club());
-        when(servicioClub.buscarClubPorNombre("Test")).thenReturn(clubs);
+    public void dadoElMetodoEliminarPublicacionCuandoSoyAdminPuedoEliminarLaPublicacionYMeRedirijeALaVistaEspecificaDelClub() throws NoExisteEseClub {
+        when(requestMock.getSession()).thenReturn(sessionMock);
+        when(sessionMock.getAttribute("usuario")).thenReturn(usuarioMock);
+        Club club = new Club();
+        club.setId(1L);
+        when(servicioClubMock.buscarClubPor(club.getId())).thenReturn(club);
+        Publicacion publicacion = new Publicacion();
+        publicacion.setId(1L);
+        when(servicioPublicacionMock.buscarPublicacionPorId(publicacion.getId())).thenReturn(publicacion);
+        when(servicioUsuarioMock.esAdmin(usuarioMock)).thenReturn(true);
 
-        mockMvc.perform(get("/buscar")
-                        .param("query", "Test")
-                        .sessionAttr("usuario", new Usuario())) // Simula que el usuario está en la sesión
-                .andExpect(status().isOk())
-                .andExpect(view().name("home"))
-                .andExpect(model().attributeExists("clubs"))
-                .andExpect(model().attribute("clubs", clubs))
-                .andExpect(model().attribute("noResultados", false));
+        ModelAndView modelo = controladorClub.eliminarPublicacion(club.getId(), publicacion.getId(),requestMock);
+
+        assertThat(modelo.getViewName(), equalToIgnoringCase("redirect:/club/{clubId}"));
     }
 
-    // Test para buscar cuando no se encuentran clubes
     @Test
-    void buscarClubSinResultados() throws Exception {
-        when(servicioClub.buscarClubPorNombre("NoExiste")).thenReturn(Collections.emptyList());
+    public void dadoElMetodoEliminarPublicacionCuandoSoyUsuarioNormalNoPuedoEliminarLaPublicacionYMeRedirijeALaVistaHome() throws NoExisteEseClub {
+        when(requestMock.getSession()).thenReturn(sessionMock);
+        when(sessionMock.getAttribute("usuario")).thenReturn(usuarioMock);
+        Club club = new Club();
+        club.setId(1L);
+        when(servicioClubMock.buscarClubPor(club.getId())).thenReturn(club);
+        Publicacion publicacion = new Publicacion();
+        publicacion.setId(1L);
+        when(servicioPublicacionMock.buscarPublicacionPorId(publicacion.getId())).thenReturn(publicacion);
+        when(servicioUsuarioMock.esAdmin(usuarioMock)).thenReturn(false);
 
-        mockMvc.perform(get("/buscar")
-                        .param("query", "NoExiste")
-                        .sessionAttr("usuario", new Usuario())) // Simula que el usuario está en la sesión
-                .andExpect(status().isOk())
-                .andExpect(view().name("home"))
-                .andExpect(model().attribute("noResultados", true));
+        ModelAndView modelo = controladorClub.eliminarPublicacion(club.getId(), publicacion.getId(),requestMock);
+
+        assertThat(modelo.getViewName(), equalToIgnoringCase("redirect:/home"));
+    }
+
+    @Test
+    public void dadoElMetodoBuscarClubPorNombreCuandoBuscoAlgoQueTengaResultadoMeRedireccionaAlHomeConUnaListaEnElModelo() throws NoExistenClubs {
+        when(requestMock.getSession()).thenReturn(sessionMock);
+        ArrayList<Club> clubs = new ArrayList<>();
+        clubs.add(new Club());
+        when(servicioClubMock.buscarClubPorNombre(any())).thenReturn(clubs);
+
+        ModelAndView modelo = controladorClub.buscarClubPorNombre("palabraPorBuscar",requestMock);
+
+        assertThat(modelo.getViewName(), equalTo("home"));
+        assertThat(modelo.getModel().get("clubs"), equalTo(clubs));
+        verify(servicioClubMock,times(1)).buscarClubPorNombre("palabraPorBuscar");
+    }
+
+    @Test
+    public void dadoElMetodoBuscarClubPorNombreCuandoBuscoAlgoQueNOTengaResultadoMeRedireccionaAlHomeConUnaListaVaciaEnElModelo() throws NoExistenClubs {
+        when(requestMock.getSession()).thenReturn(sessionMock);
+        ArrayList<Club> clubs = new ArrayList<>();
+        when(servicioClubMock.buscarClubPorNombre(any())).thenReturn(clubs);
+
+        ModelAndView modelo = controladorClub.buscarClubPorNombre("palabraPorBuscar",requestMock);
+
+        assertThat(modelo.getViewName(), equalTo("home"));
+        assertThat(modelo.getModel().get("clubs"), equalTo(null));
+        verify(servicioClubMock,times(1)).buscarClubPorNombre("palabraPorBuscar");
+    }
+
+    @Test
+    public void dadoElMetodoAnotarUsuarioAClubDebeRedireccionarmeALaVistaDelClubEspecifico() throws NoExisteEseClub, NoExisteEseUsuario {
+        when(requestMock.getSession()).thenReturn(sessionMock);
+        when(sessionMock.getAttribute("usuario")).thenReturn(usuarioMock);
+        when(servicioClubMock.buscarClubPor(any())).thenReturn(clubMock);
+
+        ModelAndView modelo = controladorClub.anotarUsuarioAClub(clubMock.getId(), requestMock);
+
+        assertThat(modelo.getViewName(), equalTo("redirect:/club/{clubId}"));
+        verify(servicioClubMock,times(1)).registrarUsuarioEnElClub(usuarioMock, clubMock);
+    }
+
+    @Test
+    public void dadoElMetodoAbandonarClubMeDebeRedireccionarALaVistaHome() throws NoExisteEseClub, NoExisteEseUsuario {
+        when(requestMock.getSession()).thenReturn(sessionMock);
+        when(sessionMock.getAttribute("usuario")).thenReturn(usuarioMock);
+        when(servicioClubMock.buscarClubPor(any())).thenReturn(clubMock);
+
+        ModelAndView modelo = controladorClub.abandonarClub(clubMock.getId(), requestMock);
+
+        assertThat(modelo.getViewName(), equalTo("redirect:/home"));
+        verify(servicioClubMock,times(1)).borrarRegistroUsuarioEnElClub(usuarioMock, clubMock);
+    }
+
+    @Test
+    public void dadoElMetodoIrDetallePublicacionSiExisteLaPublicacionMeDireccionaALaVistaDeEstaPublicacion() throws NoExisteEseClub {
+        Comentario comentario = new Comentario();
+        Publicacion publicacion = new Publicacion();
+        publicacion.setId(1L);
+        publicacion.setComentarios(new ArrayList<>());
+        publicacion.getComentarios().add(comentario);
+        when(requestMock.getSession()).thenReturn(sessionMock);
+        when(servicioClubMock.buscarClubPor(any())).thenReturn(clubMock);
+        when(sessionMock.getAttribute("usuario")).thenReturn(usuarioMock);
+        when(servicioPublicacionMock.buscarPublicacionPorId(any())).thenReturn(publicacion);
+
+        ModelAndView modelo = controladorClub.irAdetallePublicacion(clubMock.getId(), publicacion.getId(), requestMock);
+
+        assertThat(modelo.getViewName(), equalTo("detallePublicacion"));
+        assertThat(modelo.getModel().get("usuario"), equalTo(usuarioMock));
+        assertThat(modelo.getModel().get("club"), equalTo(clubMock));
+        assertThat(modelo.getModel().get("publicacion"), equalTo(publicacion));
+        assertThat(modelo.getModel().get("comentarios"), equalTo(publicacion.getComentarios()));
+    }
+
+    @Test
+    public void dadoElMetodoIrDetallePublicacionSiNOExisteLaPublicacionMeDireccionaALaVistaHome() throws NoExisteEseClub {
+        Publicacion publicacion = new Publicacion();
+        publicacion.setId(1L);
+        when(requestMock.getSession()).thenReturn(sessionMock);
+        when(sessionMock.getAttribute("usuario")).thenReturn(usuarioMock);
+        when(servicioPublicacionMock.buscarPublicacionPorId(any())).thenReturn(null);
+
+        ModelAndView modelo = controladorClub.irAdetallePublicacion(clubMock.getId(), publicacion.getId(), requestMock);
+
+        assertThat(modelo.getViewName(), equalTo("redirect:/home"));
+    }
+
+    @Test
+    public void dadoElMetodoCrearNuevoComentarioAlmaceneElComentarioCorrectamenteDebeRedireccionarmeALaVistaEspecificaDeLaPublicacion() throws NoExisteEseClub {
+        Comentario comentario = new Comentario();
+        when(requestMock.getSession()).thenReturn(sessionMock);
+        when(sessionMock.getAttribute("usuario")).thenReturn(usuarioMock);
+        Publicacion publicacion = new Publicacion();
+        publicacion.setId(1L);
+        when(servicioPublicacionMock.buscarPublicacionPorId(any())).thenReturn(publicacion);
+
+        ModelAndView modelo = controladorClub.crearNuevoComentario(comentario, publicacion.getId(), clubMock.getId(), requestMock);
+
+        assertThat(modelo.getViewName(), equalTo("redirect:/club/" + clubMock.getId()  + "/detallePublicacion"+ "/" + publicacion.getId()));
+        verify(servicioComentarioMock, times(1)).guardarComentario(comentario, publicacion);
+    }
+
+    @Test
+    public void dadoElMetodoCrearNuevoComentarioNoAlmaceneElComentarioCorrectamenteDebeRedireccionarmeALaVistaEspecificaDeLaPublicacion() throws NoExisteEseClub {
+        Comentario comentario = new Comentario();
+        when(requestMock.getSession()).thenReturn(sessionMock);
+        when(sessionMock.getAttribute("usuario")).thenReturn(usuarioMock);
+        Publicacion publicacion = new Publicacion();
+        publicacion.setId(1L);
+        when(servicioPublicacionMock.buscarPublicacionPorId(any())).thenReturn(null);
+
+        ModelAndView modelo = controladorClub.crearNuevoComentario(comentario, publicacion.getId(), clubMock.getId(), requestMock);
+
+
+
+        assertThat(modelo.getViewName(), equalTo("redirect:/club/" + clubMock.getId()  + "/detallePublicacion"+ "/" + publicacion.getId()));
+        verify(servicioComentarioMock, times(0)).guardarComentario(comentario, publicacion);
+    }
+
+    @Test
+    public void dadoElMetodoEliminarClubCuandoLoEliminaExitosamenteMeRedireccionaALaVistaHome() throws NoExisteEseClub {
+        when(servicioClubMock.buscarClubPor(any())).thenReturn(clubMock);
+
+        ModelAndView modelo = controladorClub.eliminarClub(clubMock.getId());
+
+        assertThat(modelo.getViewName(), equalTo("redirect:/home"));
+        verify(servicioClubMock, times(1)).eliminarClub(clubMock);
+    }
+
+    @Test
+    public void dadoElMetodoEliminarClubCuandoLoNoEliminaExitosamenteMeRedireccionaALaVistaHome() throws NoExisteEseClub {
+        when(servicioClubMock.buscarClubPor(any())).thenReturn(null);
+
+        ModelAndView modelo = controladorClub.eliminarClub(clubMock.getId());
+
+        assertThat(modelo.getViewName(), equalTo("redirect:/home"));
+        verify(servicioClubMock, times(0)).eliminarClub(clubMock);
+    }
+
+    @Test
+    public void dadoElMetodoMostrarFormularioReporteCuandoQuieroHacerUnReporteDeUnClubExistenteMeRedireccionaALaVistaCrearReporte() throws NoExisteEseClub {
+        when(requestMock.getSession()).thenReturn(sessionMock);
+        when(sessionMock.getAttribute("usuario")).thenReturn(usuarioMock);
+        when(servicioClubMock.buscarClubPor(any())).thenReturn(clubMock);
+
+        ModelAndView modelo = controladorClub.mostrarFormularioReporte(clubMock.getId(), requestMock);
+
+        assertThat(modelo.getViewName(), equalTo("crearReporte"));
+        assertThat(modelo.getModel().get("club"), equalTo(clubMock));
+        assertThat(modelo.getModel().get("usuario"), equalTo(usuarioMock));
+    }
+
+    @Test
+    public void dadoElMetodoMostrarFormularioReporteCuandoQuieroHacerUnReporteDeUnClubInexistenteMeRedireccionaALaVistaHome() throws NoExisteEseClub {
+        when(requestMock.getSession()).thenReturn(sessionMock);
+        when(sessionMock.getAttribute("usuario")).thenReturn(usuarioMock);
+        when(servicioClubMock.buscarClubPor(any())).thenReturn(null);
+
+        ModelAndView modelo = controladorClub.mostrarFormularioReporte(clubMock.getId(), requestMock);
+
+        assertThat(modelo.getViewName(), equalTo("redirect:/home"));
+    }
+
+    @Test
+    public void dadoElMetodoRealizarNuevoReporteSiExisteElClubAlQueQuieroReportarMeDireccionaALaVistaEspecificaDelClub() throws NoExisteEseClub, ReporteExistente {
+        Reporte reporte = new Reporte();
+        when(requestMock.getSession()).thenReturn(sessionMock);
+        when(sessionMock.getAttribute("usuario")).thenReturn(usuarioMock);
+        when(servicioClubMock.buscarClubPor(any())).thenReturn(clubMock);
+
+        ModelAndView modelo = controladorClub.realizarNuevoReporte(clubMock.getId(), reporte, requestMock);
+
+        assertThat(modelo.getViewName(), equalTo("redirect:/club/" + clubMock.getId()));
+        verify(servicioReporteMock, times(1)).guardarReporte(reporte);
+    }
+
+    @Test
+    public void dadoElMetodoRealizarNuevoReporteSiNOExisteElClubAlQueQuieroReportarMeDireccionaALaVistaHome() throws NoExisteEseClub, ReporteExistente {
+        Reporte reporte = new Reporte();
+        when(requestMock.getSession()).thenReturn(sessionMock);
+        when(sessionMock.getAttribute("usuario")).thenReturn(usuarioMock);
+        when(servicioClubMock.buscarClubPor(any())).thenReturn(null);
+
+        ModelAndView modelo = controladorClub.realizarNuevoReporte(clubMock.getId(), reporte, requestMock);
+
+        assertThat(modelo.getViewName(), equalTo("redirect:/home"));
+        verify(servicioReporteMock, times(0)).guardarReporte(reporte);
     }
 }

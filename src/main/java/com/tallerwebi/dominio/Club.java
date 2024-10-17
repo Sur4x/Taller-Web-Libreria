@@ -17,17 +17,29 @@ public class Club {
     //private Libro libro; AGREGAR ESTE ATRIBUTO
     private String imagen;
 
-    @ManyToMany(mappedBy = "clubsInscriptos", fetch = FetchType.EAGER)
+    private String estaReportado;
+
+    @ManyToMany(mappedBy = "clubsInscriptos", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.EAGER)
     private List<Usuario> integrantes;
 
-    public Club(){}
-    public Club(Long id, String nombre, String descripcion, String genero, String imagen, List<Usuario> integrantes) {
+    @OneToMany(mappedBy = "club", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Publicacion> publicaciones;
+    @OneToMany(mappedBy = "club", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Reporte> reportes;
+
+    public Club() {
+    }
+
+    public Club(Long id, String nombre, String descripcion, String genero, String imagen, String estaReportado, List<Usuario> integrantes, List<Publicacion> publicaciones, List<Reporte> reportes) {
         this.id = id;
         this.nombre = nombre;
         this.descripcion = descripcion;
         this.genero = genero;
         this.imagen = imagen;
         this.integrantes = new ArrayList<>();
+        this.publicaciones = new ArrayList<>();
+        this.estaReportado = estaReportado;
+        this.reportes = new ArrayList<>();
     }
 
     public Long getId() {
@@ -70,6 +82,14 @@ public class Club {
         this.imagen = imagen;
     }
 
+    public String getEstaReportado() {
+        return estaReportado;
+    }
+
+    public void setEstaReportado(String estaReportado) {
+        this.estaReportado = estaReportado;
+    }
+
     public List<Usuario> getIntegrantes() {
         return integrantes;
     }
@@ -77,5 +97,38 @@ public class Club {
     public void setIntegrantes(List<Usuario> integrantes) {
         this.integrantes = integrantes;
     }
+
+    public List<Publicacion> getPublicaciones() {
+        return publicaciones;
+    }
+
+    public void setPublicaciones(List<Publicacion> publicaciones) {
+        this.publicaciones = publicaciones;
+    }
+
+    public List<Reporte> getReportes() {
+        return reportes;
+    }
+
+    public void setReportes(List<Reporte> reportes) {
+        this.reportes = reportes;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Club club = (Club) o;
+
+        return id != null ? id.equals(club.id) : club.id == null;
+    }
+
+    @Override
+    public int hashCode() {
+        return id != null ? id.hashCode() : 0;
+    }
+
+
 }
 

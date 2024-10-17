@@ -44,9 +44,9 @@ public class VistaLoginE2E {
     }
 
     @Test
-    void deberiaDecirUNLAMEnElNavbar() {
+    void deberiaDecirClubDeLecturaEnElNavbar() {
         String texto = vistaLogin.obtenerTextoDeLaBarraDeNavegacion();
-        assertThat("UNLAM", equalToIgnoringCase(texto));
+        assertThat("Club de Lectura", equalToIgnoringCase(texto));
     }
 
     @Test
@@ -55,7 +55,7 @@ public class VistaLoginE2E {
         vistaLogin.escribirClave("unlam");
         vistaLogin.darClickEnIniciarSesion();
         String texto = vistaLogin.obtenerMensajeDeError();
-        assertThat("Error Usuario o clave incorrecta", equalToIgnoringCase(texto));
+        assertThat("Error: Usuario o clave incorrecta", equalToIgnoringCase(texto));
     }
 
     @Test
@@ -64,6 +64,6 @@ public class VistaLoginE2E {
         vistaLogin.escribirClave("test");
         vistaLogin.darClickEnIniciarSesion();
         String url = vistaLogin.obtenerURLActual();
-        assertThat(url, containsStringIgnoringCase("/spring/home"));
+        assertThat(url, containsStringIgnoringCase("/club/home"));
     }
 }

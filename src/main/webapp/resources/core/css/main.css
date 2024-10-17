@@ -58,7 +58,6 @@
               background-color: #0056b3;
           }
 
-        //CSS PARA EL DESPLEGABLE
             nav {
               background-color: #333;
               padding: 10px;
@@ -126,5 +125,3 @@
           .dropdown:hover .dropdown-content {
               display: block;
           }
-
-  }

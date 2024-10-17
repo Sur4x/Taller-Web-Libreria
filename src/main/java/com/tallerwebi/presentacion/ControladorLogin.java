@@ -41,7 +41,7 @@ public class ControladorLogin {
     public ModelAndView validarLogin(@ModelAttribute("datosLogin") DatosLogin datosLogin, HttpServletRequest request) {
         ModelMap model = new ModelMap();
 
-        Usuario usuarioBuscado = servicioLogin.consultarUsuario(datosLogin.getEmail());
+        Usuario usuarioBuscado = servicioLogin.consultarUsuario(datosLogin.getEmail(), datosLogin.getPassword());
         if (usuarioBuscado != null) {
             //Agregar al model usuarioBuscado y retonarlo en el ModelAndView
             request.getSession().setAttribute("usuario", usuarioBuscado);
