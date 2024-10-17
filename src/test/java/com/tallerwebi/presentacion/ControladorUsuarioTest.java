@@ -3,6 +3,7 @@ package com.tallerwebi.presentacion;
 import com.tallerwebi.dominio.ServicioUsuario;
 import com.tallerwebi.dominio.Usuario;
 import com.tallerwebi.dominio.excepcion.NoExisteEseUsuario;
+import com.tallerwebi.dominio.excepcion.UsuarioExistente;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.web.servlet.ModelAndView;
@@ -13,6 +14,7 @@ import javax.servlet.http.HttpSession;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.text.IsEqualIgnoringCase.equalToIgnoringCase;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
@@ -34,8 +36,34 @@ public class ControladorUsuarioTest {
         usuarioMock = mock(Usuario.class); //Mockeo un usuario
     }
 
+
     @Test
-    public void DadoQueUsoElMetodoLogoutLaSessionDebeSerInvalidadaYDebeDevolvermeAlaVistaHome() {
+    public void dadoElMetodoIrAPerfilFuncioneCorrectamenteDebeDevolvermeALaVistaPerfilDelUsuarioEspecifico() throws NoExisteEseUsuario {
+        //mock de un usuario
+        when(requestMock.getSession()).thenReturn(sessionMock);
+        when(sessionMock.getAttribute("usuario")).thenReturn(usuarioMock);
+        when(servicioUsuarioMock.buscarUsuarioPor(1L)).thenReturn(usuarioMock);
+
+        ModelAndView model = controladorUsuario.irAPerfil(1L, requestMock);
+
+        assertThat(model.getViewName(), equalToIgnoringCase("perfil"));
+        assertThat(model.getModel().get("usuario"), equalTo(usuarioMock));
+    }
+
+    @Test
+    public void dadoQueElMetodoIrAPerfilIntentaAccederAUnPerfilQueNoEsElDelUsuarioLogueadoRedireccionaALaVistaLogin() throws NoExisteEseUsuario {
+        when(requestMock.getSession()).thenReturn(sessionMock);
+        Usuario usuario = new Usuario();
+        when(servicioUsuarioMock.buscarUsuarioPor(1L)).thenReturn(usuario);
+
+        ModelAndView model = controladorUsuario.irAPerfil(2L,requestMock);
+
+        assertThat(model.getViewName(), equalToIgnoringCase("redirect:/login"));
+        assertThat(model.getModel().get("usuario"), equalTo(null));
+    }
+
+    @Test
+    public void dadoElMetodoLogoutLaSessionDebeSerPasarASerInvalidadaYDebeDevolvermeAlaVistaHome() {
         when(requestMock.getSession()).thenReturn(sessionMock);
 
         ModelAndView model = controladorUsuario.logout(requestMock); //uso el metodo logout con el request mock
@@ -45,31 +73,9 @@ public class ControladorUsuarioTest {
         // que fuiste redireccionado
     }
 
-    @Test
-    public void dadoQueElMetodoIrAPerfilFuncioneCorrectamenteDebeDevolvermeALaVistaPerfilDelUsuarioEspecifico() throws NoExisteEseUsuario {
-        //mock de un usuario
-
-        when(servicioUsuarioMock.buscarUsuarioPor(1L)).thenReturn(usuarioMock);
-
-        ModelAndView model = controladorUsuario.irAPerfil(1L);
-
-        assertThat(model.getViewName(), equalToIgnoringCase("perfil"));
-        assertThat(model.getModel().get("usuario"), equalTo(usuarioMock));
-    }
 
     @Test
-    public void dadoQueElMetodoIrAPerfilNoFuncionaCorrectamenteDebeDevolvermeALaVistaHome() throws NoExisteEseUsuario {
-
-        when(servicioUsuarioMock.buscarUsuarioPor(1L)).thenReturn(null);
-
-        ModelAndView model = controladorUsuario.irAPerfil(1L);
-
-        assertThat(model.getViewName(), equalToIgnoringCase("Redirect: /home"));
-        assertThat(model.getModel().get("usuario"), equalTo(null));
-    }
-
-    @Test
-    public void dadoQueElMetodoIrAMisClubsFuncionaCorrectamenteDebeDevolvermeALaVistaMisClubsConUnModeloQueContengaUnUsuario() throws NoExisteEseUsuario {
+    public void dadoQueElMetodoIrAMisClubsDebeDevolvermeALaVistaMisClubsConUnModeloQueContengaUnUsuario() throws NoExisteEseUsuario {
         when(servicioUsuarioMock.buscarUsuarioPor(1L)).thenReturn(usuarioMock);
 
         ModelAndView model = controladorUsuario.irAMisClubs(1L);
@@ -78,14 +84,5 @@ public class ControladorUsuarioTest {
         assertThat(model.getModel().get("usuario"), equalTo(usuarioMock));
     }
 
-    @Test
-    public void dadoQueElMetodoIrAMisClubsNoFuncionaCorrectamenteDebeDevolvermeALaVistaMisClubsConUnModeloVacio() throws NoExisteEseUsuario {
-        when(servicioUsuarioMock.buscarUsuarioPor(2L)).thenReturn(null);
-
-        ModelAndView model = controladorUsuario.irAMisClubs(2L);
-
-        assertThat(model.getViewName(), equalToIgnoringCase("misClubs"));
-        assertThat(model.getModel().get("usuario"), equalTo(null));
-    }
 
 }

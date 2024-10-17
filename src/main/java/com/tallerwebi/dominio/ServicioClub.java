@@ -25,12 +25,12 @@ public interface ServicioClub {
 
     void eliminarPublicacion(Publicacion publicacion, Club club);
 
-    void agregarNuevoComentario(Publicacion publicacion, Long idClub, Long idPublicacion) throws NoExisteEseClub;
-
     void borrarRegistroUsuarioEnElClub(Usuario usuario, Club club);
 
-    void eliminarClub(Long id) throws NoExisteEseClub;
+    void eliminarClub(Club club) throws NoExisteEseClub;
 
-    void reportarClub(Long id) throws Exception;
+    void agregarNuevoReporteAlClub(Long id, Reporte reporte) throws Exception;
+
+    void obtenerTodosLosReportesDeUnClub(Club club);
 
 }

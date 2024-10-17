@@ -12,8 +12,7 @@ public interface RepositorioClub {
 
     List<Club> buscarClubPorNombre(String nombre);
 
-    void eliminar(Long id);
+    void eliminar(Club club);
 
-    void reportarClub(Long id);
 }
 

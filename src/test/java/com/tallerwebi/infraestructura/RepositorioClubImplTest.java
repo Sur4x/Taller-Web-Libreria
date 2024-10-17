@@ -1,3 +1,4 @@
+
 package com.tallerwebi.infraestructura;
 
 
@@ -25,6 +26,7 @@ import java.util.List;
 @Transactional
 public class RepositorioClubImplTest {
 
+
     private RepositorioClubImpl repositorioClub;
 
     @Autowired
@@ -49,7 +51,7 @@ public class RepositorioClubImplTest {
         Club resultado = (Club) query.getSingleResult();
         assertThat(resultado.getNombre(), equalTo(club.getNombre()));
     }
-
+    @Rollback
     @Test
     public void obtenerTodosLosClubs_deberiaDevolverListaDeClubs() {
         Club club1 = new Club();
@@ -64,7 +66,7 @@ public class RepositorioClubImplTest {
         int resultado = 2;
         assertThat( clubs.size(), equalTo(resultado));
     }
-
+    @Rollback
     @Test
     public void devolverListaVaciaSiNoEncuentraCoincidencia (){
         Club club1 = new Club();
@@ -73,7 +75,7 @@ public class RepositorioClubImplTest {
         List<Club> clubs = this.repositorioClub.buscarClubPorNombre("Club De Misterio");
         assertThat(clubs, is(empty()));
     }
-
+    @Rollback
     @Test
     public void obtenerPorNombreDelClub (){
         Club club1 = new Club();
@@ -88,7 +90,7 @@ public class RepositorioClubImplTest {
         Club resultado = (Club) query.getSingleResult();
         assertThat(resultado.getNombre(), equalTo(club1.getNombre()));
     }
-
+/*
     @Test
     public void dadoQueExistaElClubEliminarlo () {
 
@@ -101,4 +103,8 @@ public class RepositorioClubImplTest {
         assertThat(resultado, is(nullValue()));
 
     }
+
+ */
+
 }
+

@@ -52,29 +52,8 @@ public class RepositorioClubImpl implements RepositorioClub {
     }
 
     @Override
-    public void eliminar(Long id) {
-        final Session session = sessionFactory.getCurrentSession();
-        Club club = session.get(Club.class, id);
-        if (club != null) {
-            session.delete(club);
-        }
-    }
-
-    @Override
-    public void reportarClub(Long id) {
-        Session session = sessionFactory.getCurrentSession();
-        Club club = session.get(Club.class, id);
-
-        if (club != null) {
-            Integer cantidadDeReportes = club.getCantidadDeReportes();
-            club.setCantidadDeReportes(cantidadDeReportes + 1);
-
-            if(club.getCantidadDeReportes() == 3){
-                club.setEstaReportado("CLUB REPORTADO");
-            }
-
-            session.update(club);
-        }
+    public void eliminar(Club club) {
+        sessionFactory.getCurrentSession().delete(club);
     }
 
 }

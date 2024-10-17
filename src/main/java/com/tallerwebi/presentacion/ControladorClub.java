@@ -20,18 +20,18 @@ import java.util.List;
 public class ControladorClub {
 
     private ServicioClub servicioClub;
-
     private ServicioUsuario servicioUsuario;
-
-    @Autowired
     private ServicioPublicacion servicioPublicacion;
-    @Autowired
     private ServicioComentario servicioComentario;
+    private ServicioReporte servicioReporte;
 
     @Autowired
-    public ControladorClub(ServicioClub servicioClub,ServicioUsuario servicioUsuario) {
+    public ControladorClub(ServicioClub servicioClub,ServicioUsuario servicioUsuario, ServicioPublicacion servicioPublicacion, ServicioComentario servicioComentario, ServicioReporte servicioReporte) {
         this.servicioClub = servicioClub;
         this.servicioUsuario = servicioUsuario;
+        this.servicioPublicacion = servicioPublicacion;
+        this.servicioComentario = servicioComentario;
+        this.servicioReporte = servicioReporte;
     }
 
     // Muestra el formulario para crear un nuevo club
@@ -52,13 +52,14 @@ public class ControladorClub {
     @RequestMapping(path = "/crearNuevoClub", method = RequestMethod.POST)
     public ModelAndView crearNuevoClub(@ModelAttribute("club") Club club, HttpServletRequest request) throws ClubExistente, NoExisteEseUsuario {
         Usuario usuario = (Usuario) request.getSession().getAttribute("usuario");
-        ModelMap model = new ModelMap();
+        ModelMap modelo = new ModelMap();
 
         Boolean agregado = servicioClub.agregar(club);
 
         if (agregado && usuario != null){
-            model.put("usuario", usuario);
-            return new ModelAndView("redirect:/home");
+            modelo.put("usuario", usuario);
+            modelo.put("clubId", club.getId());
+            return new ModelAndView("redirect:/club/{clubId}", modelo);
         }else{
             return new ModelAndView("redirect:/home");
         }
@@ -72,9 +73,13 @@ public class ControladorClub {
         Club club = servicioClub.buscarClubPor(id);
         ModelMap model = new ModelMap();
         if (club != null){
-            Hibernate.initialize(club.getPublicaciones()); //Esto esta rarisimo
+            Hibernate.initialize(club.getPublicaciones());
             model.put("club",club);
+            model.put("publicaciones", club.getPublicaciones());
             model.put("usuario", usuario);
+
+            servicioClub.obtenerTodosLosReportesDeUnClub(club);
+
             return new ModelAndView("detalleClub", model);
         }else{
             return new ModelAndView("Redirect: /home", model);
@@ -83,7 +88,7 @@ public class ControladorClub {
 
     // Buscar clubes por nombre o coincidencia parcial
     @RequestMapping(path = "/buscar", method = RequestMethod.GET)
-    public ModelAndView buscarClub(@RequestParam("query") String query, HttpServletRequest request) throws NoExistenClubs {
+    public ModelAndView buscarClubPorNombre(@RequestParam("query") String query, HttpServletRequest request) throws NoExistenClubs {
         Usuario usuario = (Usuario) request.getSession().getAttribute("usuario");
         ModelMap model = new ModelMap();
         List<Club> clubs = servicioClub.buscarClubPorNombre(query);
@@ -96,7 +101,6 @@ public class ControladorClub {
             model.put("noResultados", false);
             model.put("clubs", clubs);
         }
-
         return new ModelAndView("home", model);
     }
 
@@ -137,32 +141,27 @@ public class ControladorClub {
         Usuario usuario = (Usuario) request.getSession().getAttribute("usuario");
         servicioClub.agregarNuevaPublicacion(publicacion, id);
 
-        return new ModelAndView("redirect:/home");
+        return new ModelAndView("redirect:/club/{clubId}");
     }
+
 
     @RequestMapping(path = "/club/{clubId}/eliminarPublicacion/{publicacionId}")
     @Transactional
     public ModelAndView eliminarPublicacion(@PathVariable("clubId") Long id, @PathVariable("publicacionId") Long idPublicacion ,HttpServletRequest request) throws NoExisteEseClub {
         Usuario usuario = (Usuario) request.getSession().getAttribute("usuario");
         ModelMap modelo = new ModelMap();
-
-        List<Club> clubs = usuario.getClubsInscriptos();
         Club club = servicioClub.buscarClubPor(id);
         Publicacion publicacion = servicioPublicacion.buscarPublicacionPorId(idPublicacion);
 
-        if(clubs.contains(club) && publicacion!=null && usuario.getRol().equals("admin")){
-            Hibernate.initialize(club.getPublicaciones());
-            servicioClub.eliminarPublicacion(publicacion, club);
-        }else {
-            modelo.put("error", "No formás parte del club o no estás logueado correctamente.");
-            return new ModelAndView("redirect:/club/{clubId}", modelo);
-        }
-        return new ModelAndView("redirect:/club/{clubId}");
+        if(servicioUsuario.esAdmin(usuario)){
+                servicioClub.eliminarPublicacion(publicacion, club);
+                return new ModelAndView("redirect:/club/{clubId}");
+        }else return new ModelAndView("redirect:/home");
     }
 
     @RequestMapping(path = "/club/{clubId}/detallePublicacion/{publicacionId}")
     @Transactional
-    public ModelAndView irAdetalleClub(@PathVariable("clubId") Long clubId,@PathVariable("publicacionId") Long publicacionId, HttpServletRequest request) throws NoExisteEseClub {
+    public ModelAndView irAdetallePublicacion(@PathVariable("clubId") Long clubId,@PathVariable("publicacionId") Long publicacionId, HttpServletRequest request) throws NoExisteEseClub {
         Usuario usuario = (Usuario) request.getSession().getAttribute("usuario");
         ModelMap modelo = new ModelMap();
 
@@ -176,7 +175,7 @@ public class ControladorClub {
             modelo.put("club", servicioClub.buscarClubPor(clubId));
             return new ModelAndView("detallePublicacion", modelo);
         }else{
-            return new ModelAndView("redirect:/login");
+            return new ModelAndView("redirect:/home");
         }
     }
     @RequestMapping(path = "/club/{clubId}/crearNuevoComentario/{publicacionId}")
@@ -194,34 +193,48 @@ public class ControladorClub {
     }
 
     @RequestMapping(path = "/club/eliminar/{id}", method = RequestMethod.POST)
-    public ModelAndView eliminarClub(@PathVariable("id") Long id) {
-        try {
-            servicioClub.eliminarClub(id);
+    public ModelAndView eliminarClub(@PathVariable("id") Long id) throws NoExisteEseClub {
+        Club club = servicioClub.buscarClubPor(id);
+        if (club != null) {
+            servicioClub.eliminarClub(club);
             return new ModelAndView("redirect:/home");
-        } catch (NoExisteEseClub e) {
-            return new ModelAndView("redirect:/home", "error", e.getMessage());
+        }else{
+            return new ModelAndView("redirect:/home");
         }
     }
-    @RequestMapping(path = "/club/reportar/{id}")
+    @RequestMapping(path = "/club/{clubId}/reportar", method = RequestMethod.GET)
     @Transactional
-    public ModelAndView reportarClub(@PathVariable("id") Long id, HttpServletRequest request) throws Exception {
+    public ModelAndView mostrarFormularioReporte(@PathVariable("clubId") Long clubId, HttpServletRequest request) throws NoExisteEseClub {
         Usuario usuario = (Usuario) request.getSession().getAttribute("usuario");
-        try {
-            servicioClub.reportarClub(id);
+        ModelMap model = new ModelMap();
 
-            Club club = servicioClub.buscarClubPor(id);
+        Club club = servicioClub.buscarClubPor(clubId);
+        if (club != null) {
+            Hibernate.initialize(club.getPublicaciones());
 
-            ModelMap model = new ModelMap();
-           if(club != null) {
-               Hibernate.initialize(club.getPublicaciones());
-               model.put("club", club);
-               model.put("usuario", usuario);
-           }
-            return new ModelAndView("detalleClub", model);
+            model.put("club", club);
+            model.put("usuario", usuario);
+            model.put("reporte", new Reporte());
 
-        } catch (Exception e) {
-        return new ModelAndView("redirect:/home", "error", e.getMessage());
+            return new ModelAndView("crearReporte", model);
+        } else {
+            return new ModelAndView("redirect:/home");
         }
     }
 
+    @RequestMapping(path = "/club/{clubId}/nuevoReporte", method = RequestMethod.POST)
+    public ModelAndView realizarNuevoReporte(@PathVariable("clubId") Long clubId, @ModelAttribute("reporte") Reporte reporte, HttpServletRequest request) throws NoExisteEseClub, ReporteExistente {
+        Usuario usuario = (Usuario) request.getSession().getAttribute("usuario");
+
+        Club club = servicioClub.buscarClubPor(clubId);
+        if (club != null) {
+
+            reporte.setClub(club);
+            servicioReporte.guardarReporte(reporte);
+
+            return new ModelAndView("redirect:/club/" + clubId);
+        } else {
+            return new ModelAndView("redirect:/home");
+        }
+    }
 }

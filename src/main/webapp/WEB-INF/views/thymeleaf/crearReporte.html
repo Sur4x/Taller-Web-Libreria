@@ -2,11 +2,10 @@
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Publicación</title>
+    <title>Title</title>
+    <link rel="stylesheet" th:href="@{/webjars/bootstrap/5.2.0/css/bootstrap.min.css}"/>
+    <link rel="stylesheet" th:href="@{/css/main.css}"/>
 </head>
-
-<link rel="stylesheet" th:href="@{/webjars/bootstrap/5.2.0/css/bootstrap.min.css}"/>
-<link rel="stylesheet" th:href="@{/css/main.css}"/>
 <body>
 <header>
     <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
@@ -35,52 +34,25 @@
     </nav>
 </header>
 
-<main class="mt-6">
 
+<h1 class="mb-4 text-center">Crear Nuevo Reporte</h1>
 
+<p th:if="${error != null}" class="alert alert-danger mt-3" th:text="'Error: ' + ${error}"></p>
 
-<div class="container mt-4">
-    <h1 class="text-center mb-4">Discusión:</h1>
-    <p class="text-center mb-4" th:text="${publicacion.mensaje}"></p>
-</div>
-
-    <div th:if="${usuario != null and usuario.rol == 'admin'}">
-        <div class="text-center mb-4">
-            <a th:href="@{/club/{clubId}/eliminarPublicacion/{publicacionId}(clubId=${club.id}, publicacionId=${publicacion.id})}" class="btn btn-danger mt-4">Eliminar publicación</a>
-        </div>
+<form th:action="@{/club/{clubId}/nuevoReporte(clubId=${club.id})}" th:object="${reporte}" method="post" class="p-4 shadow-sm rounded bg-light">
+    <div class="mb-3">
+        <label for="titulo" class="form-label">Título</label>
+        <input type="text" id="titulo" class="form-control" th:field="*{motivo}" placeholder="Escribe el título aquí" required>
     </div>
-
-<div class="container mt-4">
-    <h2>Comentarios de la comunidad:</h2>
-
-    <div th:if="${#lists.isEmpty(comentarios)}">
-        <p>No hay comentarios disponibles.</p>
-    </div>
-
-    <ul class="list-group">
-        <li th:if="${comentarios != null}" class="list-group-item" th:each="comentario : ${comentarios}">
-            <div class="d-flex justify-content-between align-items-center">
-                <h5 class="mb-1" th:text="${comentario.autor.nombreUsuario}"></h5>
-            </div>
-            <p class="mb-1" th:text="${comentario.texto}">Texto del comentario</p>
-        </li>
-    </ul>
-</div>
-
-<div class="container mt-4">
-<h3>Agregar Nuevo Comentario</h3>
-<form th:action="@{/club/{clubId}/crearNuevoComentario/{publicacionId}(clubId=${club.id}, publicacionId=${publicacion.id})}" method="post" th:object="${comentario}">
 
     <div class="mb-3">
-        <label for="texto" class="form-label">Comentario</label>
-        <textarea class="form-control" id="texto" th:field="*{texto}" rows="3" required></textarea>
+        <label for="mensaje" class="form-label">Descripcion</label>
+        <textarea id="mensaje" class="form-control" th:field="*{descripcion}" placeholder="Escribe el mensaje aquí" rows="4" required></textarea>
     </div>
-    <input type="hidden" name="publicacionId" th:value="${publicacion.id}"/>
-    <button type="submit" class="btn btn-primary">Enviar Comentario</button>
-</form>
-</div>
 
-</main>
+    <button type="submit" class="btn btn-primary w-100">Crear</button>
+</form>
+
 
 <script th:src="@{/webjars/bootstrap/5.2.0/js/bootstrap.bundle.min.js}"></script>
 </body>
