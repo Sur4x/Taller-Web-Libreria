@@ -44,7 +44,7 @@ public class VistaLoginE2E {
     }
 
     @Test
-    void deberiaDecirUNLAMEnElNavbar() {
+    void deberiaDecirClubDeLecturaEnElNavbar() {
         String texto = vistaLogin.obtenerTextoDeLaBarraDeNavegacion();
         assertThat("Club de Lectura", equalToIgnoringCase(texto));
     }

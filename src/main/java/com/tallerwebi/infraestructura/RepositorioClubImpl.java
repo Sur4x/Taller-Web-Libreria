@@ -52,12 +52,8 @@ public class RepositorioClubImpl implements RepositorioClub {
     }
 
     @Override
-    public void eliminar(Long id) {
-        final Session session = sessionFactory.getCurrentSession();
-        Club club = session.get(Club.class, id);
-        if (club != null) {
-            session.delete(club);
-        }
+    public void eliminar(Club club) {
+        sessionFactory.getCurrentSession().delete(club);
     }
 
 }

@@ -112,4 +112,6 @@ public class Usuario {
     public void setClubsInscriptos(List<Club> clubsInscriptos) {
         this.clubsInscriptos = clubsInscriptos;
     }
+
+
 }

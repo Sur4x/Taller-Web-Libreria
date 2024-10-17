@@ -31,26 +31,17 @@ public class ControladorUsuario {
         this.servicioUsuario = servicioUsuario;
     }
 
-    @RequestMapping("/busqueda")
-    public ModelAndView mostrarUsuarios() throws NoExistenUsuarios {
-        List<Usuario> usuarios = servicioUsuario.mostrarTodosLosUsuarios();
-        ModelMap modelo = new ModelMap();
-        modelo.put("usuarios", usuarios);
-
-        return new ModelAndView("busqueda", modelo);
-    }
-
     @RequestMapping(path = "/perfil/{id}", method = RequestMethod.GET)
     public ModelAndView irAPerfil(@PathVariable("id") Long id) throws NoExisteEseUsuario {
         Usuario usuario = servicioUsuario.buscarUsuarioPor(id);
         ModelMap model = new ModelMap();
-        if (usuario != null){
-            model.put("usuario",usuario);
-            return new ModelAndView("perfil", model);
-        }else{
-            return new ModelAndView("Redirect: /home", model);
+        if (usuarioActual != null) {
+                model.put("usuario", usuario);
+                return new ModelAndView("perfil", model);
+            } else {
+                return new ModelAndView("redirect:/login", model);
+            }
         }
-    }
 
     @RequestMapping(path = "/logout", method = RequestMethod.GET)
     public ModelAndView logout(HttpServletRequest request) {

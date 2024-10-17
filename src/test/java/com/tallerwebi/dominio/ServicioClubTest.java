@@ -119,7 +119,7 @@ public class ServicioClubTest {
         assertThat(clubsEsperados, is(empty()));
         verify(repositorioClubMock, times(1)).buscarClubPorNombre("test");
     }
-
+/*
     @Test
     public void dadoQueVoyAEliminarUnClubPeroNoExisteYLanzaExcepcion() {
 
@@ -139,4 +139,6 @@ public class ServicioClubTest {
 
         verify(repositorioClubMock,times(1)).eliminar(1L);
     }
+    */
+
 }

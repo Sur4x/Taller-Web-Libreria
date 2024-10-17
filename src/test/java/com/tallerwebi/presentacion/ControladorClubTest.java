@@ -2,12 +2,17 @@ package com.tallerwebi.presentacion;
 
 import com.tallerwebi.dominio.*;
 import com.tallerwebi.dominio.excepcion.*;
+import org.hibernate.Session;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.ui.Model;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
@@ -31,10 +36,13 @@ public class ControladorClubTest {
         servicioUsuarioMock = mock(ServicioUsuario.class); // Mock del servicio de usuario
         controladorClub = new ControladorClub(servicioClubMock, servicioUsuarioMock); // Controlador con mocks
         usuarioMock = mock(Usuario.class); // Mock de un usuario
+        clubMock = mock(Club.class);
+
+
     }
 
     @Test
-    public void dadoQueElUsuarioEstaEnSesionIrACrearNuevoClubDebeDevolverVistaCrearClub() {
+    public void dadoElMetodoIrACrearNuevoClubCuandoEstoyLogueadoDebeDevolvermeLaVistaCrearClub() {
         when(requestMock.getSession()).thenReturn(sessionMock);
         when(sessionMock.getAttribute("usuario")).thenReturn(usuarioMock);
 
@@ -46,7 +54,7 @@ public class ControladorClubTest {
     }
 
     @Test
-    public void dadoQueElUsuarioNoEstaEnSesionIrACrearNuevoClubDebeRedirigirALogin() {
+    public void dadoElMetodoIrACrearNuevoClubCuandoNoEstoyLogueadoDebeDevolvermeLaVistaCrearClub() {
         when(requestMock.getSession()).thenReturn(sessionMock);
         when(sessionMock.getAttribute("usuario")).thenReturn(null);
 
@@ -56,18 +64,18 @@ public class ControladorClubTest {
     }
 
     @Test
-    public void dadoQueElClubSeCreaCorrectamenteClubDebeRedirigirAHome() throws ClubExistente, NoExisteEseUsuario {
+    public void dadoElMetodoCrearNuevoClubCuandoSeCreaCorrectamenteMeRedirireccionaAlaVistaDelClubEspecifico() throws ClubExistente, NoExisteEseUsuario {
         when(requestMock.getSession()).thenReturn(sessionMock);
         when(sessionMock.getAttribute("usuario")).thenReturn(usuarioMock);
         when(servicioClubMock.agregar(any(Club.class))).thenReturn(true);
 
         ModelAndView model = controladorClub.crearNuevoClub(new Club(), requestMock);
-        assertThat(model.getViewName(), equalToIgnoringCase("redirect:/home"));
+        assertThat(model.getViewName(), equalToIgnoringCase("redirect:/club/{clubId}"));
 
     }
 
     @Test
-    public void dadoQueElClubNoSeCreaCorrectamenteCreaNuevoClubDebeRedirigirAHome() throws ClubExistente, NoExisteEseUsuario {
+    public void dadoElMetodoCrearNuevoClubCuandoNoSeCreaCorrectamenteMeRedirireccionaAlaVistaHome() throws ClubExistente, NoExisteEseUsuario {
         when(requestMock.getSession()).thenReturn(sessionMock);
         when(sessionMock.getAttribute("usuario")).thenReturn(usuarioMock);
         when(servicioClubMock.agregar(any(Club.class))).thenReturn(false);
@@ -77,7 +85,7 @@ public class ControladorClubTest {
     }
 
     @Test
-    public void dadoQueElClubExisteIrADetalleClubTieneQueDarElDetalleDelClub() throws NoExisteEseClub {
+    public void dadoElMetodoIrADetalleClubSiElClubExisteDebeRedireccionarmeALaVistaDetalleClub() throws NoExisteEseClub {
         when(requestMock.getSession()).thenReturn(sessionMock);
         when(sessionMock.getAttribute("usuario")).thenReturn(usuarioMock);
         Club clubMock = mock(Club.class);
@@ -89,7 +97,7 @@ public class ControladorClubTest {
         assertThat(model.getModel().get("usuario"), equalTo(usuarioMock));
     }
     @Test
-    public void dadoQueElClubNoExisteIrADetalleClubRedirigirAlHome() throws NoExisteEseClub {
+    public void dadoElMetodoIrADetalleClubSiElClubNOExisteDebeRedireccionarmeALaVistaDetalleClub() throws NoExisteEseClub {
         when(requestMock.getSession()).thenReturn(sessionMock);
         when(sessionMock.getAttribute("usuario")).thenReturn(usuarioMock);
         when(servicioClubMock.buscarClubPor(1L)).thenReturn(null);
@@ -98,14 +106,10 @@ public class ControladorClubTest {
     }
 
     @Test
-    public void dadoQueElClubExisteEliminarClub ()  throws NoExisteEseClub {
-        Long clubId = 1L;
+    public void dadoElMetodoIrANuevaPublicacionFuncionaCorretamenteMeDirijeANuevaPublicacion() throws NoExisteEseClub {
         when(requestMock.getSession()).thenReturn(sessionMock);
         when(sessionMock.getAttribute("usuario")).thenReturn(usuarioMock);
-        doNothing().when(servicioClubMock).eliminarClub(clubId); //do Nothing hace que no haga haga nada cuando llama al servicio
-        ModelAndView model = controladorClub.eliminarClub(clubId);
-        assertThat(model.getViewName(), equalToIgnoringCase("redirect:/home"));
-        verify(servicioClubMock).eliminarClub(clubId);
-    }
-
+        ModelAndView modelo = controladorClub.irANuevaPublicacion(1L, requestMock);
+        assertThat(modelo.getModel().get("usuario"), equalTo(usuarioMock));
+        assertThat(modelo.getViewName(), equalToIgnoringCase("nuevaPublicacion"));
     }

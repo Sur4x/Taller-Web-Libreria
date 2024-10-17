@@ -22,16 +22,6 @@ public class ServicioUsuarioImpl implements ServicioUsuario{
     }
 
     @Override
-    public List<Usuario> mostrarTodosLosUsuarios() throws NoExistenUsuarios {
-        List<Usuario> usuarios = repositorioUsuario.buscarTodosLosUsuarios();
-        if (!usuarios.isEmpty()){
-            return usuarios;
-        }else{
-            throw new NoExistenUsuarios("No existen usuarios para mostrar");
-        }
-    }
-
-    @Override
     public Usuario buscarUsuarioPor(Long id) throws NoExisteEseUsuario {
         Usuario usuario = repositorioUsuario.buscarUsuarioPor(id);
         if (usuario != null){
@@ -40,5 +30,10 @@ public class ServicioUsuarioImpl implements ServicioUsuario{
             throw new NoExisteEseUsuario("No existe un usuario con ese id");
         }
 
+    }
+
+    @Override
+    public boolean esAdmin(Usuario usuario) {
+        return usuario.getRol().equals("admin");
     }
 }

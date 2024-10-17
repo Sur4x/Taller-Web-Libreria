@@ -36,17 +36,19 @@
 </header>
 
 <main class="mt-6">
-<div th:if="${usuario != null and usuario.rol == 'admin'}">
-<div class="text-center mb-4">
-    <a th:href="@{/club/{clubId}/eliminarPublicacion/{publicacionId}(clubId=${club.id}, publicacionId=${publicacion.id})}" class="btn btn-danger mt-4">Eliminar publicación</a>
-</div>
-</div>
+
 
 
 <div class="container mt-4">
     <h1 class="text-center mb-4">Discusión:</h1>
     <p class="text-center mb-4" th:text="${publicacion.mensaje}"></p>
 </div>
+
+    <div th:if="${usuario != null and usuario.rol == 'admin'}">
+        <div class="text-center mb-4">
+            <a th:href="@{/club/{clubId}/eliminarPublicacion/{publicacionId}(clubId=${club.id}, publicacionId=${publicacion.id})}" class="btn btn-danger mt-4">Eliminar publicación</a>
+        </div>
+    </div>
 
 <div class="container mt-4">
     <h2>Comentarios de la comunidad:</h2>
