@@ -44,7 +44,7 @@ public class ControladorUsuarioTest {
         when(sessionMock.getAttribute("usuario")).thenReturn(usuarioMock);
         when(servicioUsuarioMock.buscarUsuarioPor(1L)).thenReturn(usuarioMock);
 
-        ModelAndView model = controladorUsuario.irAPerfil(1L);
+        ModelAndView model = controladorUsuario.irAPerfil(1L, requestMock);
 
         assertThat(model.getViewName(), equalToIgnoringCase("perfil"));
         assertThat(model.getModel().get("usuario"), equalTo(usuarioMock));
@@ -56,7 +56,7 @@ public class ControladorUsuarioTest {
         Usuario usuario = new Usuario();
         when(servicioUsuarioMock.buscarUsuarioPor(1L)).thenReturn(usuario);
 
-        ModelAndView model = controladorUsuario.irAPerfil(1L);
+        ModelAndView model = controladorUsuario.irAPerfil(2L,requestMock);
 
         assertThat(model.getViewName(), equalToIgnoringCase("redirect:/login"));
         assertThat(model.getModel().get("usuario"), equalTo(null));

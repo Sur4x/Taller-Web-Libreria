@@ -9,6 +9,5 @@ public interface ServicioUsuario {
 
     Usuario buscarUsuarioPor(Long id) throws NoExisteEseUsuario;
 
-
-
+    boolean esAdmin(Usuario usuario);
 }

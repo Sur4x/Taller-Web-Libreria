@@ -32,7 +32,8 @@ public class ControladorUsuario {
     }
 
     @RequestMapping(path = "/perfil/{id}", method = RequestMethod.GET)
-    public ModelAndView irAPerfil(@PathVariable("id") Long id) throws NoExisteEseUsuario {
+    public ModelAndView irAPerfil(@PathVariable("id") Long id, HttpServletRequest request) throws NoExisteEseUsuario {
+        Usuario usuarioActual = (Usuario) request.getSession().getAttribute("usuario");
         Usuario usuario = servicioUsuario.buscarUsuarioPor(id);
         ModelMap model = new ModelMap();
         if (usuarioActual != null) {

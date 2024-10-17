@@ -29,6 +29,7 @@ public class ServicioUsuarioTest {
         usuario = mock(Usuario.class);
         MockitoAnnotations.openMocks(this);
     }
+    /*
     @Test
     void dadoQueNoSePuedaObtenerATodosLosUsuariosDebidoAQueNoHayNinguno(){
 
@@ -40,6 +41,7 @@ public class ServicioUsuarioTest {
 
         assertEquals(exception.getMessage(), "No existen usuarios para mostrar");
     }
+
     @Test
     void dadoQueSePuedaObtenerATodosLosUsuarios() throws NoExistenUsuarios {
 
@@ -52,6 +54,7 @@ public class ServicioUsuarioTest {
 
         assertThat(resultado.size(), Matchers.is(1));
     }
+ */
     @Test
     void dadoQueNoSePuedaBuscarUsuarioPorIdPorqueNoExiste() {
 

@@ -141,8 +141,9 @@ public class ControladorClub {
         Usuario usuario = (Usuario) request.getSession().getAttribute("usuario");
         servicioClub.agregarNuevaPublicacion(publicacion, id);
 
-        return new ModelAndView("redirect:/home");
+        return new ModelAndView("redirect:/club/{clubId}");
     }
+
 
     @RequestMapping(path = "/club/{clubId}/eliminarPublicacion/{publicacionId}")
     @Transactional
@@ -236,5 +237,4 @@ public class ControladorClub {
             return new ModelAndView("redirect:/home");
         }
     }
-
 }
