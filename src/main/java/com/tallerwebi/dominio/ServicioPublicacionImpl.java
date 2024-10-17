@@ -7,8 +7,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class ServicioPublicacionImpl implements ServicioPublicacion {
-    @Autowired
+
     private RepositorioPublicacion repositorioPublicacion;
+
+    @Autowired
+    public ServicioPublicacionImpl(RepositorioPublicacion repositorioPublicacion) {
+        this.repositorioPublicacion = repositorioPublicacion;
+    }
 
     @Override
     @Transactional

@@ -9,6 +9,7 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.equalToIgnoringCase;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -27,7 +28,7 @@ public class ServicioLoginTest {
         MockitoAnnotations.openMocks(this);
     }
     @Test
-    public void debePoderConsultarUnUsuarioPorMailYContraseña(){
+    public void dadoElMetodoConsultarUsuarioSiLeEntregoUnUsuarioQueEstaEnElSistemaMeLoDevuelve(){
 
         Usuario roberto = new Usuario();
         roberto.setEmail("roberto@noReply.com.ar");
@@ -42,7 +43,21 @@ public class ServicioLoginTest {
     }
 
     @Test
-    public void debeImpedirQueSeRegistreUnUsuarioDebidoAQueYaExiste(){
+    public void dadoElMetodoConsultarUsuarioSiLeEntregoUnUsuarioQueNoEstaEnElSistemaMeDevuelveNull(){
+
+        Usuario roberto = new Usuario();
+        roberto.setEmail("roberto@noReply.com.ar");
+        roberto.setPassword("1234");
+
+        Mockito.when(repositorioUsuario.buscarUsuario(anyString(),anyString())).thenReturn(null);
+
+        Usuario resultado = servicioLogin.consultarUsuario("roberto@noReply.com.ar", "1234");
+
+        assertThat(resultado, equalTo(null));
+    }
+
+    @Test
+    public void dadoElMetodoRegistrarCuandoIntentoRegistrarAUnUsuarioQueYaExisteLanzaUnaExcepcion(){
 
         Usuario roberto = new Usuario();
         roberto.setEmail("roberto@noReply.com.ar");
@@ -56,7 +71,7 @@ public class ServicioLoginTest {
     }
 
     @Test
-    public void debePermitirQueSeRegistreUnNuevoUsuario() throws UsuarioExistente {
+    public void dadoElMetodoRegistrarCuandoIntentoRegistrarAUnUsuarioQueNoExisteEnElSistemaLoRegistra() throws UsuarioExistente {
 
         Usuario roberto = new Usuario();
         roberto.setEmail("roberto@noReply.com.ar");

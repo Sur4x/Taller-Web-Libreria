@@ -20,15 +20,20 @@ public class ServicioClubTest {
 
     private ServicioClub servicioClub;
     private RepositorioClub repositorioClubMock;
+    private RepositorioPublicacion repositorioPublicacionMock;
+    private RepositorioUsuario repositorioUsuarioMock;
+    private RepositorioReporte repositorioReporteMock;
     private  Club clubMock;
 
-    private RepositorioUsuario repositorioUsuarioMock;
 
     @BeforeEach
     public void init(){
         repositorioClubMock = mock(RepositorioClub.class);
+        repositorioPublicacionMock = mock(RepositorioPublicacion.class);
         repositorioUsuarioMock = mock(RepositorioUsuario.class);
-        this.servicioClub = new ServicioClubImpl(repositorioClubMock);
+        repositorioReporteMock = mock(RepositorioReporte.class);
+
+        this.servicioClub = new ServicioClubImpl(repositorioClubMock,repositorioPublicacionMock,repositorioUsuarioMock,repositorioReporteMock);
         clubMock = mock(Club.class);
     }
 
@@ -119,26 +124,168 @@ public class ServicioClubTest {
         assertThat(clubsEsperados, is(empty()));
         verify(repositorioClubMock, times(1)).buscarClubPorNombre("test");
     }
-/*
+
     @Test
-    public void dadoQueVoyAEliminarUnClubPeroNoExisteYLanzaExcepcion() {
+    public void dadoElMetodoRegistrarUsuarioEnElClubNormalYElUsuarioNoEstaInscriptoEnElClubLoRegistraCorrectamente(){
+        Usuario usuario = new Usuario();
+        Club club = new Club();
+        club.setIntegrantes(new ArrayList<>());
 
-        when(repositorioClubMock.buscarClubPor(anyLong())).thenReturn(null);
+        servicioClub.registrarUsuarioEnElClub(usuario, club);
 
-        Exception exception = assertThrows(NoExisteEseClub.class, () -> servicioClub.eliminarClub(1L));
-
-        assertEquals(exception.getMessage(), "No existe un club con el ID proporcionado.");
+        verify(repositorioUsuarioMock,times(1)).guardar(usuario);
     }
 
     @Test
-    public void dadoQueVoyAEliminarUnClubConExisto() throws NoExisteEseClub {
+    public void dadoElMetodoRegistrarUsuarioEnElClubConUnUsuarioYClubNulosYElUsuarioNoEstaInscriptoEnElClubNoRealizaElMetodoGuardar(){
+        Usuario usuario = null;
+        Club club = null;
 
-        when(repositorioClubMock.buscarClubPor(anyLong())).thenReturn(clubMock);
+        servicioClub.registrarUsuarioEnElClub(usuario, club);
 
-        servicioClub.eliminarClub(1L);
-
-        verify(repositorioClubMock,times(1)).eliminar(1L);
+        verify(repositorioUsuarioMock,times(0)).guardar(usuario);
     }
-    */
+
+    @Test
+    public void dadoElMetodoborrarRegistroUsuarioEnElClubFuncionaCorrectamenteRealizaElMetodoGuardar(){
+        Usuario usuario = new Usuario();
+        usuario.setClubsInscriptos(new ArrayList<>());
+        Club club = new Club();
+        club.setIntegrantes(new ArrayList<>());
+
+        servicioClub.borrarRegistroUsuarioEnElClub(usuario, club);
+
+        verify(repositorioUsuarioMock,times(1)).guardar(usuario);
+    }
+
+    @Test
+    public void dadoElMetodoborrarRegistroUsuarioEnElClubNoFuncionaCorrectamenteUsuarioOClubNulosNoRealizaElMetodoGuardar(){
+        Usuario usuario = null;
+        Club club = new Club();
+        club.setIntegrantes(new ArrayList<>());
+
+        servicioClub.borrarRegistroUsuarioEnElClub(usuario, club);
+
+        verify(repositorioUsuarioMock,times(0)).guardar(usuario);
+    }
+
+    @Test
+    public void dadoElMetodoEliminarClubSiLeProporcionoUnClubExistenteEnElSistemaLoEliminaCorrectamente() throws NoExisteEseClub {
+        Club club = new Club();
+        club.setIntegrantes(new ArrayList<>());
+        Usuario usuario = new Usuario();
+        club.getIntegrantes().add(usuario); //agregue 1 usuario en la lista del club
+
+        servicioClub.eliminarClub(club);
+
+        verify(repositorioUsuarioMock, times(1)).guardar(usuario);
+        verify(repositorioClubMock, times(1)).guardar(club);
+        verify(repositorioClubMock, times(1)).eliminar(club);
+    }
+
+    @Test
+    public void dadoElMetodoEliminarClubSiLeProporcionoUnClubInexistenteEnElSistemaLanzaUnaExcepcion() throws NoExisteEseClub{
+        Usuario usuario = new Usuario();
+        NoExisteEseClub excepcionEsperada = assertThrows(NoExisteEseClub.class, () -> servicioClub.eliminarClub(null));
+
+        assertEquals(excepcionEsperada.getMessage(), "No existe un club con el ID proporcionado.");
+    }
+
+    @Test
+    public void dadoElMetodoAgregarNuevaPublicacionCorrectamenteDebeRealizarDosMetodosEspecificos() throws NoExisteEseClub {
+        Publicacion publicacion = new Publicacion();
+        Club club = new Club();
+        club.setId(1L);
+        club.setPublicaciones(new ArrayList<>());
+        when(repositorioClubMock.buscarClubPor(1L)).thenReturn(club);
+
+        servicioClub.agregarNuevaPublicacion(publicacion, 1L);
+
+        verify(repositorioPublicacionMock, times(1)).guardar(publicacion);
+        verify(repositorioClubMock, times(1)).guardar(club);
+    }
+
+    @Test
+    public void dadoElMetodoAgregarNuevaPublicacionCuandoSuPublicacionOIDSonNulosNoRealizaLosMetodosEspecificos() throws NoExisteEseClub {
+        Publicacion publicacion = null;
+        Club club = new Club();
+        club.setId(1L);
+        club.setPublicaciones(new ArrayList<>());
+        when(repositorioClubMock.buscarClubPor(1L)).thenReturn(club);
+
+        servicioClub.agregarNuevaPublicacion(publicacion, 1L);
+
+        verify(repositorioPublicacionMock, times(0)).guardar(publicacion);
+        verify(repositorioClubMock, times(0)).guardar(club);
+    }
+
+    @Test
+    public void dadoElMetodoEliminarPublicacionFuncionaCorretamenteRealizaElMetodoGuardarYEliminar(){
+        Publicacion publicacion = new Publicacion();
+        Club club = new Club();
+        club.setPublicaciones(new ArrayList<>());
+
+        servicioClub.eliminarPublicacion(publicacion, club);
+
+        verify(repositorioClubMock, times(1)).guardar(club);
+        verify(repositorioPublicacionMock, times(1)).eliminar(publicacion);
+    }
+
+    @Test
+    public void dadoElMetodoEliminarPublicacionLeProporcionoAlgunObjetoNuloNoRealizaElMetodoGuardarYEliminar(){
+        Publicacion publicacion = new Publicacion();
+        Club club = null;
+
+        servicioClub.eliminarPublicacion(publicacion, club);
+
+        verify(repositorioClubMock, times(0)).guardar(club);
+        verify(repositorioPublicacionMock, times(0)).eliminar(publicacion);
+    }
+
+    @Test
+    public void dadoElMetodoObtenerTodosLosReportesDeUnClubCuandoElClubTieneUnSoloReporteUtilizaElMetodoGuardarYSigueComoClubAccesible(){
+        Club club = new Club();
+        club.setReportes(new ArrayList<>());
+        Reporte reporte = new Reporte();
+        club.getReportes().add(reporte);
+
+        when(repositorioReporteMock.obtenerTodosLosReportesDeUnClub(club)).thenReturn(club.getReportes());
+
+        servicioClub.obtenerTodosLosReportesDeUnClub(club);
+
+        verify(repositorioClubMock, times(1)).guardar(club);
+        assertThat(club.getEstaReportado(), equalTo("CLUB ACCESIBLE"));
+    }
+
+    @Test
+    public void dadoElMetodoObtenerTodosLosReportesDeUnClubCuandoElClubTieneDosReportesUtilizaElMetodoGuardarYSigueComoClubReportado(){
+        Club club = new Club();
+        club.setReportes(new ArrayList<>());
+        Reporte reporte = new Reporte();
+        Reporte reporte2 = new Reporte();
+        club.getReportes().add(reporte);
+        club.getReportes().add(reporte2);
+
+        when(repositorioReporteMock.obtenerTodosLosReportesDeUnClub(club)).thenReturn(club.getReportes());
+
+        servicioClub.obtenerTodosLosReportesDeUnClub(club);
+
+        verify(repositorioClubMock, times(1)).guardar(club);
+        assertThat(club.getEstaReportado(), equalTo("CLUB REPORTADO"));
+    }
+
+    @Test
+    public void dadoElMetodoAgregarNuevoReporteAlClubCuandoIntentoCrearUnReporteAUnClubInexistenteLanzaUnaExcepcion(){
+
+    }
+
+    @Test
+    public void dadoElMetodoAgregarNuevoReporteAlClubCuandoIntentoCrearUnReporteAUnClubExistenteRealizaElMetodoGuardar(){
+
+    }
+
+
+
+
 
 }

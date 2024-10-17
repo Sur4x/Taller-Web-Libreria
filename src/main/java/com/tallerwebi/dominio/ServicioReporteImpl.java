@@ -7,8 +7,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class ServicioReporteImpl implements ServicioReporte{
-    @Autowired
+
     private RepositorioReporte repositorioReporte;
+
+    @Autowired
+    public ServicioReporteImpl(RepositorioReporte repositorioReporte) {
+        this.repositorioReporte = repositorioReporte;
+    }
 
     @Override
     public Reporte buscarReportePorId(Long id) {
@@ -30,6 +35,8 @@ public class ServicioReporteImpl implements ServicioReporte{
     @Override
     public void eliminarReporte(Long id) {
         Reporte reporte = repositorioReporte.buscarReportePorId(id);
-        repositorioReporte.eliminar(reporte);
+        if (reporte != null) {
+            repositorioReporte.eliminar(reporte);
+        }
     }
 }

@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
@@ -29,34 +30,9 @@ public class ServicioUsuarioTest {
         usuario = mock(Usuario.class);
         MockitoAnnotations.openMocks(this);
     }
-    /*
-    @Test
-    void dadoQueNoSePuedaObtenerATodosLosUsuariosDebidoAQueNoHayNinguno(){
-
-        List<Usuario> listaVacia = new ArrayList<>();
-
-        Mockito.when(repositorioUsuario.buscarTodosLosUsuarios()).thenReturn(listaVacia);
-
-        NoExistenUsuarios exception = assertThrows(NoExistenUsuarios.class, () -> servicioUsuario.mostrarTodosLosUsuarios());
-
-        assertEquals(exception.getMessage(), "No existen usuarios para mostrar");
-    }
 
     @Test
-    void dadoQueSePuedaObtenerATodosLosUsuarios() throws NoExistenUsuarios {
-
-        List<Usuario> listaDeUsuarios = new ArrayList<>();
-        listaDeUsuarios.add(usuario);
-
-        Mockito.when(repositorioUsuario.buscarTodosLosUsuarios()).thenReturn(listaDeUsuarios);
-
-        List<Usuario> resultado = servicioUsuario.mostrarTodosLosUsuarios();
-
-        assertThat(resultado.size(), Matchers.is(1));
-    }
- */
-    @Test
-    void dadoQueNoSePuedaBuscarUsuarioPorIdPorqueNoExiste() {
+    void dadoElMetodoBuscarUsuarioPorIdNoEncuentreAlUsuarioEnElSistemaLanzaUnaExcepcion() {
 
         Mockito.when(repositorioUsuario.buscarUsuarioPor(anyLong())).thenReturn(null);
 
@@ -66,13 +42,31 @@ public class ServicioUsuarioTest {
     }
 
     @Test
-    void dadoQueSePuedaBuscarUsuarioPorId() throws NoExisteEseUsuario {
+    void dadoElMetodoBuscarUsuarioPorIdCuandoEncuentreAlUsuarioEnElSistemaLoDevuelve() throws NoExisteEseUsuario {
 
         Mockito.when(repositorioUsuario.buscarUsuarioPor(anyLong())).thenReturn(usuario);
 
         Usuario resultado = servicioUsuario.buscarUsuarioPor(1L);
 
         assertThat(resultado.getId(), Matchers.is(usuario.getId()));
+    }
+
+    @Test
+    void dadoElMetodoEsAdminSiElUsuarioEsAdminDevuelveTrue() throws NoExisteEseUsuario {
+        Usuario usuarioTest = new Usuario();
+        usuarioTest.setRol("admin");
+        Boolean esAdmin = servicioUsuario.esAdmin(usuarioTest);
+
+        assertThat(esAdmin, equalTo(true));
+    }
+
+    @Test
+    void dadoElMetodoEsAdminSiElUsuarioEsNormalDevuelveFalse() throws NoExisteEseUsuario {
+        Usuario usuarioTest = new Usuario();
+        usuarioTest.setRol("usuario");
+        Boolean esAdmin = servicioUsuario.esAdmin(usuarioTest);
+
+        assertThat(esAdmin, equalTo(false));
     }
 
 }

@@ -10,18 +10,17 @@ import java.util.List;
 @Service
 public class ServicioClubImpl implements ServicioClub {
 
-
     private RepositorioClub repositorioClub;
-    @Autowired
     private RepositorioPublicacion repositorioPublicacion;
-    @Autowired
     private RepositorioUsuario repositorioUsuario;
-    @Autowired
     private RepositorioReporte repositorioReporte;
 
     @Autowired
-    public ServicioClubImpl(RepositorioClub repositorioClub) {
+    public ServicioClubImpl(RepositorioClub repositorioClub, RepositorioPublicacion repositorioPublicacion, RepositorioUsuario repositorioUsuario, RepositorioReporte repositorioReporte) {
         this.repositorioClub = repositorioClub;
+        this.repositorioPublicacion = repositorioPublicacion;
+        this. repositorioUsuario = repositorioUsuario;
+        this.repositorioReporte = repositorioReporte;
     }
 
     @Override
@@ -65,17 +64,23 @@ public class ServicioClubImpl implements ServicioClub {
     @Override
     @Transactional
     public void registrarUsuarioEnElClub(Usuario usuario, Club club){
-        usuario.getClubsInscriptos().add(club);
-        club.getIntegrantes().add(usuario);
-        repositorioUsuario.guardar(usuario);
+        if (usuario != null && club != null) {
+            if (!usuario.getClubsInscriptos().contains(club)){
+                usuario.getClubsInscriptos().add(club);
+                club.getIntegrantes().add(usuario);
+                repositorioUsuario.guardar(usuario);
+            }
+        }
     }
 
     @Override
     @Transactional
     public void borrarRegistroUsuarioEnElClub(Usuario usuario, Club club){
-        usuario.getClubsInscriptos().remove(club);
-        club.getIntegrantes().remove(usuario);
-        repositorioUsuario.guardar(usuario);
+        if (usuario != null && club != null) {
+            usuario.getClubsInscriptos().remove(club);
+            club.getIntegrantes().remove(usuario);
+            repositorioUsuario.guardar(usuario);
+        }
     }
 
     @Override
@@ -96,28 +101,28 @@ public class ServicioClubImpl implements ServicioClub {
     @Override
     @Transactional
     public void agregarNuevaPublicacion(Publicacion publicacion, Long id) throws NoExisteEseClub {
-        Club club = buscarClubPor(id);
-        publicacion.setClub(club);
-        club.getPublicaciones().add(publicacion);
 
-        repositorioPublicacion.guardar(publicacion);
+        if (publicacion != null && id != null){
+            Club club = buscarClubPor(id);
+            publicacion.setClub(club);
+            club.getPublicaciones().add(publicacion);
 
-        repositorioClub.guardar(club);
+            repositorioPublicacion.guardar(publicacion);
+
+            repositorioClub.guardar(club);
+        }
+
     }
 
 
     @Override
     @Transactional
     public void eliminarPublicacion(Publicacion publicacion, Club club){
-        club.getPublicaciones().remove(publicacion);
-        repositorioClub.guardar(club);
-        repositorioPublicacion.eliminar(publicacion);
-    }
-
-    @Override
-    @Transactional
-    public void agregarNuevoComentario(Publicacion publicacion, Long idclub, Long idPublicacion) throws NoExisteEseClub {
-
+        if (publicacion != null && club != null) {
+            club.getPublicaciones().remove(publicacion);
+            repositorioClub.guardar(club);
+            repositorioPublicacion.eliminar(publicacion);
+        }
     }
 
     @Override
@@ -138,9 +143,9 @@ public class ServicioClubImpl implements ServicioClub {
     @Transactional
     public void agregarNuevoReporteAlClub(Long idClub, Reporte reporte) throws Exception {
         try{
-            Club club = buscarClubPor(idClub);
+            Club club = buscarClubPor(idClub); //si el club existe
 
-            if(repositorioReporte.buscarReportePorId(reporte.getId()) != null){
+            if(repositorioReporte.buscarReportePorId(reporte.getId()) != null){ //si el reporte existe
                 throw new ReporteExistente("El reporte ya existe");
             }
 

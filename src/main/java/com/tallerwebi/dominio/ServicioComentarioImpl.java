@@ -6,16 +6,22 @@ import org.springframework.stereotype.Service;
 @Service
 public class ServicioComentarioImpl implements ServicioComentario{
 
-    @Autowired
     private RepositorioPublicacion repositorioPublicacion;
+    private RepositorioComentario repositorioComentario;
 
     @Autowired
-    private RepositorioComentario repositorioComentario;
+    public ServicioComentarioImpl(RepositorioPublicacion repositorioPublicacion, RepositorioComentario repositorioComentario) {
+        this.repositorioPublicacion = repositorioPublicacion;
+        this.repositorioComentario = repositorioComentario;
+    }
 
     @Override
     public void guardarComentario(Comentario comentario, Publicacion publicacion) {
-       publicacion.getComentarios().add(comentario);
-       repositorioComentario.guardar(comentario);
-       repositorioPublicacion.guardar(publicacion);
+
+        if (publicacion != null && comentario != null){
+            publicacion.getComentarios().add(comentario);
+            repositorioComentario.guardar(comentario);
+            repositorioPublicacion.guardar(publicacion);
+        }
     }
 }
