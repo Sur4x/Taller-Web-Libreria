@@ -14,5 +14,7 @@ public interface RepositorioClub {
 
     void eliminar(Club club);
 
+    Integer incrementarCantidadDeReportesEnUnClubObteniendoSuCantidadTotalDeReportes(Long idClub);
+
 }
 

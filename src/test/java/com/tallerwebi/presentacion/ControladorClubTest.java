@@ -99,6 +99,7 @@ public class ControladorClubTest {
         when(servicioClubMock.buscarClubPor(1L)).thenReturn(clubMock);
 
         ModelAndView model = controladorClub.irADetalleClub(1L, requestMock);
+
         assertThat(model.getViewName(), equalToIgnoringCase("detalleClub"));
         assertThat(model.getModel().get("club"), equalTo(clubMock));
         assertThat(model.getModel().get("usuario"), equalTo(usuarioMock));
@@ -340,10 +341,10 @@ public class ControladorClubTest {
 
     @Test
     public void dadoElMetodoRealizarNuevoReporteSiExisteElClubAlQueQuieroReportarMeDireccionaALaVistaEspecificaDelClub() throws NoExisteEseClub, ReporteExistente {
-        Reporte reporte = new Reporte();
+        Reporte reporte = new Reporte(); //creo el reporte
         when(requestMock.getSession()).thenReturn(sessionMock);
-        when(sessionMock.getAttribute("usuario")).thenReturn(usuarioMock);
-        when(servicioClubMock.buscarClubPor(any())).thenReturn(clubMock);
+        when(sessionMock.getAttribute("usuario")).thenReturn(usuarioMock); //mockeo el usuario
+        when(servicioClubMock.buscarClubPor(any())).thenReturn(clubMock); //cuando llamo a buscarClubPor devuelve el club
 
         ModelAndView modelo = controladorClub.realizarNuevoReporte(clubMock.getId(), reporte, requestMock);
 
