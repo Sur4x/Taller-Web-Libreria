@@ -20,7 +20,9 @@ public class ServicioPublicacionImpl implements ServicioPublicacion {
     @Override
     public Publicacion buscarPublicacionPorId(Long idPublicacion){
         Publicacion publicacion = repositorioPublicacion.buscarPublicacionPorId(idPublicacion);
-        Hibernate.initialize(publicacion.getComentarios());
+        if (publicacion != null) {
+            Hibernate.initialize(publicacion.getComentarios());
+        }
         return publicacion;
     }
 }

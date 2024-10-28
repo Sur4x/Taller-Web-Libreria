@@ -23,7 +23,8 @@ public class Publicacion {
     @OneToMany(mappedBy = "publicacion", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Comentario> comentarios; //1 SUBTITULO TIENE MUCHOS COMENTARIOS
 
-    public Publicacion(){}
+    public Publicacion(){
+    }
 
     public Publicacion(Long id, Club club, String titulo, String mensaje, List<Comentario> comentarios) {
         this.id = id;

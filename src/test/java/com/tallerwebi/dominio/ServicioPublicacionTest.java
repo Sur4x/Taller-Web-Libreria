@@ -4,6 +4,8 @@ import com.tallerwebi.infraestructura.RepositorioPublicacionImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
+
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.ArgumentMatchers.any;
@@ -35,6 +37,7 @@ public class ServicioPublicacionTest {
     @Test
     public void dadoElMetodoBuscarPublicacionPorIdCuandoLeEntregoUnIdQueNoEstaEnElSistemaMeDevuelveLaPublicacionVacia(){
         Publicacion publicacion = new Publicacion();
+        publicacion.setId(1L);
         when(repositorioPublicacionMock.buscarPublicacionPorId(any())).thenReturn(null);
 
         Publicacion publicacionEncontrada = servicioPublicacion.buscarPublicacionPorId(1L);

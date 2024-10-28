@@ -279,7 +279,7 @@ public class ControladorClubTest {
     }
 
     @Test
-    public void dadoElMetodoCrearNuevoComentarioNoAlmaceneElComentarioCorrectamenteDebeRedireccionarmeALaVistaEspecificaDeLaPublicacion() throws NoExisteEseClub {
+    public void dadoElMetodoCrearNuevoComentarioNoAlmaceneElComentarioCorrectamenteDebeRedireccionarmeALaVistaLogin() throws NoExisteEseClub {
         Comentario comentario = new Comentario();
         when(requestMock.getSession()).thenReturn(sessionMock);
         when(sessionMock.getAttribute("usuario")).thenReturn(usuarioMock);
@@ -289,9 +289,7 @@ public class ControladorClubTest {
 
         ModelAndView modelo = controladorClub.crearNuevoComentario(comentario, publicacion.getId(), clubMock.getId(), requestMock);
 
-
-
-        assertThat(modelo.getViewName(), equalTo("redirect:/club/" + clubMock.getId()  + "/detallePublicacion"+ "/" + publicacion.getId()));
+        assertThat(modelo.getViewName(), equalTo("redirect:/login"));
         verify(servicioComentarioMock, times(0)).guardarComentario(comentario, publicacion);
     }
 
@@ -336,7 +334,7 @@ public class ControladorClubTest {
 
         ModelAndView modelo = controladorClub.mostrarFormularioReporte(clubMock.getId(), requestMock);
 
-        assertThat(modelo.getViewName(), equalTo("redirect:/home"));
+        assertThat(modelo.getViewName(), equalTo("redirect:/login"));
     }
 
     @Test
