@@ -3,7 +3,7 @@ package com.tallerwebi.dominio;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "comentarios")
+@Table(name = "comentario")
 public class Comentario {
 
     @Id
@@ -13,13 +13,15 @@ public class Comentario {
     private String texto;
 
     @ManyToOne
-    @JoinColumn(name = "idUsuario")
-    private Usuario autor;
+    @JoinColumn()
+    private Usuario autor; //bien
 
     @ManyToOne
-    @JoinColumn(name = "idPublicacion")
+    @JoinColumn()
     private Publicacion publicacion;
 
+    @Version
+    private Long version;
     public Comentario(){}
 
     public Comentario(Long id, String texto, Usuario autor, Publicacion publicacion) {
@@ -61,4 +63,5 @@ public class Comentario {
     public void setPublicacion(Publicacion publicacion) {
         this.publicacion = publicacion;
     }
+
 }

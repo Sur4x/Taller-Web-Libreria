@@ -41,7 +41,6 @@
 <main class="mt-6">
 
     <div class="container mt-4">
-        <h1 class="text-center mb-4">Discusión:</h1>
         <p class="text-center mb-4" th:text="${publicacion.mensaje}"></p>
     </div>
 
@@ -65,6 +64,13 @@
                     <h5 class="mb-1" th:text="${comentario.autor.nombreUsuario}"></h5>
                 </div>
                 <p class="mb-1" th:text="${comentario.texto}">Texto del comentario</p>
+                <div th:if="${usuario != null and comentario.autor.id == usuario.id}" >
+                    <form th:action="@{/club/{clubId}/detallePublicacion/{publicacionId}/eliminarComentario/{comentarioId}(clubId=${club.id},publicacionId=${publicacion.id},comentarioId=${comentario.id})}" method="post" style="display: inline;">
+                        <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('¿Estás seguro de que deseas eliminar este comentario?');">
+                            Eliminar
+                        </button>
+                    </form>
+                </div>
             </li>
         </ul>
     </div>

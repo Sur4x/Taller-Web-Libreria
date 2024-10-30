@@ -152,14 +152,12 @@ public class ControladorClub {
     }
 
     @RequestMapping(path = "/club/{clubId}/detallePublicacion/{publicacionId}")
-    @Transactional
     public ModelAndView irAdetallePublicacion(@PathVariable("clubId") Long clubId,@PathVariable("publicacionId") Long publicacionId, HttpServletRequest request) throws NoExisteEseClub {
         Usuario usuario = (Usuario) request.getSession().getAttribute("usuario");
         ModelMap modelo = new ModelMap();
 
         Publicacion publicacion = servicioPublicacion.buscarPublicacionPorId(publicacionId);
         if(publicacion != null) {
-            Hibernate.initialize(publicacion.getComentarios());
             modelo.put("comentarios", publicacion.getComentarios());
             modelo.put("comentario", new Comentario());
             modelo.put("publicacion", publicacion);
@@ -224,4 +222,21 @@ public class ControladorClub {
             return new ModelAndView("redirect:/home");
         }
     }
+
+    @RequestMapping(path = "/club/{clubId}/detallePublicacion/{publicacionId}/eliminarComentario/{comentarioId}")
+    public ModelAndView IrAEliminarComentario(@PathVariable("clubId") Long clubId, @PathVariable("publicacionId") Long publicacionId,@PathVariable("comentarioId") Long comentarioId, HttpServletRequest request) throws NoExisteEseClub {
+        ModelMap model = new ModelMap();
+        Usuario usuario = (Usuario) request.getSession().getAttribute("usuario");
+        Club club = servicioClub.buscarClubPor(clubId);
+        Publicacion publicacion = servicioPublicacion.buscarPublicacionEnUnClub(publicacionId, club); // publicacion en el club
+        Comentario comentario = servicioComentario.buscarComentarioEnUnaPublicacion(comentarioId, publicacion);//coemntario en publicacion
+        if (usuario != null && club != null && publicacion != null && comentario != null) {
+            servicioComentario.eliminarComentario(comentario);
+            model.put("error", "Comentario eliminado correctamente.");
+        }else{
+            model.put("error", "Error al eliminar el comentario.");
+        }
+        return new ModelAndView("redirect:/club/" + clubId + "/detallePublicacion/" + publicacionId, model);
+    }
+
 }

@@ -25,4 +25,9 @@ public class ServicioPublicacionImpl implements ServicioPublicacion {
         }
         return publicacion;
     }
+
+    @Override
+    public Publicacion buscarPublicacionEnUnClub(Long publicacionId, Club club) {
+        return repositorioPublicacion.buscarPublicacionEnUnClub(publicacionId, club);
+    }
 }

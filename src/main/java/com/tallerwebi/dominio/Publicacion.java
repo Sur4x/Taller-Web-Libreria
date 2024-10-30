@@ -23,6 +23,9 @@ public class Publicacion {
     @OneToMany(mappedBy = "publicacion", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Comentario> comentarios; //1 SUBTITULO TIENE MUCHOS COMENTARIOS
 
+    @Version
+    private Long version;
+
     public Publicacion(){
     }
 
@@ -71,4 +74,8 @@ public class Publicacion {
     }
 
     public void setClub(Club club) { this.club = club;    }
+
+    public Club getClub() {
+        return club;
+    }
 }

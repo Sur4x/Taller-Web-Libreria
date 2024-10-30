@@ -1,5 +1,6 @@
 package com.tallerwebi.infraestructura;
 
+import com.tallerwebi.dominio.Club;
 import com.tallerwebi.dominio.Publicacion;
 import com.tallerwebi.dominio.RepositorioPublicacion;
 import com.tallerwebi.dominio.Usuario;
@@ -9,6 +10,9 @@ import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
+
+import javax.persistence.Query;
+import java.util.List;
 
 @Repository("repositorioPublicacion")
 public class RepositorioPublicacionImpl implements RepositorioPublicacion {
@@ -39,4 +43,16 @@ public class RepositorioPublicacionImpl implements RepositorioPublicacion {
     public void eliminar(Publicacion publicacion){
         sessionFactory.getCurrentSession().delete(publicacion);
     }
+
+    @Override
+    public Publicacion buscarPublicacionEnUnClub(Long publicacionId, Club club) {
+        Long clubId = club.getId();
+        String hql = "FROM Publicacion p WHERE p.id = :publicacionId AND p.club.id = :clubId";
+        Query query = this.sessionFactory.getCurrentSession().createQuery(hql);
+        query.setParameter("publicacionId",publicacionId);
+        query.setParameter("clubId",clubId);
+        List<Publicacion> resultList = query.getResultList(); //si no encuentra una publicacion no tire excepcion
+        return resultList.isEmpty() ? null : resultList.get(0);
+    }
+
 }

@@ -362,4 +362,73 @@ public class ControladorClubTest {
         assertThat(modelo.getViewName(), equalTo("redirect:/home"));
         verify(servicioReporteMock, times(0)).guardarReporte(reporte);
     }
+
+    @Test
+    public void dadoElMetodoIrAEliminarComentarioSiLoEliminarCorrectamenteMeRedireccionaALaVistaDetallaClubConUnErrorEspecifico() throws NoExisteEseClub {
+        Long clubId = 1L;
+        Long publicacionId = 2L;
+        Long comentarioId = 3L;
+        Long usuarioId = 1L;
+
+        Usuario usuario = new Usuario();
+        usuario.setId(usuarioId);
+
+        Comentario comentario = new Comentario();
+        comentario.setId(comentarioId);
+
+        Club club = new Club();
+        club.setId(clubId);
+
+        Publicacion publicacion = new Publicacion();
+        publicacion.setId(publicacionId);
+
+        when(servicioClubMock.buscarClubPor(clubId)).thenReturn(club);
+        when(servicioPublicacionMock.buscarPublicacionEnUnClub(publicacionId, club)).thenReturn(publicacion);
+        when(servicioComentarioMock.buscarComentarioEnUnaPublicacion(comentarioId, publicacion)).thenReturn(comentario);
+        when(requestMock.getSession()).thenReturn(sessionMock);
+        when(sessionMock.getAttribute("usuario")).thenReturn(usuario);
+
+        ModelAndView modelo = controladorClub.IrAEliminarComentario(clubId, publicacionId,comentarioId, requestMock);
+
+        assertThat(modelo.getViewName(), equalTo("redirect:/club/" + clubId + "/detallePublicacion/" + publicacionId));
+        assertThat(modelo.getModel().get("error"), equalTo("Comentario eliminado correctamente."));
+        verify(servicioComentarioMock, times(1)).eliminarComentario(comentario);
+        verify(servicioPublicacionMock, times(1)).buscarPublicacionEnUnClub(publicacionId, club);
+        verify(servicioComentarioMock, times(1)).buscarComentarioEnUnaPublicacion(comentarioId,publicacion);
+    }
+
+    @Test
+    public void dadoElMetodoIrAEliminarComentarioSiNoLoPuedoEliminarCorrectamenteMeRedireccionaALaVistaDetallaClubConUnErrorEspecifico() throws NoExisteEseClub {
+        Long clubId = 1L;
+        Long publicacionId = 2L;
+        Long comentarioId = 3L;
+        Long usuarioId = 1L;
+
+        Usuario usuario = new Usuario();
+        usuario.setId(usuarioId);
+
+        Comentario comentario = new Comentario();
+        comentario.setId(comentarioId);
+
+        Club club = new Club();
+        club.setId(clubId);
+
+        Publicacion publicacion = new Publicacion();
+        publicacion.setId(publicacionId);
+
+        when(servicioClubMock.buscarClubPor(clubId)).thenReturn(club);
+        when(servicioPublicacionMock.buscarPublicacionEnUnClub(publicacionId, club)).thenReturn(null);
+
+        when(requestMock.getSession()).thenReturn(sessionMock);
+        when(sessionMock.getAttribute("usuario")).thenReturn(usuario);
+
+        ModelAndView modelo = controladorClub.IrAEliminarComentario(clubId, publicacionId,comentarioId, requestMock);
+
+        assertThat(modelo.getViewName(), equalTo("redirect:/club/" + clubId + "/detallePublicacion/" + publicacionId));
+        assertThat(modelo.getModel().get("error"), equalTo("Error al eliminar el comentario."));
+        verify(servicioComentarioMock, times(0)).eliminarComentario(comentario);
+        verify(servicioPublicacionMock, times(1)).buscarPublicacionEnUnClub(publicacionId, club);
+        verify(servicioComentarioMock, times(0)).buscarComentarioEnUnaPublicacion(comentarioId,publicacion);
+    }
+
 }

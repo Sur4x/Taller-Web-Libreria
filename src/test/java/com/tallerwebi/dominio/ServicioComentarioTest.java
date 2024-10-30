@@ -7,6 +7,8 @@ import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.Mockito.*;
 
 public class ServicioComentarioTest {
@@ -43,5 +45,41 @@ public class ServicioComentarioTest {
 
         verify(repositorioComentarioMock, times(0)).guardar(comentario);
         verify(repositorioPublicacionMock, times(0)).guardar(publicacion);
+    }
+
+    @Test
+    public void dadoElMetodoBuscarComentarioEnUnaPublicacionSiLoEncuentroEnElSistemaRetornaUnComentario(){
+        Long comentarioId = 1L;
+        Publicacion publicacion = new Publicacion();
+        Comentario comentario = new Comentario();
+
+        when(repositorioComentarioMock.buscarComentarioEnUnaPublicacion(comentarioId, publicacion)).thenReturn(comentario);
+
+        Comentario comentarioObtenido = servicioComentario.buscarComentarioEnUnaPublicacion(comentarioId, publicacion);
+
+        assertThat(comentarioObtenido, equalTo(comentario));
+        verify(repositorioComentarioMock, times(1)).buscarComentarioEnUnaPublicacion(comentarioId, publicacion);
+    }
+
+    @Test
+    public void dadoElMetodoBuscarComentarioEnUnaPublicacionSiNoLoEncuentroEnElSistemaRetornaNull(){
+        Long comentarioId = 1L;
+        Publicacion publicacion = new Publicacion();
+
+        when(repositorioComentarioMock.buscarComentarioEnUnaPublicacion(comentarioId, publicacion)).thenReturn(null);
+
+        Comentario comentarioObtenido = servicioComentario.buscarComentarioEnUnaPublicacion(comentarioId, publicacion);
+
+        assertThat(comentarioObtenido, equalTo(null));
+        verify(repositorioComentarioMock, times(1)).buscarComentarioEnUnaPublicacion(comentarioId, publicacion);
+    }
+
+    @Test
+    public void dadoElMetodoEliminarComentarioSeDebeRealizarUnaVez(){
+        Comentario comentario = new Comentario();
+
+        servicioComentario.eliminarComentario(comentario);
+
+        verify(repositorioComentarioMock,times(1)).eliminarComentario(comentario);
     }
 }

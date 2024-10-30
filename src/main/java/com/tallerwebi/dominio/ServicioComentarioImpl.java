@@ -32,4 +32,14 @@ public class ServicioComentarioImpl implements ServicioComentario{
         comentario.setAutor(autor);
         comentario.setPublicacion(publicacion);
     }
+
+    @Override
+    public Comentario buscarComentarioEnUnaPublicacion(Long comentarioId, Publicacion publicacion) {
+        return repositorioComentario.buscarComentarioEnUnaPublicacion(comentarioId,publicacion);
+    }
+
+    @Override
+    public void eliminarComentario(Comentario comentario) {
+        repositorioComentario.eliminarComentario(comentario);
+    }
 }
