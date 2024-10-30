@@ -51,15 +51,14 @@ public class RepositorioPublicacionImplTest {
     @Test
     public void dadoElMetodoBuscarPublicacionEnUnClubSiLaEncuentraRetornaUnaPublicacion() {
         Club club = new Club();
-        repositorioClub.guardar(club);
-        club.setPublicaciones(new ArrayList<>());
+        club.setPublicaciones(new ArrayList<Publicacion>());
 
         Publicacion publicacion = new Publicacion();
-        publicacion.setId(1L);
         publicacion.setClub(club);
+        repositorioPublicacion.guardar(publicacion);
         club.getPublicaciones().add(publicacion);
 
-        repositorioPublicacion.guardar(publicacion);
+        repositorioClub.guardar(club);
 
         Publicacion publicacionObtenida = repositorioPublicacion.buscarPublicacionEnUnClub(publicacion.getId(), club);
         assertThat(publicacionObtenida, equalTo(publicacion));
