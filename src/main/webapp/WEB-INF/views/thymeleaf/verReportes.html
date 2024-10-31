@@ -61,7 +61,7 @@
       <td th:text="${reporte.descripcion}">Descripción</td>
       <td>
         <div class="d-flex justify-content-center">
-          <form th:action="@{/reporte/eliminar/{id}(id=${reporte.id})}" method="post" style="display: inline;">
+          <form th:action="@{/club/eliminar/reporte/{id}(id=${reporte.id})}" method="post" style="display: inline;">
             <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('¿Eliminar este reporte?');">Eliminar</button>
           </form>
         </div>

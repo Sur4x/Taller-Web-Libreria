@@ -217,16 +217,15 @@ public class ControladorClub {
             if (usuario == null) {
                 return new ModelAndView("redirect:/login");
             }
-
             Club club = servicioClub.buscarClubPor(clubId);
 
             if (club == null) {
                 throw new NoExisteEseClub("No existe el club con ID " + clubId);
             }
 
-            Hibernate.initialize(club.getPublicaciones());
-
             List<Reporte> reportes = servicioReporte.listarReportesPorClub(club);
+
+            servicioClub.obtenerTodosLosReportesDeUnClub(club);
 
             model.put("club", club);
             model.put("usuario", usuario);
@@ -248,6 +247,14 @@ public class ControladorClub {
         } else {
             return new ModelAndView("redirect:/home");
         }
+    }
+
+    @RequestMapping(path = "/club/eliminar/reporte/{id}", method = RequestMethod.POST)
+    public ModelAndView eliminarReporteDeUnClub(@PathVariable("id") Long id) throws NoExisteEseClub {
+
+            servicioReporte.eliminarReporte(id);
+
+            return new ModelAndView("redirect:/home");
     }
 
     @RequestMapping(path = "/club/{clubId}/detallePublicacion/{publicacionId}/eliminarComentario/{comentarioId}")
