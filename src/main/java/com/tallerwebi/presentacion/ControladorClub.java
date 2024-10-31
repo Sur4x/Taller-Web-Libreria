@@ -222,6 +222,33 @@ public class ControladorClub {
         }
     }
 
+    @RequestMapping(path = "/club/{clubId}/listar/reportes", method = RequestMethod.GET)
+    @Transactional
+    public ModelAndView mostrarReportesPorClub(@PathVariable("clubId") Long clubId, HttpServletRequest request) throws NoExisteEseClub {
+            Usuario usuario = (Usuario) request.getSession().getAttribute("usuario");
+            ModelMap model = new ModelMap();
+
+            if (usuario == null) {
+                return new ModelAndView("redirect:/login");
+            }
+
+            Club club = servicioClub.buscarClubPor(clubId);
+
+            if (club == null) {
+                throw new NoExisteEseClub("No existe el club con ID " + clubId);
+            }
+
+            Hibernate.initialize(club.getPublicaciones());
+
+            List<Reporte> reportes = servicioReporte.listarReportesPorClub(club);
+
+            model.put("club", club);
+            model.put("usuario", usuario);
+            model.put("reportes", reportes);
+
+            return new ModelAndView("verReportes", model);
+        }
+
     @RequestMapping(path = "/club/{clubId}/nuevoReporte", method = RequestMethod.POST)
     public ModelAndView realizarNuevoReporte(@PathVariable("clubId") Long clubId, @ModelAttribute("reporte") Reporte reporte, HttpServletRequest request) throws NoExisteEseClub, ReporteExistente {
         Usuario usuario = (Usuario) request.getSession().getAttribute("usuario");

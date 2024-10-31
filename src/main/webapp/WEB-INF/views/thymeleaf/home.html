@@ -224,7 +224,7 @@
           <td th:text="${club.genero}">Género del club</td>
           <td>
             <div class="d-flex justify-content-between">
-              <a th:href="@{/club/{id}(id=${club.id})}" class="btn btn-primary btn-sm">Ver</a>
+              <a th:href="@{/club/{id}/listar/reportes(id=${club.id})}" class="btn btn-primary btn-sm">Ver</a>
               <form th:action="@{/club/eliminar/{id}(id=${club.id})}" method="post" style="display: inline;">
                 <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('¿Estás seguro de que deseas eliminar este club?');">
                   Eliminar
