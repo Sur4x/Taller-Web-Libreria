@@ -30,11 +30,11 @@ public class RepositorioClubImpl implements RepositorioClub {
     }
 
     @Override
-    @Transactional
     public Club buscarClubPor(Long id) {
-        return (Club) sessionFactory.getCurrentSession().createCriteria(Club.class)
-                .add(Restrictions.eq("id", id))
-                .uniqueResult();
+        String hql = "FROM Club c WHERE c.id = :id";
+        Query query = this.sessionFactory.getCurrentSession().createQuery(hql);
+        query.setParameter("id", id);
+        return (Club) query.getSingleResult();
     }
 
     @Override
@@ -54,6 +54,21 @@ public class RepositorioClubImpl implements RepositorioClub {
     @Override
     public void eliminar(Club club) {
         sessionFactory.getCurrentSession().delete(club);
+    }
+
+    @Override
+    @Transactional
+    public Integer incrementarCantidadDeReportesEnUnClubObteniendoSuCantidadTotalDeReportes(Long idClub) {
+        String hql = "UPDATE Club SET cantidadDeReportes = cantidadDeReportes + 1 WHERE id = :idClub";
+        Query query = this.sessionFactory.getCurrentSession().createQuery(hql);
+        query.setParameter("idClub", idClub);
+        query.executeUpdate();
+
+        // Ahora obtiene la cantidad actual de reportes
+        String hqlSelect = "SELECT c.cantidadDeReportes FROM Club c WHERE c.id = :idClub";
+        Query selectQuery = this.sessionFactory.getCurrentSession().createQuery(hqlSelect);
+        selectQuery.setParameter("idClub", idClub);
+        return (Integer) selectQuery.getSingleResult();
     }
 
 }

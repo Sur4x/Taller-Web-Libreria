@@ -1,6 +1,7 @@
 package com.tallerwebi.dominio;
 
 import com.tallerwebi.dominio.excepcion.*;
+import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -8,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 @Service
+@Transactional
 public class ServicioClubImpl implements ServicioClub {
 
     private RepositorioClub repositorioClub;
@@ -24,10 +26,9 @@ public class ServicioClubImpl implements ServicioClub {
     }
 
     @Override
-    @Transactional  // Aseguramos que este método esté dentro de una transacción
     public Boolean agregar(Club club) throws ClubExistente {
         Club clubExistente = repositorioClub.buscarClubPor(club.getId());
-        if (clubExistente!=null) {
+        if (clubExistente != null) {
             throw new ClubExistente("El club ya existe");
         }
         repositorioClub.guardar(club);
@@ -35,7 +36,6 @@ public class ServicioClubImpl implements ServicioClub {
     }
 
     @Override
-    @Transactional(readOnly = true)  // La lectura de datos también debe estar dentro de una transacción
     public List<Club> obtenerTodosLosClubs() throws NoExistenClubs {
         List<Club> clubs = repositorioClub.obtenerTodosLosClubs();
         if (clubs.isEmpty()) {
@@ -45,24 +45,21 @@ public class ServicioClubImpl implements ServicioClub {
     }
 
     @Override
-    @Transactional
     public Club buscarClubPor(Long id) throws NoExisteEseClub {
         Club club = repositorioClub.buscarClubPor(id);
-
         if (club == null) {
             throw new NoExisteEseClub("No existe un club con ese ID");
         }
+        Hibernate.initialize(club.getPublicaciones());
         return club;
     }
 
     @Override
-    @Transactional(readOnly = true)
     public List<Club> buscarClubPorNombre(String nombre) {
         return repositorioClub.buscarClubPorNombre(nombre);
     }
 
     @Override
-    @Transactional
     public void registrarUsuarioEnElClub(Usuario usuario, Club club){
         if (usuario != null && club != null) {
             if (!usuario.getClubsInscriptos().contains(club)){
@@ -74,7 +71,6 @@ public class ServicioClubImpl implements ServicioClub {
     }
 
     @Override
-    @Transactional
     public void borrarRegistroUsuarioEnElClub(Usuario usuario, Club club){
         if (usuario != null && club != null) {
             usuario.getClubsInscriptos().remove(club);
@@ -84,7 +80,6 @@ public class ServicioClubImpl implements ServicioClub {
     }
 
     @Override
-    @Transactional
     public void eliminarClub(Club club) throws NoExisteEseClub {
         if (club == null) {
             throw new NoExisteEseClub("No existe un club con el ID proporcionado.");
@@ -99,7 +94,6 @@ public class ServicioClubImpl implements ServicioClub {
     }
 
     @Override
-    @Transactional
     public void agregarNuevaPublicacion(Publicacion publicacion, Long id) throws NoExisteEseClub {
 
         if (publicacion != null && id != null){
@@ -108,15 +102,11 @@ public class ServicioClubImpl implements ServicioClub {
             club.getPublicaciones().add(publicacion);
 
             repositorioPublicacion.guardar(publicacion);
-
             repositorioClub.guardar(club);
         }
-
     }
 
-
     @Override
-    @Transactional
     public void eliminarPublicacion(Publicacion publicacion, Club club){
         if (publicacion != null && club != null) {
             club.getPublicaciones().remove(publicacion);
@@ -126,7 +116,6 @@ public class ServicioClubImpl implements ServicioClub {
     }
 
     @Override
-    @Transactional
     public void obtenerTodosLosReportesDeUnClub(Club club) {
 
         List<Reporte> listaReportes = repositorioReporte.obtenerTodosLosReportesDeUnClub(club);
@@ -140,7 +129,6 @@ public class ServicioClubImpl implements ServicioClub {
     }
 
     @Override
-    @Transactional
     public void agregarNuevoReporteAlClub(Long idClub, Reporte reporte) throws ReporteExistente, NoExisteEseClub {
 
         Club club = buscarClubPor(idClub); //si el club existe
@@ -150,5 +138,9 @@ public class ServicioClubImpl implements ServicioClub {
         reporte.setClub(club);
         club.getReportes().add(reporte);
         repositorioReporte.guardar(reporte);
+    }
+
+    public void incrementarCantidadDeReportesEnUnClubObteniendoSuCantidadTotalDeReportes(Long idClub){
+       repositorioClub.incrementarCantidadDeReportesEnUnClubObteniendoSuCantidadTotalDeReportes(idClub);
     }
 }

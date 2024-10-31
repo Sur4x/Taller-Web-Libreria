@@ -1,140 +1,151 @@
 <!DOCTYPE html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
 <head>
-  <meta charset="UTF-8">
-  <title>Detalles del Club</title>
+    <meta charset="UTF-8">
+    <title>Detalles del Club</title>
 
-  <link rel="stylesheet" th:href="@{/webjars/bootstrap/5.2.0/css/bootstrap.min.css}"/>
-  <link rel="stylesheet" th:href="@{/css/main.css}"/>
+    <link rel="stylesheet" th:href="@{/webjars/bootstrap/5.2.0/css/bootstrap.min.css}"/>
+    <link rel="stylesheet" th:href="@{/css/main.css}"/>
 
 </head>
 <body>
 <!-- USUARIO SIN LOGUEAR -->
 <header>
-  <div th:if="${usuario == null}">
-    <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
-      <a class="navbar-brand" th:href="@{/home}">Club de Lectura</a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
-              aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
+    <div th:if="${usuario == null}">
+        <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
+            <a class="navbar-brand" th:href="@{/home}">Club de Lectura</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                    aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
 
-      <div class="collapse navbar-collapse" id="navbarNav">
-        <div class="d-flex ms-auto">
-          <a th:href="@{/login}" class="btn btn-primary me-2">Iniciar sesión</a>
-          <a th:href="@{/registro}" class="btn btn-primary">Registrarse</a>
-        </div>
-      </div>
-    </nav>
-  </div>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <div class="d-flex ms-auto">
+                    <a th:href="@{/login}" class="btn btn-primary me-2">Iniciar sesión</a>
+                    <a th:href="@{/registro}" class="btn btn-primary">Registrarse</a>
+                </div>
+            </div>
+        </nav>
+    </div>
 
-  <!-- USUARIO ADMIN -->
-  <div th:if="${usuario != null and usuario.rol == 'admin'}">
-    <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
-      <a class="navbar-brand" th:href="@{/home}">Club de Lectura</a>
-      <h1>Bienvenido ADMIN</h1>
+    <!-- USUARIO ADMIN -->
+    <div th:if="${usuario != null and usuario.rol == 'admin'}">
+        <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
+            <a class="navbar-brand" th:href="@{/home}">Club de Lectura</a>
+            <h1>Bienvenido ADMIN</h1>
 
-      <div class="d-flex ms-auto">
+            <div class="d-flex ms-auto">
 
-        <a th:href="@{/logout}">Cerrar sesión</a>
+                <a th:href="@{/logout}">Cerrar sesión</a>
 
-      </div>
-    </nav>
+            </div>
+        </nav>
 
-    <p class="lead text-center" th:text="${club.estaReportado}" style="padding-top: 75px;"></p>
+        <p class="lead text-center" th:text="${club.estaReportado}" style="padding-top: 75px;"></p>
 
-  </div>
+    </div>
 
-  <!-- USUARIO NORMAL -->
-  <div th:if="${usuario != null and usuario.rol == 'usuario'}">
-    <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
-      <a class="navbar-brand" th:href="@{/home}">Club de Lectura</a>
-      <div class="d-flex ms-auto align-items-center">
-        <a th:href="@{/crearClub}" class="btn btn-primary me-2">Crear nuevo club</a>
-        <div class="dropdown">
-          <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton"
-                  data-bs-toggle="dropdown" aria-expanded="false">
-            Menú
-          </button>
-          <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-            <li><a class="dropdown-item" th:href="@{/perfil/{id}(id=${usuario.id})}">Perfil</a></li>
-            <li><a class="dropdown-item" th:href="@{/misClubs/{usuarioId}(usuarioId=${usuario.id})}">Mis
-              clubs</a></li>
-            <li><a class="dropdown-item" th:href="@{/logout}">Cerrar sesión</a></li>
-          </ul>
-        </div>
-      </div>
-    </nav>
-  </div>
+    <!-- USUARIO NORMAL -->
+    <div th:if="${usuario != null and usuario.rol == 'usuario'}">
+        <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
+            <a class="navbar-brand" th:href="@{/home}">Club de Lectura</a>
+            <div class="d-flex ms-auto align-items-center">
+                <a th:href="@{/crearClub}" class="btn btn-primary me-2">Crear nuevo club</a>
+                <div class="dropdown">
+                    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton"
+                            data-bs-toggle="dropdown" aria-expanded="false">
+                        Menú
+                    </button>
+                    <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                        <li><a class="dropdown-item" th:href="@{/perfil/{id}(id=${usuario.id})}">Perfil</a></li>
+                        <li><a class="dropdown-item" th:href="@{/misClubs/{usuarioId}(usuarioId=${usuario.id})}">Mis
+                            clubs</a></li>
+                        <li><a class="dropdown-item" th:href="@{/logout}">Cerrar sesión</a></li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </div>
 
 </header>
 
 <main>
 
-  <div class="container mt-5 pt-5">
-    <h1 class="text-center mb-4" th:text="${club.nombre}"></h1>
-    <p class="text-center text-muted" th:text="${club.genero}"></p>
-    <p class="lead text-center" th:text="${club.descripcion}"></p>
+    <div class="container mt-5 pt-5">
+        <h1 class="text-center mb-4" th:text="${club.nombre}"></h1>
+        <p class="text-center text-muted" th:text="${club.genero}"></p>
+        <p class="lead text-center" th:text="${club.descripcion}"></p>
 
 
-    <div class="text-center">
-      <!-- Imagen con tamaño fijo -->
-      <img th:src="@{/images/{imagen}(imagen=${club.imagen})}" alt="Imagen del club" class="img-fluid rounded" style="max-width: 300px; height: auto;">
-    </div>
-
-  </div>
-
-  <div th:if="${usuario != null}">
-    <!-- Recorremos los clubes a los que el usuario está inscripto -->
-    <div th:each="clubsInscripto : ${usuario.clubsInscriptos}">
-      <!-- Si el usuario está inscripto en este club, mostramos el botón de abandonar -->
-      <div th:if="${clubsInscripto.id == club.id}">
-        <div th:if="${usuario.rol == 'usuario' or usuario.rol == 'admin'}">
-          <form th:action="@{/club/{clubId}/abandonar(clubId=${club.id})}" method="post" class="text-center mt-4">
-            <button type="submit" class="btn btn-success btn-lg">Abandonar Club</button>
-          </form>
+        <div class="text-center">
+            <!-- Imagen con tamaño fijo -->
+            <img th:src="@{/images/{imagen}(imagen=${club.imagen})}" alt="Imagen del club" class="img-fluid rounded"
+                 style="max-width: 300px; height: auto;">
         </div>
-      </div>
+
     </div>
 
-    <!-- Si el usuario NO está inscripto en este club, mostramos el botón de inscribirse -->
-    <div th:if="${#lists.isEmpty(usuario.clubsInscriptos) or !usuario.clubsInscriptos.contains(club)}">
-      <div th:if="${usuario.rol == 'usuario' or usuario.rol == 'admin'}">
-        <form th:action="@{/club/{clubId}/anotarse(clubId=${club.id})}" method="post" class="text-center mt-4">
-          <button type="submit" class="btn btn-success btn-lg">Inscribirse en el Club</button>
-        </form>
-      </div>
+    <div th:if="${usuario != null}">
+        <!-- Recorremos los clubes a los que el usuario está inscripto -->
+        <div th:each="clubsInscripto : ${usuario.clubsInscriptos}">
+            <!-- Si el usuario está inscripto en este club, mostramos el botón de abandonar -->
+            <div th:if="${clubsInscripto.id == club.id}">
+                <div th:if="${usuario.rol == 'usuario' or usuario.rol == 'admin'}">
+                    <form th:action="@{/club/{clubId}/abandonar(clubId=${club.id})}" method="post"
+                          class="text-center mt-4">
+                        <button type="submit" class="btn btn-success btn-lg">Abandonar Club</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Si el usuario NO está inscripto en este club, mostramos el botón de inscribirse -->
+        <div th:if="${#lists.isEmpty(usuario.clubsInscriptos) or !usuario.clubsInscriptos.contains(club)}">
+            <div th:if="${usuario.rol == 'usuario' or usuario.rol == 'admin'}">
+                <form th:action="@{/club/{clubId}/anotarse(clubId=${club.id})}" method="post" class="text-center mt-4">
+                    <button type="submit" class="btn btn-success btn-lg">Inscribirse en el Club</button>
+                </form>
+            </div>
+        </div>
     </div>
-  </div>
 
-  <div class="text-center mb-4">
-    <a th:href="@{/club/{clubId}/reportar(clubId=${club.id})}" class="btn btn-primary mt-4">Reportar Club</a>
-  </div>
+    <div class="text-center mb-4">
+        <a th:href="@{/club/{clubId}/reportar(clubId=${club.id})}" class="btn btn-primary mt-4">Reportar
+            Club</a>
+    </div>
 
-  <div class="text-center mb-4">
-    <a th:href="@{/club/{clubId}/irANuevaPublicacion(clubId=${club.id})}" class="btn btn-primary mt-4">Crear nueva publicación</a>
-  </div>
+    <div th:if="${usuario != null}">
+        <!-- Recorremos los clubes a los que el usuario está inscripto -->
+        <div th:each="clubsInscripto : ${usuario.clubsInscriptos}">
+            <!-- Si el usuario está inscripto en este club, mostramos el botón de abandonar -->
+            <div th:if="${clubsInscripto.id == club.id}">
+                <div class="text-center mb-4">
+                    <a th:href="@{/club/{clubId}/irANuevaPublicacion(clubId=${club.id})}" class="btn btn-primary mt-4">Crear
+                        nueva
+                        publicación</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <h1 class="mb-4 text-center">Foro y sus Publicaciones</h1>
 
 
-
-  <h1 class="mb-4 text-center">Foro y sus Publicaciones</h1>
-
-  <p th:if="${#lists.isEmpty(publicaciones)}" class="alert alert-warning text-center">No hay publicaciones disponibles.</p>
-
-  <table class="table table-striped table-bordered" th:if="${publicaciones != null && !#lists.isEmpty(publicaciones)}">
-    <thead class="thead-dark">
-    <tr>
-      <th>Título</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr th:each="publicacion : ${publicaciones}">
-      <td>
-        <a th:href="@{/club/{clubId}/detallePublicacion/{publicacionId}(clubId=${club.id}, publicacionId=${publicacion.id})}" th:text="${publicacion.titulo}" class="text-decoration-none"></a>
-      </td>
-    </tr>
-    </tbody>
-  </table>
+    <table class="table table-striped table-bordered">
+        <thead class="thead-dark">
+        <tr>
+            <th>Título</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="publicacion : ${club.publicaciones}">
+            <td>
+                <a th:href="@{/club/{clubId}/detallePublicacion/{publicacionId}(clubId=${club.id}, publicacionId=${publicacion.id})}"
+                   th:text="${publicacion.titulo}" class="text-decoration-none"></a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
 
 </main>
 

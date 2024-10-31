@@ -1,5 +1,6 @@
 package com.tallerwebi.infraestructura;
 
+import com.tallerwebi.dominio.Club;
 import com.tallerwebi.dominio.Publicacion;
 import com.tallerwebi.integracion.config.HibernateTestConfig;
 import org.hibernate.SessionFactory;
@@ -7,13 +8,15 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.nullValue;
+import static org.hamcrest.Matchers.*;
 
 import javax.transaction.Transactional;
+import java.util.ArrayList;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {HibernateTestConfig.class})
@@ -21,6 +24,7 @@ import javax.transaction.Transactional;
 public class RepositorioPublicacionImplTest {
 
     private RepositorioPublicacionImpl repositorioPublicacion;
+    private RepositorioClubImpl repositorioClub;
 
     @Autowired
     private SessionFactory sessionFactory;
@@ -28,8 +32,10 @@ public class RepositorioPublicacionImplTest {
     @BeforeEach
     public void setUp() {
         repositorioPublicacion = new RepositorioPublicacionImpl(sessionFactory);
+        repositorioClub = new RepositorioClubImpl(sessionFactory);
     }
 
+    @Rollback
     @Test
     public void eliminarPublicacion() {
         Publicacion publicacion = new Publicacion();
@@ -39,5 +45,32 @@ public class RepositorioPublicacionImplTest {
         repositorioPublicacion.eliminar(publicacion);
         Publicacion resultado = repositorioPublicacion.buscarPublicacionPorId(publicacion.getId());
         assertThat(resultado, is(nullValue()));
+    }
+
+    @Rollback
+    @Test
+    public void dadoElMetodoBuscarPublicacionEnUnClubSiLaEncuentraRetornaUnaPublicacion() {
+        Club club = new Club();
+        club.setPublicaciones(new ArrayList<Publicacion>());
+
+        Publicacion publicacion = new Publicacion();
+        publicacion.setClub(club);
+        repositorioPublicacion.guardar(publicacion);
+        club.getPublicaciones().add(publicacion);
+
+        repositorioClub.guardar(club);
+
+        Publicacion publicacionObtenida = repositorioPublicacion.buscarPublicacionEnUnClub(publicacion.getId(), club);
+        assertThat(publicacionObtenida, equalTo(publicacion));
+    }
+
+    @Rollback
+    @Test
+    public void dadoElMetodoBuscarPublicacionEnUnClubSiNoLaEncuentraRetornaNull() {
+        Club club = new Club();
+        repositorioClub.guardar(club);
+
+        Publicacion publicacionObtenida = repositorioPublicacion.buscarPublicacionEnUnClub(1L, club);
+        assertThat(publicacionObtenida, equalTo(null));
     }
 }

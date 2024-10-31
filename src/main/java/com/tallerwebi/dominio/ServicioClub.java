@@ -30,4 +30,5 @@ public interface ServicioClub {
 
     void obtenerTodosLosReportesDeUnClub(Club club);
 
+    void incrementarCantidadDeReportesEnUnClubObteniendoSuCantidadTotalDeReportes(Long idClub);
 }

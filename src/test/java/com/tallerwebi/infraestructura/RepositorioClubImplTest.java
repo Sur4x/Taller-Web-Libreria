@@ -90,21 +90,22 @@ public class RepositorioClubImplTest {
         Club resultado = (Club) query.getSingleResult();
         assertThat(resultado.getNombre(), equalTo(club1.getNombre()));
     }
+
 /*
+    @Rollback
     @Test
-    public void dadoQueExistaElClubEliminarlo () {
+    public void dadoElMetodoIncrementarCantidadDeReportesEnUnClubSiReportoUnClub2VecesSuCantidadDeReportesEs2() {
+        Club club = new Club();
+        club.setId(1L);
+        club.setCantidadDeReportes(0);
+        this.repositorioClub.guardar(club);
 
-        Club club1 = new Club();
-        club1.setNombre("Club 1");
-        repositorioClub.guardar(club1);
-        repositorioClub.eliminar(club1.getId());
+        this.repositorioClub.incrementarCantidadDeReportesEnUnClubObteniendoSuCantidadTotalDeReportes(club.getId());
+        Integer reportesTotales = this.repositorioClub.incrementarCantidadDeReportesEnUnClubObteniendoSuCantidadTotalDeReportes(club.getId());
 
-        Club resultado = repositorioClub.buscarClubPor(club1.getId());
-        assertThat(resultado, is(nullValue()));
 
+        assertThat(reportesTotales, is(2));
     }
-
  */
-
 }
 

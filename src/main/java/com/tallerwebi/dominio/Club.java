@@ -10,14 +10,12 @@ public class Club {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    //@Column(nullable = false, lenght = 30) NO PUEDE SER NULO y MAXIMO 30 CARACTERES
     private String nombre;
     private String descripcion;
     private String genero;
-    //private Libro libro; AGREGAR ESTE ATRIBUTO
     private String imagen;
-
     private String estaReportado;
+    private Integer cantidadDeReportes;
 
     @ManyToMany(mappedBy = "clubsInscriptos", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.EAGER)
     private List<Usuario> integrantes;
@@ -27,10 +25,14 @@ public class Club {
     @OneToMany(mappedBy = "club", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Reporte> reportes;
 
+
+
     public Club() {
+        this.reportes = new ArrayList<>();
+        this.cantidadDeReportes = 0;
     }
 
-    public Club(Long id, String nombre, String descripcion, String genero, String imagen, String estaReportado, List<Usuario> integrantes, List<Publicacion> publicaciones, List<Reporte> reportes) {
+    public Club(Long id, String nombre, String descripcion, String genero, String imagen, String estaReportado, List<Usuario> integrantes, List<Publicacion> publicaciones, List<Reporte> reportes, Integer cantidadDeReportes) {
         this.id = id;
         this.nombre = nombre;
         this.descripcion = descripcion;
@@ -40,6 +42,7 @@ public class Club {
         this.publicaciones = new ArrayList<>();
         this.estaReportado = estaReportado;
         this.reportes = new ArrayList<>();
+        this.cantidadDeReportes = 0;
     }
 
     public Long getId() {
@@ -112,6 +115,14 @@ public class Club {
 
     public void setReportes(List<Reporte> reportes) {
         this.reportes = reportes;
+    }
+
+    public Integer getCantidadDeReportes() {
+        return cantidadDeReportes;
+    }
+
+    public void setCantidadDeReportes(Integer cantidadDeReportes) {
+        this.cantidadDeReportes = cantidadDeReportes;
     }
 
     @Override

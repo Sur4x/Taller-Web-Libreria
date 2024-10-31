@@ -99,6 +99,7 @@ public class ControladorClubTest {
         when(servicioClubMock.buscarClubPor(1L)).thenReturn(clubMock);
 
         ModelAndView model = controladorClub.irADetalleClub(1L, requestMock);
+
         assertThat(model.getViewName(), equalToIgnoringCase("detalleClub"));
         assertThat(model.getModel().get("club"), equalTo(clubMock));
         assertThat(model.getModel().get("usuario"), equalTo(usuarioMock));
@@ -278,7 +279,7 @@ public class ControladorClubTest {
     }
 
     @Test
-    public void dadoElMetodoCrearNuevoComentarioNoAlmaceneElComentarioCorrectamenteDebeRedireccionarmeALaVistaEspecificaDeLaPublicacion() throws NoExisteEseClub {
+    public void dadoElMetodoCrearNuevoComentarioNoAlmaceneElComentarioCorrectamenteDebeRedireccionarmeALaVistaLogin() throws NoExisteEseClub {
         Comentario comentario = new Comentario();
         when(requestMock.getSession()).thenReturn(sessionMock);
         when(sessionMock.getAttribute("usuario")).thenReturn(usuarioMock);
@@ -288,9 +289,7 @@ public class ControladorClubTest {
 
         ModelAndView modelo = controladorClub.crearNuevoComentario(comentario, publicacion.getId(), clubMock.getId(), requestMock);
 
-
-
-        assertThat(modelo.getViewName(), equalTo("redirect:/club/" + clubMock.getId()  + "/detallePublicacion"+ "/" + publicacion.getId()));
+        assertThat(modelo.getViewName(), equalTo("redirect:/login"));
         verify(servicioComentarioMock, times(0)).guardarComentario(comentario, publicacion);
     }
 
@@ -335,15 +334,15 @@ public class ControladorClubTest {
 
         ModelAndView modelo = controladorClub.mostrarFormularioReporte(clubMock.getId(), requestMock);
 
-        assertThat(modelo.getViewName(), equalTo("redirect:/home"));
+        assertThat(modelo.getViewName(), equalTo("redirect:/login"));
     }
 
     @Test
     public void dadoElMetodoRealizarNuevoReporteSiExisteElClubAlQueQuieroReportarMeDireccionaALaVistaEspecificaDelClub() throws NoExisteEseClub, ReporteExistente {
-        Reporte reporte = new Reporte();
+        Reporte reporte = new Reporte(); //creo el reporte
         when(requestMock.getSession()).thenReturn(sessionMock);
-        when(sessionMock.getAttribute("usuario")).thenReturn(usuarioMock);
-        when(servicioClubMock.buscarClubPor(any())).thenReturn(clubMock);
+        when(sessionMock.getAttribute("usuario")).thenReturn(usuarioMock); //mockeo el usuario
+        when(servicioClubMock.buscarClubPor(any())).thenReturn(clubMock); //cuando llamo a buscarClubPor devuelve el club
 
         ModelAndView modelo = controladorClub.realizarNuevoReporte(clubMock.getId(), reporte, requestMock);
 
@@ -363,4 +362,73 @@ public class ControladorClubTest {
         assertThat(modelo.getViewName(), equalTo("redirect:/home"));
         verify(servicioReporteMock, times(0)).guardarReporte(reporte);
     }
+
+    @Test
+    public void dadoElMetodoIrAEliminarComentarioSiLoEliminarCorrectamenteMeRedireccionaALaVistaDetallaClubConUnErrorEspecifico() throws NoExisteEseClub {
+        Long clubId = 1L;
+        Long publicacionId = 2L;
+        Long comentarioId = 3L;
+        Long usuarioId = 1L;
+
+        Usuario usuario = new Usuario();
+        usuario.setId(usuarioId);
+
+        Comentario comentario = new Comentario();
+        comentario.setId(comentarioId);
+
+        Club club = new Club();
+        club.setId(clubId);
+
+        Publicacion publicacion = new Publicacion();
+        publicacion.setId(publicacionId);
+
+        when(servicioClubMock.buscarClubPor(clubId)).thenReturn(club);
+        when(servicioPublicacionMock.buscarPublicacionEnUnClub(publicacionId, club)).thenReturn(publicacion);
+        when(servicioComentarioMock.buscarComentarioEnUnaPublicacion(comentarioId, publicacion)).thenReturn(comentario);
+        when(requestMock.getSession()).thenReturn(sessionMock);
+        when(sessionMock.getAttribute("usuario")).thenReturn(usuario);
+
+        ModelAndView modelo = controladorClub.IrAEliminarComentario(clubId, publicacionId,comentarioId, requestMock);
+
+        assertThat(modelo.getViewName(), equalTo("redirect:/club/" + clubId + "/detallePublicacion/" + publicacionId));
+        assertThat(modelo.getModel().get("error"), equalTo("Comentario eliminado correctamente."));
+        verify(servicioComentarioMock, times(1)).eliminarComentario(comentario);
+        verify(servicioPublicacionMock, times(1)).buscarPublicacionEnUnClub(publicacionId, club);
+        verify(servicioComentarioMock, times(1)).buscarComentarioEnUnaPublicacion(comentarioId,publicacion);
+    }
+
+    @Test
+    public void dadoElMetodoIrAEliminarComentarioSiNoLoPuedoEliminarCorrectamenteMeRedireccionaALaVistaDetallaClubConUnErrorEspecifico() throws NoExisteEseClub {
+        Long clubId = 1L;
+        Long publicacionId = 2L;
+        Long comentarioId = 3L;
+        Long usuarioId = 1L;
+
+        Usuario usuario = new Usuario();
+        usuario.setId(usuarioId);
+
+        Comentario comentario = new Comentario();
+        comentario.setId(comentarioId);
+
+        Club club = new Club();
+        club.setId(clubId);
+
+        Publicacion publicacion = new Publicacion();
+        publicacion.setId(publicacionId);
+
+        when(servicioClubMock.buscarClubPor(clubId)).thenReturn(club);
+        when(servicioPublicacionMock.buscarPublicacionEnUnClub(publicacionId, club)).thenReturn(null);
+
+        when(requestMock.getSession()).thenReturn(sessionMock);
+        when(sessionMock.getAttribute("usuario")).thenReturn(usuario);
+
+        ModelAndView modelo = controladorClub.IrAEliminarComentario(clubId, publicacionId,comentarioId, requestMock);
+
+        assertThat(modelo.getViewName(), equalTo("redirect:/club/" + clubId + "/detallePublicacion/" + publicacionId));
+        assertThat(modelo.getModel().get("error"), equalTo("Error al eliminar el comentario."));
+        verify(servicioComentarioMock, times(0)).eliminarComentario(comentario);
+        verify(servicioPublicacionMock, times(1)).buscarPublicacionEnUnClub(publicacionId, club);
+        verify(servicioComentarioMock, times(0)).buscarComentarioEnUnaPublicacion(comentarioId,publicacion);
+    }
+
 }
