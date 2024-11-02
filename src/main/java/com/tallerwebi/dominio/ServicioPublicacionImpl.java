@@ -22,6 +22,9 @@ public class ServicioPublicacionImpl implements ServicioPublicacion {
         Publicacion publicacion = repositorioPublicacion.buscarPublicacionPorId(idPublicacion);
         if (publicacion != null) {
             Hibernate.initialize(publicacion.getComentarios());
+            for (Comentario comentario : publicacion.getComentarios()) {
+                Hibernate.initialize(comentario.getLikes());
+            }
         }
         return publicacion;
     }

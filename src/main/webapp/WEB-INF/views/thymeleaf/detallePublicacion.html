@@ -40,6 +40,7 @@
 
 <main class="mt-6">
 
+
     <div class="container mt-4">
         <p class="text-center mb-4" th:text="${publicacion.mensaje}"></p>
     </div>
@@ -51,6 +52,9 @@
         </div>
     </div>
 
+    <div th:if="${mensaje != null}">
+        <p th:text="${mensaje}"></p>
+    </div>
     <div class="container mt-4">
         <h2>Comentarios de la comunidad:</h2>
 
@@ -64,6 +68,16 @@
                     <h5 class="mb-1" th:text="${comentario.autor.nombreUsuario}"></h5>
                 </div>
                 <p class="mb-1" th:text="${comentario.texto}">Texto del comentario</p>
+
+                <!-- Botón de Like -->
+                <form th:action="@{/club/{clubId}/detallePublicacion/{publicacionId}/likear/{comentarioId}(clubId=${club.id}, publicacionId=${publicacion.id}, comentarioId=${comentario.id})}" method="post">
+                    <input type="hidden" name="comentarioId" value="${comentario.id}">
+                    <button type="submit" class="btn btn-primary btn-sm">Like</button>
+                </form>
+
+
+                <!-- Contador de Likes -->
+                <span id="like-count-[[${comentario.id}]]" th:text="${comentario.likes.size()}"></span> Me gusta
                 <div th:if="${usuario != null and comentario.autor.id == usuario.id}" >
                     <form th:action="@{/club/{clubId}/detallePublicacion/{publicacionId}/eliminarComentario/{comentarioId}(clubId=${club.id},publicacionId=${publicacion.id},comentarioId=${comentario.id})}" method="post" style="display: inline;">
                         <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('¿Estás seguro de que deseas eliminar este comentario?');">
@@ -96,7 +110,7 @@
     </div>
 
 </main>
-
 <script th:src="@{/webjars/bootstrap/5.2.0/js/bootstrap.bundle.min.js}"></script>
+
 </body>
 </html>

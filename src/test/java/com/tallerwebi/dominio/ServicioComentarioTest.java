@@ -1,6 +1,7 @@
 package com.tallerwebi.dominio;
 
 import com.tallerwebi.infraestructura.RepositorioComentarioImpl;
+import com.tallerwebi.infraestructura.RepositorioLikeImpl;
 import com.tallerwebi.infraestructura.RepositorioPublicacionImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -15,13 +16,15 @@ public class ServicioComentarioTest {
 
     private RepositorioPublicacion repositorioPublicacionMock;
     private RepositorioComentario repositorioComentarioMock;
+    private RepositorioLike repositorioLikeMock;
     private ServicioComentario servicioComentario;
 
     @BeforeEach
     public void init(){
         repositorioPublicacionMock = mock(RepositorioPublicacionImpl.class);
         repositorioComentarioMock = mock(RepositorioComentarioImpl.class);
-        this.servicioComentario = new ServicioComentarioImpl(repositorioPublicacionMock,repositorioComentarioMock);
+        repositorioLikeMock = mock(RepositorioLikeImpl.class);
+        this.servicioComentario = new ServicioComentarioImpl(repositorioPublicacionMock,repositorioComentarioMock,repositorioLikeMock);
     }
 
     @Test

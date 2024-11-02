@@ -31,6 +31,7 @@ public class ControladorClubTest {
     private ServicioPublicacion servicioPublicacionMock;
     private ServicioComentario servicioComentarioMock;
     private ServicioReporte servicioReporteMock;
+    private ServicioLike servicioLikeMock;
 
     @BeforeEach
     public void init() {
@@ -41,7 +42,8 @@ public class ControladorClubTest {
         servicioPublicacionMock = mock(ServicioPublicacion.class);
         servicioComentarioMock = mock(ServicioComentario.class);
         servicioReporteMock = mock(ServicioReporte.class);
-        controladorClub = new ControladorClub(servicioClubMock, servicioUsuarioMock, servicioPublicacionMock, servicioComentarioMock, servicioReporteMock); // Controlador con mocks
+        servicioLikeMock = mock(ServicioLike.class);
+        controladorClub = new ControladorClub(servicioClubMock, servicioUsuarioMock, servicioPublicacionMock, servicioComentarioMock, servicioReporteMock, servicioLikeMock); // Controlador con mocks
         usuarioMock = mock(Usuario.class); // Mock de un usuario
         clubMock = mock(Club.class);
 
@@ -430,5 +432,61 @@ public class ControladorClubTest {
         verify(servicioPublicacionMock, times(1)).buscarPublicacionEnUnClub(publicacionId, club);
         verify(servicioComentarioMock, times(0)).buscarComentarioEnUnaPublicacion(comentarioId,publicacion);
     }
+
+    //Estos test son logica del controladorLike, en algun momento moverlos
+    //Testear que se use el metodo "agregarLike" una vez
+    //Mockear el servicio y quede true o false, con eso testear el mensaje que tiene el modelo
+    @Test
+    public void dadoUnControladorCuandoDoyLikeCorrectamenteSeAgregaElLikeConUnMensajeExitoso() throws NoExisteEseClub {
+        Usuario usuario = new Usuario();
+        usuario.setEmail("asd");
+        Comentario comentario = new Comentario();
+        comentario.setAutor(usuario);
+        Club club = new Club();
+        club.setNombre("clubsito");
+        Publicacion publicacion = new Publicacion();
+        publicacion.setMensaje("Asd");
+
+        when(requestMock.getSession()).thenReturn(sessionMock);
+        when(sessionMock.getAttribute("usuario")).thenReturn(usuario);
+        when(servicioLikeMock.agregarLike(comentario.getId(), usuario)).thenReturn(true);
+        when(servicioPublicacionMock.buscarPublicacionPorId(publicacion.getId())).thenReturn(publicacion);
+
+        ModelAndView model = controladorClub.darLike(comentario.getId(), club.getId(),publicacion.getId(),requestMock);
+
+        verify(servicioLikeMock,times(1)).agregarLike(comentario.getId(),usuario);//se verifico que el metodo ando auque sea una vez
+        verify(servicioPublicacionMock,times(1)).buscarPublicacionPorId(publicacion.getId());
+        verify(servicioClubMock,times(1)).buscarClubPor(club.getId());
+        assertThat(model.getViewName(),equalTo("detallePublicacion"));
+        assertThat(model.getModel().get("mensaje"),equalTo("Like agregado correctamente."));
+    }
+
+    @Test
+    public void dadoUnControladorLikeCuandoDoyLikeCorrectamenteSeUtilizaElMetodoAgregarLikeYMeLLevaAlaVistaDetallePublicacion() throws NoExisteEseClub {
+        Usuario usuario = new Usuario();
+        usuario.setEmail("asd");
+        Comentario comentario = new Comentario();
+        comentario.setAutor(usuario);
+        Club club = new Club();
+        club.setNombre("clubsito");
+        Publicacion publicacion = new Publicacion();
+        publicacion.setMensaje("Asd");
+
+        when(requestMock.getSession()).thenReturn(sessionMock);
+        when(sessionMock.getAttribute("usuario")).thenReturn(usuario);
+        when(servicioLikeMock.agregarLike(comentario.getId(), usuario)).thenReturn(false);
+        when(servicioPublicacionMock.buscarPublicacionPorId(publicacion.getId())).thenReturn(null);
+
+        ModelAndView model = controladorClub.darLike(comentario.getId(), club.getId(),publicacion.getId(),requestMock);
+
+        verify(servicioLikeMock,times(1)).agregarLike(comentario.getId(),usuario);
+        verify(servicioPublicacionMock,times(1)).buscarPublicacionPorId(publicacion.getId());
+        verify(servicioClubMock,times(0)).buscarClubPor(club.getId());
+        assertThat(model.getViewName(),equalTo("detallePublicacion"));
+        assertThat(model.getModel().get("mensaje"),equalTo("Problemas al agregar el like."));
+    }
+
+
+
 
 }

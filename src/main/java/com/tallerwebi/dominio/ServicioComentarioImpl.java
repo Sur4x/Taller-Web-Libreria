@@ -10,16 +10,17 @@ public class ServicioComentarioImpl implements ServicioComentario{
 
     private RepositorioPublicacion repositorioPublicacion;
     private RepositorioComentario repositorioComentario;
+    private RepositorioLike repositorioLike;
 
     @Autowired
-    public ServicioComentarioImpl(RepositorioPublicacion repositorioPublicacion, RepositorioComentario repositorioComentario) {
+    public ServicioComentarioImpl(RepositorioPublicacion repositorioPublicacion, RepositorioComentario repositorioComentario, RepositorioLike repositorioLike) {
         this.repositorioPublicacion = repositorioPublicacion;
         this.repositorioComentario = repositorioComentario;
+        this.repositorioLike = repositorioLike;
     }
 
     @Override
     public void guardarComentario(Comentario comentario, Publicacion publicacion) {
-
         if (publicacion != null && comentario != null){
             publicacion.getComentarios().add(comentario);
             repositorioComentario.guardar(comentario);
@@ -40,6 +41,8 @@ public class ServicioComentarioImpl implements ServicioComentario{
 
     @Override
     public void eliminarComentario(Comentario comentario) {
+        repositorioLike.eliminarLikesDeUnComentario(comentario.getId());
         repositorioComentario.eliminarComentario(comentario);
     }
+
 }

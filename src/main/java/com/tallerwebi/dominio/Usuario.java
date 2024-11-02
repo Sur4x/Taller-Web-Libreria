@@ -31,6 +31,8 @@ public class Usuario {
     @OneToMany(mappedBy = "autor", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Comentario> comentarios = new ArrayList<>();
 
+    @OneToMany(mappedBy = "autorDelLike", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Like> likes = new ArrayList<>();
 
     public Usuario(){};
     public Usuario(String nombreUsuario, String email,String password, List<Club> clubsInscriptos) {
@@ -88,25 +90,25 @@ public class Usuario {
     public void setDescripcion(String descripcion) {
         this.descripcion = descripcion;
     }
-/*
-    public List<Genero> getGenerosPreferidos() {
-        return generosPreferidos;
-    }
 
-    public void setGenerosPreferidos(List<Genero> generosPreferidos) {
-        this.generosPreferidos = generosPreferidos;
-    }
-
-    public List<Libro> getLibrosLeidos() {
-        return librosLeidos;
-    }
-
-    public void setLibrosLeidos(List<Libro> librosLeidos) {
-        this.librosLeidos = librosLeidos;
-    }
-*/
     public List<Club> getClubsInscriptos() {
         return clubsInscriptos;
+    }
+
+    public List<Comentario> getComentarios() {
+        return comentarios;
+    }
+
+    public void setComentarios(List<Comentario> comentarios) {
+        this.comentarios = comentarios;
+    }
+
+    public List<Like> getLikes() {
+        return likes;
+    }
+
+    public void setLikes(List<Like> likes) {
+        this.likes = likes;
     }
 
     public void setClubsInscriptos(List<Club> clubsInscriptos) {
