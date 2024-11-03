@@ -1,12 +1,17 @@
 package com.tallerwebi.dominio;
 
 import com.tallerwebi.dominio.excepcion.ClubExistente;
+import com.tallerwebi.dominio.excepcion.NoExisteEseClub;
 import com.tallerwebi.dominio.excepcion.ReporteExistente;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -87,6 +92,26 @@ public class ServicioReporteTest {
         servicioReporte.eliminarReporte(1L);
 
         verify(repositorioReporteMock,times(0)).eliminar(reporte);
+    }
+
+    @Test
+    public void dadoElMetodoListarReportesPorClubObtengoUnaListaConReportes() throws NoExisteEseClub {
+        Club club = new Club();
+
+        Reporte reporte = new Reporte();
+        reporte.setClub(club);
+        Reporte otroReporte = new Reporte();
+        otroReporte.setClub(club);
+
+        List<Reporte> lista = new ArrayList<>();
+        lista.add(reporte);
+        lista.add(otroReporte);
+
+        when(repositorioReporteMock.obtenerTodosLosReportesDeUnClub(any())).thenReturn(lista);
+
+        List<Reporte> resultado = servicioReporte.listarReportesPorClub(club);
+
+        assertThat(resultado.size(), is(2));
     }
     
 }
