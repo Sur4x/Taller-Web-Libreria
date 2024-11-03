@@ -21,7 +21,7 @@ public class Publicacion {
     private Club club; //UN CLUB TIENE MUCHOS SUBTITULOS
 
     @OneToMany(mappedBy = "publicacion", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Comentario> comentarios; //1 SUBTITULO TIENE MUCHOS COMENTARIOS
+    private List<Comentario> comentarios; //1 PUBLICACION TIENE MUCHOS COMENTARIOS
 
     public Publicacion(){
     }

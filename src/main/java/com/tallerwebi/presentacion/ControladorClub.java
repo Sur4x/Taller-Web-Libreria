@@ -5,6 +5,7 @@ import com.tallerwebi.dominio.excepcion.*;
 import org.dom4j.rule.Mode;
 import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
@@ -24,14 +25,16 @@ public class ControladorClub {
     private ServicioPublicacion servicioPublicacion;
     private ServicioComentario servicioComentario;
     private ServicioReporte servicioReporte;
+    private ServicioLike servicioLike;
 
     @Autowired
-    public ControladorClub(ServicioClub servicioClub,ServicioUsuario servicioUsuario, ServicioPublicacion servicioPublicacion, ServicioComentario servicioComentario, ServicioReporte servicioReporte) {
+    public ControladorClub(ServicioClub servicioClub, ServicioUsuario servicioUsuario, ServicioPublicacion servicioPublicacion, ServicioComentario servicioComentario, ServicioReporte servicioReporte, ServicioLike servicioLike) {
         this.servicioClub = servicioClub;
         this.servicioUsuario = servicioUsuario;
         this.servicioPublicacion = servicioPublicacion;
         this.servicioComentario = servicioComentario;
         this.servicioReporte = servicioReporte;
+        this.servicioLike = servicioLike;
     }
 
     // Muestra el formulario para crear un nuevo club
@@ -39,11 +42,11 @@ public class ControladorClub {
     public ModelAndView irACrearNuevoClub(HttpServletRequest request) {
         Usuario usuario = (Usuario) request.getSession().getAttribute("usuario");
         ModelMap modelo = new ModelMap();
-        if(usuario != null) {
+        if (usuario != null) {
             modelo.put("club", new Club());
             modelo.put("usuario", usuario);
             return new ModelAndView("crearClub", modelo);
-        }else{
+        } else {
             return new ModelAndView("redirect:/login");
         }
     }
@@ -56,11 +59,11 @@ public class ControladorClub {
 
         Boolean agregado = servicioClub.agregar(club);
 
-        if (agregado && usuario != null){
+        if (agregado && usuario != null) {
             modelo.put("usuario", usuario);
             modelo.put("clubId", club.getId());
             return new ModelAndView("redirect:/club/{clubId}", modelo);
-        }else{
+        } else {
             return new ModelAndView("redirect:/home");
         }
     }
@@ -71,11 +74,11 @@ public class ControladorClub {
         Usuario usuario = (Usuario) request.getSession().getAttribute("usuario");
         Club club = servicioClub.buscarClubPor(id);
         ModelMap model = new ModelMap();
-        if (club != null){
-            model.put("club",club);
+        if (club != null) {
+            model.put("club", club);
             model.put("usuario", usuario);
             return new ModelAndView("detalleClub", model);
-        }else{
+        } else {
             return new ModelAndView("Redirect: /home", model);
         }
     }
@@ -119,12 +122,12 @@ public class ControladorClub {
     public ModelAndView irANuevaPublicacion(@PathVariable("clubId") Long id, HttpServletRequest request) throws NoExisteEseClub {
         Usuario usuario = (Usuario) request.getSession().getAttribute("usuario");
         ModelMap modelo = new ModelMap();
-        if(usuario != null) {
+        if (usuario != null) {
             modelo.put("publicacion", new Publicacion());
             modelo.put("clubId", id);
             modelo.put("usuario", usuario);
             return new ModelAndView("nuevaPublicacion", modelo);
-        }else{
+        } else {
             return new ModelAndView("redirect:/login");
         }
     }
@@ -139,45 +142,47 @@ public class ControladorClub {
 
     @RequestMapping(path = "/club/{clubId}/eliminarPublicacion/{publicacionId}")
     @Transactional
-    public ModelAndView eliminarPublicacion(@PathVariable("clubId") Long id, @PathVariable("publicacionId") Long idPublicacion ,HttpServletRequest request) throws NoExisteEseClub {
+    public ModelAndView eliminarPublicacion(@PathVariable("clubId") Long id, @PathVariable("publicacionId") Long idPublicacion, HttpServletRequest request) throws NoExisteEseClub {
         Usuario usuario = (Usuario) request.getSession().getAttribute("usuario");
         ModelMap modelo = new ModelMap();
         Club club = servicioClub.buscarClubPor(id);
         Publicacion publicacion = servicioPublicacion.buscarPublicacionPorId(idPublicacion);
 
-        if(servicioUsuario.esAdmin(usuario)){
-                servicioClub.eliminarPublicacion(publicacion, club);
-                return new ModelAndView("redirect:/club/{clubId}");
-        }else return new ModelAndView("redirect:/home");
+        if (servicioUsuario.esAdmin(usuario)) {
+            servicioClub.eliminarPublicacion(publicacion, club);
+            return new ModelAndView("redirect:/club/{clubId}");
+        } else return new ModelAndView("redirect:/home");
     }
 
     @RequestMapping(path = "/club/{clubId}/detallePublicacion/{publicacionId}")
-    public ModelAndView irAdetallePublicacion(@PathVariable("clubId") Long clubId,@PathVariable("publicacionId") Long publicacionId, HttpServletRequest request) throws NoExisteEseClub {
+    @Transactional
+    public ModelAndView irAdetallePublicacion(@PathVariable("clubId") Long clubId, @PathVariable("publicacionId") Long publicacionId, HttpServletRequest request) throws NoExisteEseClub {
         Usuario usuario = (Usuario) request.getSession().getAttribute("usuario");
         ModelMap modelo = new ModelMap();
 
         Publicacion publicacion = servicioPublicacion.buscarPublicacionPorId(publicacionId);
-        if(publicacion != null) {
+        if (publicacion != null) {
             modelo.put("comentarios", publicacion.getComentarios());
             modelo.put("comentario", new Comentario());
             modelo.put("publicacion", publicacion);
             modelo.put("usuario", usuario);
             modelo.put("club", servicioClub.buscarClubPor(clubId));
             return new ModelAndView("detallePublicacion", modelo);
-        }else{
+        } else {
             return new ModelAndView("redirect:/home");
         }
     }
+
     @RequestMapping(path = "/club/{clubId}/crearNuevoComentario/{publicacionId}")
-    public ModelAndView crearNuevoComentario(@ModelAttribute Comentario comentario,@PathVariable("publicacionId") Long publicacionId, @PathVariable("clubId") Long clubId, HttpServletRequest request) throws NoExisteEseClub {
+    public ModelAndView crearNuevoComentario(@ModelAttribute Comentario comentario, @PathVariable("publicacionId") Long publicacionId, @PathVariable("clubId") Long clubId, HttpServletRequest request) throws NoExisteEseClub {
         Usuario usuario = (Usuario) request.getSession().getAttribute("usuario");
 
         Publicacion publicacion = servicioPublicacion.buscarPublicacionPorId(publicacionId);
-        if (publicacion != null && usuario != null){
-            servicioComentario.setearAutorYPublicacionEnUnComentario(comentario,usuario,publicacion);
+        if (publicacion != null && usuario != null) {
+            servicioComentario.setearAutorYPublicacionEnUnComentario(comentario, usuario, publicacion);
             servicioComentario.guardarComentario(comentario, publicacion);
-            return new ModelAndView("redirect:/club/" + clubId  + "/detallePublicacion"+ "/" + publicacionId);
-        }else{
+            return new ModelAndView("redirect:/club/" + clubId + "/detallePublicacion" + "/" + publicacionId);
+        } else {
             return new ModelAndView("redirect:/login");
         }
     }
@@ -188,10 +193,11 @@ public class ControladorClub {
         if (club != null) {
             servicioClub.eliminarClub(club);
             return new ModelAndView("redirect:/home");
-        }else{
+        } else {
             return new ModelAndView("redirect:/home");
         }
     }
+
     @RequestMapping(path = "/club/{clubId}/reportar", method = RequestMethod.GET)
     public ModelAndView mostrarFormularioReporte(@PathVariable("clubId") Long clubId, HttpServletRequest request) throws NoExisteEseClub {
         Usuario usuario = (Usuario) request.getSession().getAttribute("usuario");
@@ -258,19 +264,49 @@ public class ControladorClub {
     }
 
     @RequestMapping(path = "/club/{clubId}/detallePublicacion/{publicacionId}/eliminarComentario/{comentarioId}")
-    public ModelAndView IrAEliminarComentario(@PathVariable("clubId") Long clubId, @PathVariable("publicacionId") Long publicacionId,@PathVariable("comentarioId") Long comentarioId, HttpServletRequest request) throws NoExisteEseClub {
+    public ModelAndView IrAEliminarComentario(@PathVariable("clubId") Long clubId, @PathVariable("publicacionId") Long publicacionId, @PathVariable("comentarioId") Long comentarioId, HttpServletRequest request) throws NoExisteEseClub {
         ModelMap model = new ModelMap();
         Usuario usuario = (Usuario) request.getSession().getAttribute("usuario");
+
         Club club = servicioClub.buscarClubPor(clubId);
         Publicacion publicacion = servicioPublicacion.buscarPublicacionEnUnClub(publicacionId, club); // publicacion en el club
         Comentario comentario = servicioComentario.buscarComentarioEnUnaPublicacion(comentarioId, publicacion);//coemntario en publicacion
+
         if (usuario != null && club != null && publicacion != null && comentario != null) {
             servicioComentario.eliminarComentario(comentario);
             model.put("error", "Comentario eliminado correctamente.");
-        }else{
+        } else {
             model.put("error", "Error al eliminar el comentario.");
         }
         return new ModelAndView("redirect:/club/" + clubId + "/detallePublicacion/" + publicacionId, model);
     }
+
+    @RequestMapping(path = "/club/{clubId}/detallePublicacion/{publicacionId}/likear/{comentarioId}")
+    public ModelAndView darLike(@PathVariable Long comentarioId, @PathVariable Long clubId, @PathVariable Long publicacionId, HttpServletRequest request) throws NoExisteEseClub {
+        ModelMap model = new ModelMap();
+        Usuario usuario = (Usuario) request.getSession().getAttribute("usuario");
+        Boolean agregado = false;
+
+        if (usuario != null) {
+            agregado = servicioLike.agregarLike(comentarioId, usuario);
+        }
+        if (agregado) {
+            model.put("mensaje", "Like agregado correctamente.");
+        } else {
+            model.put("mensaje", "Problemas al agregar el like.");
+        }
+        //Agrego los mismos datos al modelo para que la vista detallePublicacion sea la misma.
+        Publicacion publicacion = servicioPublicacion.buscarPublicacionPorId(publicacionId);
+        if (publicacion != null) {
+            model.put("comentarios", publicacion.getComentarios());
+            model.put("comentario", new Comentario());
+            model.put("publicacion", publicacion);
+            model.put("usuario", usuario);
+            model.put("club", servicioClub.buscarClubPor(clubId));
+        }
+
+        return new ModelAndView("detallePublicacion", model);
+    }
+
 
 }

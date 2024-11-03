@@ -3,6 +3,7 @@ package com.tallerwebi.infraestructura;
 import com.tallerwebi.dominio.Comentario;
 import com.tallerwebi.dominio.Publicacion;
 import com.tallerwebi.dominio.RepositorioComentario;
+import com.tallerwebi.dominio.Usuario;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -46,4 +47,14 @@ public class RepositorioComentarioImpl implements RepositorioComentario {
         query.setParameter("comentarioId", comentarioId);
         query.executeUpdate();
     }
+
+    @Override
+    public Comentario buscarComentarioPorId(Long comentarioId) {
+        String hql = "FROM Comentario c WHERE c.id = :comentarioId";
+        Query query = this.sessionFactory.getCurrentSession().createQuery(hql);
+        query.setParameter("comentarioId", comentarioId);
+
+        return (Comentario) query.getSingleResult();
+    }
+
 }

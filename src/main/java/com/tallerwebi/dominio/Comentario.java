@@ -1,6 +1,8 @@
 package com.tallerwebi.dominio;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "comentario")
@@ -20,8 +22,9 @@ public class Comentario {
     @JoinColumn()
     private Publicacion publicacion;
 
-    @Version
-    private Long version;
+    @OneToMany(mappedBy = "comentario", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Like> likes = new ArrayList<>();
+
     public Comentario(){}
 
     public Comentario(Long id, String texto, Usuario autor, Publicacion publicacion) {
@@ -29,7 +32,6 @@ public class Comentario {
         this.texto = texto;
         this.autor = autor;
         this.publicacion = publicacion;
-
     }
 
     public Long getId() {
@@ -63,5 +65,14 @@ public class Comentario {
     public void setPublicacion(Publicacion publicacion) {
         this.publicacion = publicacion;
     }
+
+    public List<Like> getLikes() {
+        return likes;
+    }
+
+    public void setLikes(List<Like> likes) {
+        this.likes = likes;
+    }
+
 
 }

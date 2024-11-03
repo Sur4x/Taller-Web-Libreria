@@ -7,4 +7,7 @@ public interface RepositorioComentario {
     public Comentario buscarComentarioEnUnaPublicacion(Long comentarioId, Publicacion publicacion);
 
     void eliminarComentario(Comentario comentario);
+
+    Comentario buscarComentarioPorId(Long comentarioId);
+
 }
