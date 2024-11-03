@@ -25,7 +25,8 @@ public class ServicioPublicacionTest {
     @Test
     public void dadoElMetodoBuscarPublicacionPorIdCuandoLeEntregoUnIdQueEstaEnElSistemaMeDevuelveLaPublicacion(){
         Publicacion publicacion = new Publicacion();
-        publicacion.setId(1L);
+        publicacion.setComentarios(new ArrayList<>());
+
         when(repositorioPublicacionMock.buscarPublicacionPorId(any())).thenReturn(publicacion);
 
         Publicacion publicacionEncontrada = servicioPublicacion.buscarPublicacionPorId(1L);
