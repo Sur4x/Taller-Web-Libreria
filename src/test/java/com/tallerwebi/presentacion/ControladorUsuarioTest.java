@@ -39,9 +39,14 @@ public class ControladorUsuarioTest {
 
     @Test
     public void dadoElMetodoIrAPerfilFuncioneCorrectamenteDebeDevolvermeALaVistaPerfilDelUsuarioEspecifico() throws NoExisteEseUsuario {
-        //mock de un usuario
+        // mock de un usuario
         when(requestMock.getSession()).thenReturn(sessionMock);
         when(sessionMock.getAttribute("usuario")).thenReturn(usuarioMock);
+
+        // mock para usuarioActual (el usuario de sesión)
+        when(servicioUsuarioMock.buscarUsuarioPor(usuarioMock.getId())).thenReturn(usuarioMock);
+
+        // mock para el usuario cuyo perfil se muestra
         when(servicioUsuarioMock.buscarUsuarioPor(1L)).thenReturn(usuarioMock);
 
         ModelAndView model = controladorUsuario.irAPerfil(1L, requestMock);
