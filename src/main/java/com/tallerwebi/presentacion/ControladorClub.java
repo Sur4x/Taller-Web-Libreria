@@ -308,5 +308,30 @@ public class ControladorClub {
         return new ModelAndView("detallePublicacion", model);
     }
 
+    @RequestMapping(path = "/ranking")
+    public ModelAndView irARanking(HttpServletRequest request) {
+        ModelMap model = new ModelMap();
+        Usuario usuario = (Usuario) request.getSession().getAttribute("usuario");
+        model.put("usuario", usuario);
 
+        List<Club> clubsMiembros = servicioClub.obtenerClubsConMasMiembros();
+        List<Club> clubsCalificacion = servicioClub.obtenerClubsConMejorCalificacion();
+        List<Usuario> usuariosSeguidores = servicioUsuario.obtenerUsuariosConMasSeguidores();
+        List<Club> clubsPublicaciones = servicioClub.obtenerClubsConMasPublicaciones();
+
+        model.put("clubsMiembros", clubsMiembros);
+        model.put("clubsCalificacion", clubsCalificacion);
+        model.put("usuariosSeguidores", usuariosSeguidores);
+        model.put("clubsPublicaciones", clubsPublicaciones);
+
+        return new ModelAndView("ranking", model);
+    }
+
+    @RequestMapping(path = "/club/puntuar/{id}")
+    public String puntuarClub(@PathVariable Long id, @RequestParam Integer puntuacion, HttpServletRequest request) throws NoExisteEseClub {
+        Usuario usuario = (Usuario) request.getSession().getAttribute("usuario");
+        Club club = servicioClub.buscarClubPor(id);
+        servicioClub.agregarPuntuacion(club, puntuacion);
+        return "redirect:/club/" + id;
+    }
 }

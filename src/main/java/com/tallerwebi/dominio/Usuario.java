@@ -1,8 +1,7 @@
 package com.tallerwebi.dominio;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @Entity
 public class Usuario {
@@ -27,6 +26,17 @@ public class Usuario {
             inverseJoinColumns = @JoinColumn(name = "club_id")
     )
     private List<Club> clubsInscriptos = new ArrayList<>();
+
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "usuario_seguimiento",
+            joinColumns = @JoinColumn(name = "id_seguidor"),
+            inverseJoinColumns = @JoinColumn(name = "id_seguido")
+    )
+    private Set<Usuario> seguidos = new HashSet<>();
+
+    @ManyToMany(mappedBy = "seguidos")
+    private Set<Usuario> seguidores = new HashSet<>();
 
     @OneToMany(mappedBy = "autor", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Comentario> comentarios = new ArrayList<>();
@@ -116,4 +126,33 @@ public class Usuario {
     }
 
 
+    public Set<Usuario> getSeguidores() {
+        return seguidores;
+    }
+
+    public void setSeguidores(Set<Usuario> seguidores) {
+        this.seguidores = seguidores;
+    }
+
+    public Set<Usuario> getSeguidos() {
+        return seguidos;
+    }
+
+    public void setSeguidos(Set<Usuario> seguidos) {
+        this.seguidos = seguidos;
+    }
+
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Usuario usuario = (Usuario) o;
+        return Objects.equals(id, usuario.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(id);
+    }
 }

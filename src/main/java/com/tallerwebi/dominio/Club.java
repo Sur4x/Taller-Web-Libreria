@@ -16,6 +16,11 @@ public class Club {
     private String imagen;
     private String estaReportado;
     private Integer cantidadDeReportes;
+    private Integer cantidadMiembros;
+    private Integer calificacionTotal;
+    private Integer cantidadCalificaciones;
+
+    private Double calificacion;
 
     @ManyToMany(mappedBy = "clubsInscriptos", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.EAGER)
     private List<Usuario> integrantes;
@@ -29,6 +34,7 @@ public class Club {
     public Club() {
         this.reportes = new ArrayList<>();
         this.cantidadDeReportes = 0;
+        this.cantidadMiembros = 0;
     }
 
     public Club(Long id, String nombre, String descripcion, String genero, String imagen, String estaReportado, List<Usuario> integrantes, List<Publicacion> publicaciones, List<Reporte> reportes, Integer cantidadDeReportes) {
@@ -42,6 +48,10 @@ public class Club {
         this.estaReportado = estaReportado;
         this.reportes = new ArrayList<>();
         this.cantidadDeReportes = 0;
+        this.cantidadMiembros = 0;
+        this.calificacion = 0.0;
+        this.calificacionTotal = 0;
+        this.cantidadCalificaciones = 0;
     }
 
     public Long getId() {
@@ -112,9 +122,7 @@ public class Club {
         return reportes;
     }
 
-    public void setReportes(List<Reporte> reportes) {
-        this.reportes = reportes;
-    }
+    public void setReportes(List<Reporte> reportes) { this.reportes = reportes; }
 
     public Integer getCantidadDeReportes() {
         return cantidadDeReportes;
@@ -123,6 +131,27 @@ public class Club {
     public void setCantidadDeReportes(Integer cantidadDeReportes) {
         this.cantidadDeReportes = cantidadDeReportes;
     }
+
+    public Integer getCantidadMiembros(){ return cantidadMiembros; }
+
+    public void setCantidadMiembros(Integer cantidadMiembros) { this.cantidadMiembros = cantidadMiembros;}
+
+    public Double getCalificacion() {
+        Double cT = (double) calificacionTotal;
+        Double cC = (double) cantidadCalificaciones;
+        return cT/cC;
+    }
+    public void setCalificacion(Double calificacion){ this.calificacion = calificacion; };
+
+    public Integer getCantidadCalificaciones() { return cantidadCalificaciones; }
+
+    public Integer getCalificacionTotal() {
+        return calificacionTotal;
+    }
+
+    public void setCantidadCalificaciones(Integer cantidadCalificaciones) { this.cantidadCalificaciones = cantidadCalificaciones;}
+
+    public void setCalificacionTotal(Integer calificacionTotal) { this.calificacionTotal = calificacionTotal;}
 
     @Override
     public boolean equals(Object o) {
@@ -138,7 +167,6 @@ public class Club {
     public int hashCode() {
         return id != null ? id.hashCode() : 0;
     }
-
 
 }
 

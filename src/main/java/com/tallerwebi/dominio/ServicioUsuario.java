@@ -10,4 +10,10 @@ public interface ServicioUsuario {
     Usuario buscarUsuarioPor(Long id) throws NoExisteEseUsuario;
 
     boolean esAdmin(Usuario usuario);
+
+    void seguirUsuario(Usuario usuarioASeguir, Usuario usuarioActual);
+
+    void dejarDeSeguirUsuario(Usuario usuarioASeguir, Usuario usuarioActual);
+
+    List<Usuario> obtenerUsuariosConMasSeguidores();
 }

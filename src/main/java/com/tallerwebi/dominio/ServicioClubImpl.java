@@ -6,6 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -65,7 +68,9 @@ public class ServicioClubImpl implements ServicioClub {
             if (!usuario.getClubsInscriptos().contains(club)){
                 usuario.getClubsInscriptos().add(club);
                 club.getIntegrantes().add(usuario);
+                club.setCantidadMiembros(club.getCantidadMiembros() + 1);
                 repositorioUsuario.guardar(usuario);
+                repositorioClub.guardar(club);
             }
         }
     }
@@ -75,7 +80,9 @@ public class ServicioClubImpl implements ServicioClub {
         if (usuario != null && club != null) {
             usuario.getClubsInscriptos().remove(club);
             club.getIntegrantes().remove(usuario);
+            club.setCantidadMiembros(club.getCantidadMiembros() - 1);
             repositorioUsuario.guardar(usuario);
+            repositorioClub.guardar(club);
         }
     }
 
@@ -142,5 +149,39 @@ public class ServicioClubImpl implements ServicioClub {
 
     public void incrementarCantidadDeReportesEnUnClubObteniendoSuCantidadTotalDeReportes(Long idClub){
        repositorioClub.incrementarCantidadDeReportesEnUnClubObteniendoSuCantidadTotalDeReportes(idClub);
+    }
+
+    @Override
+    public List<Club> obtenerClubsConMasMiembros() {
+        List<Club> clubs = repositorioClub.obtenerClubsConMasMiembros();
+        return clubs;
+    }
+
+    @Override
+    public List<Club> obtenerClubsConMejorCalificacion() {
+        List<Club> clubs = repositorioClub.obtenerClubsConMejorCalificacion();
+        return clubs;
+    }
+
+    @Override
+    public List<Club> obtenerClubsConMasPublicaciones() {
+        List<Club> clubs = repositorioClub.obtenerTodosLosClubs();
+        clubs.sort(Comparator.comparingInt(s -> s.getPublicaciones().size()));
+        Collections.reverse(clubs);
+        List<Club> clubsConMasPublicaciones = new ArrayList<>();
+
+        for(int i=0;i<5 && i < clubs.size();i++){
+            clubsConMasPublicaciones.add(clubs.get(i));
+        }
+
+        return clubsConMasPublicaciones;
+    }
+
+    @Override
+    public void agregarPuntuacion(Club club, Integer puntuacion) {
+        club.setCalificacionTotal(club.getCalificacionTotal() + puntuacion);
+        club.setCantidadCalificaciones(club.getCantidadCalificaciones() + 1);
+        club.setCalificacion(club.getCalificacion());
+        repositorioClub.guardar(club);
     }
 }

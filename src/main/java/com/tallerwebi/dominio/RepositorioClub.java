@@ -16,5 +16,8 @@ public interface RepositorioClub {
 
     Integer incrementarCantidadDeReportesEnUnClubObteniendoSuCantidadTotalDeReportes(Long idClub);
 
+    List<Club> obtenerClubsConMasMiembros();
+
+    List<Club> obtenerClubsConMejorCalificacion();
 }
 

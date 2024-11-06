@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.Query;
+import java.util.ArrayList;
 import java.util.List;
 
 @Repository
@@ -34,7 +35,8 @@ public class RepositorioClubImpl implements RepositorioClub {
         String hql = "FROM Club c WHERE c.id = :id";
         Query query = this.sessionFactory.getCurrentSession().createQuery(hql);
         query.setParameter("id", id);
-        return (Club) query.getSingleResult();
+        List<Club> clubs = query.getResultList();
+        return clubs.isEmpty() ? null : clubs.get(0);
     }
 
     @Override
@@ -71,4 +73,19 @@ public class RepositorioClubImpl implements RepositorioClub {
         return (Integer) selectQuery.getSingleResult();
     }
 
+    @Override
+    public List<Club> obtenerClubsConMasMiembros() {
+        String hql = "FROM Club c ORDER BY c.cantidadMiembros DESC";
+        Query query = this.sessionFactory.getCurrentSession().createQuery(hql, Club.class);
+        query.setMaxResults(5); //SOLO DEVUELVE 5 CLUBS
+        return query.getResultList();
+    }
+
+    @Override
+    public List<Club> obtenerClubsConMejorCalificacion() {
+        String hql = "FROM Club c ORDER BY c.calificacion DESC";
+        Query query = this.sessionFactory.getCurrentSession().createQuery(hql, Club.class);
+        query.setMaxResults(5); //SOLO DEVUELVE 5 CLUBS
+        return query.getResultList();
+    }
 }

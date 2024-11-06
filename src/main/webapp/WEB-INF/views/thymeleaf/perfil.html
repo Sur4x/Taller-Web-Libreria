@@ -92,6 +92,12 @@
                 </li>
             </ul>
         </div>
+
+        <div th:if="${usuario.id} != ${usuarioActual.id}">
+            <div th:if="${sigueAlUsuario}"><a class="btn" th:href="@{/perfil/{id}/dejarDeSeguir(id=${usuario.id})}"> Dejar de seguir</a></div>
+            <div th:if="!${sigueAlUsuario}"><a class="btn" th:href="@{/perfil/{id}/seguir(id=${usuario.id})}">Seguir</a></div>
+        </div>
+
     </div>
 
     <a class="btn" th:href="@{/home}"> Volver atras</a>

@@ -33,16 +33,51 @@ public class ControladorUsuario {
 
     @RequestMapping(path = "/perfil/{id}", method = RequestMethod.GET)
     public ModelAndView irAPerfil(@PathVariable("id") Long id, HttpServletRequest request) throws NoExisteEseUsuario {
-        Usuario usuarioActual = (Usuario) request.getSession().getAttribute("usuario");
-        Usuario usuario = servicioUsuario.buscarUsuarioPor(id);
-        ModelMap model = new ModelMap();
-        if (usuarioActual != null) {
+            ModelMap model = new ModelMap();
+            Usuario usuarioSesion = (Usuario) request.getSession().getAttribute("usuario");
+            if (usuarioSesion != null) {
+                Usuario usuarioActual = servicioUsuario.buscarUsuarioPor(usuarioSesion.getId());
+                Usuario usuario = servicioUsuario.buscarUsuarioPor(id);
+                boolean sigueAlUsuario = usuarioActual.getSeguidos().contains(usuario);
                 model.put("usuario", usuario);
+                model.addAttribute("sigueAlUsuario", sigueAlUsuario);
+                model.addAttribute("usuarioActual", usuarioActual);
                 return new ModelAndView("perfil", model);
             } else {
                 return new ModelAndView("redirect:/login", model);
             }
         }
+
+    @RequestMapping(path = "perfil/{id}/seguir")
+    public String seguirUsuario(@PathVariable("id") Long idUsuarioASeguir, HttpServletRequest request) throws NoExisteEseUsuario {
+        Usuario usuarioSesion = (Usuario) request.getSession().getAttribute("usuario");
+        if (usuarioSesion == null) {
+            return "redirect:/login";
+        }
+        Usuario usuarioActual = servicioUsuario.buscarUsuarioPor(usuarioSesion.getId());
+        Usuario usuarioASeguir = servicioUsuario.buscarUsuarioPor(idUsuarioASeguir);
+
+        if(usuarioASeguir!=null && usuarioActual!=null && !usuarioASeguir.equals(usuarioActual)){
+            servicioUsuario.seguirUsuario(usuarioASeguir, usuarioActual);
+
+        }
+        return "redirect:/perfil/" + idUsuarioASeguir;
+    }
+
+    @RequestMapping(path = "perfil/{id}/dejarDeSeguir")
+    public String dejarDeSeguirUsuario(@PathVariable("id") Long idUsuarioASeguir, HttpServletRequest request) throws NoExisteEseUsuario {
+        Usuario usuarioSesion = (Usuario) request.getSession().getAttribute("usuario");
+        if (usuarioSesion == null) {
+            return "redirect:/login";
+        }
+        Usuario usuarioActual = servicioUsuario.buscarUsuarioPor(usuarioSesion.getId());
+        Usuario usuarioASeguir = servicioUsuario.buscarUsuarioPor(idUsuarioASeguir);
+
+        if(usuarioASeguir!=null && usuarioActual!=null && !usuarioASeguir.equals(usuarioActual)){
+            servicioUsuario.dejarDeSeguirUsuario(usuarioASeguir, usuarioActual);
+        }
+        return "redirect:/perfil/" + idUsuarioASeguir;
+    }
 
     @RequestMapping(path = "/logout", method = RequestMethod.GET)
     public ModelAndView logout(HttpServletRequest request) {

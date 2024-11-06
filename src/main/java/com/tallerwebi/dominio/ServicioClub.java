@@ -31,4 +31,12 @@ public interface ServicioClub {
     void obtenerTodosLosReportesDeUnClub(Club club);
 
     void incrementarCantidadDeReportesEnUnClubObteniendoSuCantidadTotalDeReportes(Long idClub);
+
+    List<Club> obtenerClubsConMasMiembros();
+
+    List<Club> obtenerClubsConMejorCalificacion();
+
+    List<Club> obtenerClubsConMasPublicaciones();
+
+    void agregarPuntuacion(Club club, Integer puntuacion);
 }
