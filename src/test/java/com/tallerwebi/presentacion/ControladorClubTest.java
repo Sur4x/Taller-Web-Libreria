@@ -17,6 +17,8 @@ import java.util.List;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.text.IsEqualIgnoringCase.equalToIgnoringCase;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 public class ControladorClubTest {
@@ -363,6 +365,46 @@ public class ControladorClubTest {
 
         assertThat(modelo.getViewName(), equalTo("redirect:/home"));
         verify(servicioReporteMock, times(0)).guardarReporte(reporte);
+    }
+
+    @Test
+    public void dadoElMetodoListarReportesSiElUsuarioNoExisteRedireccionaALogin() throws Exception {
+        when(requestMock.getSession()).thenReturn(sessionMock);
+        when(sessionMock.getAttribute("usuario")).thenReturn(null);
+
+        ModelAndView modelAndView = controladorClub.mostrarReportesPorClub(1L, requestMock);
+
+        assertEquals("redirect:/login", modelAndView.getViewName());
+    }
+
+    @Test
+    public void dadoElMetodoMostrarReportesPorClub_ClubNoExiste() throws NoExisteEseClub {
+        when(requestMock.getSession()).thenReturn(sessionMock);
+        when(sessionMock.getAttribute("usuario")).thenReturn(new Usuario());
+        when(servicioClubMock.buscarClubPor(anyLong())).thenReturn(null);
+
+        assertThrows(NoExisteEseClub.class, () -> {
+            controladorClub.mostrarReportesPorClub(1L, requestMock);
+        });
+    }
+
+    @Test
+    public void dadoElMetodoMostrarReportesPorClubSeRealizaConExito() throws Exception {
+        Usuario usuario = new Usuario();
+        Club club = new Club();
+        List<Reporte> reportes = new ArrayList<>();
+
+        when(requestMock.getSession()).thenReturn(sessionMock);
+        when(sessionMock.getAttribute("usuario")).thenReturn(usuario);
+        when(servicioClubMock.buscarClubPor(anyLong())).thenReturn(club);
+        when(servicioReporteMock.listarReportesPorClub(club)).thenReturn(reportes);
+
+        ModelAndView modelAndView = controladorClub.mostrarReportesPorClub(1L, requestMock);
+
+        assertEquals("verReportes", modelAndView.getViewName());
+        assertEquals(club, modelAndView.getModel().get("club"));
+        assertEquals(usuario, modelAndView.getModel().get("usuario"));
+        assertEquals(reportes, modelAndView.getModel().get("reportes"));
     }
 
     @Test
