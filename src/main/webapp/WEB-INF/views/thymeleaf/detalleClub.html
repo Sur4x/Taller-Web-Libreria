@@ -80,7 +80,6 @@
 
 
         <div class="text-center">
-            <!-- Imagen con tamaño fijo -->
             <img th:src="@{${club.imagen}}" alt="Imagen del club" class="img-fluid rounded"
                  style="max-width: 300px; height: auto;">
         </div>
@@ -114,9 +113,11 @@
                         </div>
                     </form>
                 </div>
+                <!--
                 <div th:if="${puntuacion != null}">
                     <a th:href="@{/club/despuntuar/{id}(id=${club.id})}" class="btn btn-success text-center btn-lg mt-4">Eliminar puntuación</a>
                 </div>
+                -->
                 <form th:action="@{/club/{clubId}/abandonar(clubId=${club.id})}" method="post" class="text-center mt-4">
                     <button type="submit" class="btn btn-success btn-lg">Abandonar Club</button>
                 </form>
