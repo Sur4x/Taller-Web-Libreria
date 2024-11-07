@@ -44,7 +44,7 @@ public class Usuario {
     private List<Like> likes = new ArrayList<>();
 
     @OneToMany(mappedBy = "usuario", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
-    private List<Puntuacion> puntuaciones;
+    private List<Puntuacion> puntuaciones = new ArrayList<>();
 
     public Usuario(){};
     public Usuario(String nombreUsuario, String email,String password, List<Club> clubsInscriptos) {
@@ -143,6 +143,7 @@ public class Usuario {
     public void setPuntuaciones(List<Puntuacion> puntuaciones) {
         this.puntuaciones = puntuaciones;
     }
+
 
     @Override
     public boolean equals(Object o) {

@@ -3,6 +3,8 @@ package com.tallerwebi.infraestructura;
 
 
 import com.tallerwebi.dominio.Club;
+import com.tallerwebi.dominio.Puntuacion;
+import com.tallerwebi.dominio.Usuario;
 import com.tallerwebi.infraestructura.config.HibernateTestConfigRepositorio;
 import org.hibernate.SessionFactory;
 import org.junit.jupiter.api.BeforeEach;
@@ -26,8 +28,8 @@ import java.util.List;
 @Transactional
 public class RepositorioClubImplTest {
 
-
     private RepositorioClubImpl repositorioClub;
+    private RepositorioUsuarioImpl repositorioUsuario;
 
     @Autowired
     private SessionFactory sessionFactory;
@@ -35,6 +37,7 @@ public class RepositorioClubImplTest {
     @BeforeEach
     public void setUp() {
         this.repositorioClub = new RepositorioClubImpl(sessionFactory);
+        this.repositorioUsuario = new RepositorioUsuarioImpl(sessionFactory);
     }
 
     @Rollback
@@ -91,21 +94,137 @@ public class RepositorioClubImplTest {
         assertThat(resultado.getNombre(), equalTo(club1.getNombre()));
     }
 
-/*
+
+/* ESTOS TEST LOS HICE PARA EL ANTERIOR METODO repositorioClub.actualizarPromedio(club.getId(), promedio);
     @Rollback
     @Test
-    public void dadoElMetodoIncrementarCantidadDeReportesEnUnClubSiReportoUnClub2VecesSuCantidadDeReportesEs2() {
+    public void dadoElMetodoGuardarPuntuacionCuandoGuardaUnaPuedoObtenerlaDeLaBDD(){
+        Usuario usuario = new Usuario();
+        this.repositorioUsuario.guardar(usuario);
+
         Club club = new Club();
-        club.setId(1L);
-        club.setCantidadDeReportes(0);
         this.repositorioClub.guardar(club);
 
-        this.repositorioClub.incrementarCantidadDeReportesEnUnClubObteniendoSuCantidadTotalDeReportes(club.getId());
-        Integer reportesTotales = this.repositorioClub.incrementarCantidadDeReportesEnUnClubObteniendoSuCantidadTotalDeReportes(club.getId());
+        Puntuacion puntuacion = new Puntuacion();
+        puntuacion.setClub(club);
+        puntuacion.setUsuario(usuario);
+        puntuacion.setPuntuacion(4);
 
+        this.repositorioClub.guardarPuntuacion(puntuacion);
 
-        assertThat(reportesTotales, is(2));
+        String hql = "from Puntuacion where club.id = :clubId";
+        Query query = this.sessionFactory.getCurrentSession().createQuery(hql);
+        query.setParameter("clubId", club.getId());
+
+        Puntuacion puntuacionObtenida = (Puntuacion) query.getSingleResult();
+
+        assertThat(puntuacionObtenida.getPuntuacion(), equalTo(puntuacion.getPuntuacion()));
+        assertThat(puntuacionObtenida.getClub().getId(), equalTo(club.getId()));
+        assertThat(puntuacionObtenida.getUsuario().getId(), equalTo(usuario.getId()));
     }
+
+    @Rollback
+    @Test
+    public void dadoElMetodoActualizarPromedioCuandoTengoUnClubEnLaBDDConUnPromedioPuedoActualizarloPorOtro() {
+        Club club = new Club();
+        club.setPuntuacionPromedio(1.0);
+        this.repositorioClub.guardar(club);
+
+        this.repositorioClub.actualizarPromedio(club.getId(), 3.5);
+
+        String hql = "from Club where id = :clubId";
+        Query query = this.sessionFactory.getCurrentSession().createQuery(hql);
+        query.setParameter("clubId", club.getId());
+        Club clubObtenido = (Club) query.getSingleResult();
+
+        assertThat(clubObtenido, equalTo(club));
+        assertThat(clubObtenido.getPuntuacionPromedio(), equalTo(3.5));
+    }
+
+
  */
+
+    @Test
+    public void dadoElMetodoBuscarTodosLosClubsSiTengo2ClubsEnLaBDDMeDevuelveUnaListaDe2Posiciones(){
+        Club club1 = new Club();
+        Club club2 = new Club();
+
+        repositorioClub.guardar(club1);
+        repositorioClub.guardar(club2);
+
+        List<Club> clubs = repositorioClub.obtenerTodosLosClubs();
+
+        String hql = "FROM Club";
+        Query query = this.sessionFactory.getCurrentSession().createQuery(hql);
+        List<Club> clubsEncontrados =  query.getResultList();
+
+        assertThat(clubsEncontrados, equalTo(clubs));
+    }
+
+    @Test
+    public void dadoElMetodoObtenerClubsConMasMiembrosSiTengo2ClubsLosOrdenaSegunSusMiembros(){
+        Club club1 = new Club();
+        Club club2 = new Club();
+        club1.setCantidadMiembros(10);
+        club2.setCantidadMiembros(20);
+
+        repositorioClub.guardar(club1);
+        repositorioClub.guardar(club2);
+
+        List<Club> clubsObtenidos = repositorioClub.obtenerClubsConMasMiembros();
+
+        assertThat(clubsObtenidos.get(0).getCantidadMiembros(), equalTo(20));
+        assertThat(clubsObtenidos.get(1).getCantidadMiembros(), equalTo(10));
+    }
+
+
+    @Test
+    public void dadoElMetodoObtenerClubsConMasMiembrosSiTengo6ClubsLosOrdenaSegunSusMiembrosConUnMaximoDe5Posiciones(){
+        //Crea los clubs, setea sus miembros y los guarda en la bdd
+        for (int i = 0; i < 10; i++) {
+            Club club = new Club();
+            club.setCantidadMiembros(i);
+            repositorioClub.guardar(club);
+        }
+
+        List<Club> clubsObtenidos = repositorioClub.obtenerClubsConMasMiembros();
+
+        assertThat(clubsObtenidos.size(), equalTo(5));
+        assertThat(clubsObtenidos.get(0).getCantidadMiembros(), equalTo(9));
+        assertThat(clubsObtenidos.get(1).getCantidadMiembros(), equalTo(8));
+    }
+
+    @Test
+    public void dadoElMetodoObtenerClubsConMejorPuntajeSiTengo2ClubsLosOrdenaSegunSusPuntajes(){
+        Club club1 = new Club();
+        Club club2 = new Club();
+        club1.setPuntuacionPromedio(2.0);
+        club2.setPuntuacionPromedio(3.3);
+
+        repositorioClub.guardar(club1);
+        repositorioClub.guardar(club2);
+
+        List<Club> clubsObtenidos = repositorioClub.obtenerClubsConMejorPuntuacion();
+
+        assertThat(clubsObtenidos.get(0).getPuntuacionPromedio(), equalTo(3.3));
+        assertThat(clubsObtenidos.get(1).getPuntuacionPromedio(), equalTo(2.0));
+    }
+
+    @Test
+    public void dadoElMetodoObtenerClubsConMejorPuntuacionSiTengo6ClubsLosOrdenaSegunSusPuntajesConUnMaximoDe5Posiciones(){
+        //Crea los clubs, setea sus miembros y los guarda en la bdd
+        for (int i = 0; i < 10; i++) {
+            Club club = new Club();
+            club.setPuntuacionPromedio((double) i);
+            repositorioClub.guardar(club);
+        }
+
+        List<Club> clubsObtenidos = repositorioClub.obtenerClubsConMejorPuntuacion();
+
+        assertThat(clubsObtenidos.size(), equalTo(5));
+        assertThat(clubsObtenidos.get(0).getPuntuacionPromedio(), equalTo(9.0));
+        assertThat(clubsObtenidos.get(1).getPuntuacionPromedio(), equalTo(8.0));
+    }
+
 }
 

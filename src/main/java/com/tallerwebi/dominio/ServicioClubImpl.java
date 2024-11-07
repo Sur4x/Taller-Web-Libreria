@@ -166,9 +166,6 @@ public class ServicioClubImpl implements ServicioClub {
     @Override
     public List<Club> obtenerClubsConMasPublicaciones() {
         List<Club> clubs = repositorioClub.obtenerTodosLosClubs();
-        for (Club club : clubs) {
-            Hibernate.initialize(club.getPublicaciones());
-        }
         clubs.sort(Comparator.comparingInt(s -> s.getPublicaciones().size()));
         Collections.reverse(clubs);
         List<Club> clubsConMasPublicaciones = new ArrayList<>();
@@ -196,7 +193,7 @@ public class ServicioClubImpl implements ServicioClub {
         }
         repositorioClub.guardarPuntuacion(puntuacionClub);
     }
-
+/* DESPUNTUAR CLUB
     @Override
     public void removerPuntuacion(Club club, Usuario usuario) {
         Puntuacion puntuacionClub = repositorioClub.buscarPuntuacion(club, usuario);
@@ -213,8 +210,10 @@ public class ServicioClubImpl implements ServicioClub {
         else throw new NoExisteEsaPuntuacion("No puntuaste aún este club.");
     }
 
+ */
+
     @Override
-    public Double actualizarPuntuacionPromedio(Club club){
+    public Double obtenerPuntuacionPromedio(Club club){
         Double puntuacionTotal = 0.0;
         Double puntuacionPromedio = 0.0;
         for(Puntuacion puntuacion : club.getPuntuaciones()){
@@ -226,8 +225,18 @@ public class ServicioClubImpl implements ServicioClub {
         return puntuacionPromedio;
     }
 
+
+    /*
     @Override
     public void actualizarPromedio(Club club, Double promedio){
         repositorioClub.actualizarPromedio(club.getId(), promedio);
+    }
+
+ */
+
+    @Override
+    public void actualizarPromedio(Club club, Double promedio){
+        club.setPuntuacionPromedio(promedio);
+        repositorioClub.guardar(club);
     }
 }

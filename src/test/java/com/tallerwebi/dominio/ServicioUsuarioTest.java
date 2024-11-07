@@ -69,4 +69,52 @@ public class ServicioUsuarioTest {
         assertThat(esAdmin, equalTo(false));
     }
 
+    @Test
+    void dadoUnServicioUsuarioCuandoSigoAUnUsuarioSeAgreganEnSusListasYSeGuardanEnLaBDD(){
+        Usuario usuarioASeguir = new Usuario();
+        Usuario usuarioSeguidor = new Usuario();
+
+        servicioUsuario.seguirUsuario(usuarioASeguir, usuarioSeguidor);
+
+        verify(repositorioUsuario,times(2)).guardar(any());
+        assertThat(usuarioASeguir.getSeguidores().contains(usuarioSeguidor),equalTo(true));
+        assertThat(usuarioSeguidor.getSeguidos().contains(usuarioASeguir),equalTo(true));
+    }
+
+    @Test
+    void dadoUnServicioUsuarioCuandoDejoDeSeguirAUnUsuarioSeBorranSusListasYSeGuardanEnLaBDD(){
+        Usuario usuarioASeguir = new Usuario();
+        Usuario usuarioSeguidor = new Usuario();
+        usuarioASeguir.getSeguidores().add(usuarioSeguidor);
+        usuarioSeguidor.getSeguidos().add(usuarioASeguir);
+
+        servicioUsuario.dejarDeSeguirUsuario(usuarioASeguir, usuarioSeguidor);
+
+        verify(repositorioUsuario,times(2)).guardar(any());
+        assertThat(usuarioASeguir.getSeguidores().contains(usuarioSeguidor),equalTo(false));
+        assertThat(usuarioSeguidor.getSeguidos().contains(usuarioASeguir),equalTo(false));
+    }
+
+    @Test
+    void dadoElMetodoObtenerUsuariosConMasSeguidoresCuandoTengo2UsuariosEnLaBDDLosOrdenaCorrectamente(){
+        Usuario usuario1 = new Usuario();
+        Usuario usuario2 = new Usuario();
+
+        usuario1.getSeguidores().add(new Usuario());
+
+        usuario2.getSeguidores().add(new Usuario());
+        usuario2.getSeguidores().add(new Usuario());
+
+        List<Usuario> usuarios = new ArrayList<>();
+        usuarios.add(usuario1);
+        usuarios.add(usuario2);
+
+        when(repositorioUsuario.buscarTodosLosUsuarios()).thenReturn(usuarios);
+
+        List<Usuario> usuariosObtenidos = servicioUsuario.obtenerUsuariosConMasSeguidores();
+
+        assertThat(usuariosObtenidos.get(0),equalTo(usuario2));
+        assertThat(usuariosObtenidos.get(1),equalTo(usuario1));
+    }
+
 }

@@ -1,6 +1,7 @@
 package com.tallerwebi.dominio;
 
 import javax.persistence.*;
+import java.util.Objects;
 
 @Entity
 @Table(name = "club_puntuacion")
@@ -54,5 +55,18 @@ public class Puntuacion {
 
     public void setPuntuacion(Integer puntuacion) {
         this.puntuacion = puntuacion;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Puntuacion that = (Puntuacion) o;
+        return Objects.equals(idPuntuacion, that.idPuntuacion);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(idPuntuacion);
     }
 }

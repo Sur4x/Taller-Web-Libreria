@@ -89,5 +89,97 @@ public class ControladorUsuarioTest {
         assertThat(model.getModel().get("usuario"), equalTo(usuarioMock));
     }
 
+    @Test
+    public void dadoElMetodoSeguirUsuarioCuandoQuieroUsarloSinEstarLogueadoMeRedireccionaALaVistaLogin() throws NoExisteEseUsuario {
+        Long idUsuarioASeguir = 1L;
+        when(requestMock.getSession()).thenReturn(sessionMock);
+        when(sessionMock.getAttribute("usuario")).thenReturn(null);
+
+        String vista = controladorUsuario.seguirUsuario(idUsuarioASeguir, requestMock);
+
+        assertThat(vista, equalTo("redirect:/login"));
+    }
+
+    @Test
+    public void dadoElMetodoSeguirUsuarioCuandoQuieroSeguirAUnUsuarioQueNoExisteMeRedireccionaAlHome() throws NoExisteEseUsuario {
+        Long idUsuarioASeguir = 1L;
+        when(requestMock.getSession()).thenReturn(sessionMock);
+        when(sessionMock.getAttribute("usuario")).thenReturn(usuarioMock);
+        when(servicioUsuarioMock.buscarUsuarioPor(1L)).thenReturn(new Usuario());
+        when(servicioUsuarioMock.buscarUsuarioPor(usuarioMock.getId())).thenReturn(null);
+
+        String vista = controladorUsuario.seguirUsuario(idUsuarioASeguir, requestMock);
+
+        assertThat(vista, equalTo("redirect:/home"));
+        verify(servicioUsuarioMock,times(2)).buscarUsuarioPor(any());
+    }
+
+    @Test
+    public void dadoElMetodoSeguirUsuarioCuandoSigoAUnUsuarioQueExisteMeRedireccionaALaVistaDeSuPerfil() throws NoExisteEseUsuario {
+        Usuario usuarioASeguir = new Usuario();
+        usuarioASeguir.setId(1L);
+        Usuario usuarioSeguidor = new Usuario();
+        when(requestMock.getSession()).thenReturn(sessionMock);
+        when(sessionMock.getAttribute("usuario")).thenReturn(usuarioMock);
+        when(servicioUsuarioMock.buscarUsuarioPor(usuarioASeguir.getId())).thenReturn(usuarioASeguir);
+        when(servicioUsuarioMock.buscarUsuarioPor(usuarioMock.getId())).thenReturn(usuarioSeguidor);
+
+        String vista = controladorUsuario.seguirUsuario(usuarioASeguir.getId(), requestMock);
+
+        assertThat(vista, equalTo("redirect:/perfil/" + usuarioASeguir.getId()));
+        verify(servicioUsuarioMock,times(2)).buscarUsuarioPor(any());
+        verify(servicioUsuarioMock,times(1)).seguirUsuario(usuarioASeguir,usuarioSeguidor);
+    }
+
+
+
+
+
+
+
+
+
+    @Test
+    public void dadoElMetodoDejarDeSeguirUsuarioCuandoQuieroUsarloSinEstarLogueadoMeRedireccionaALaVistaLogin() throws NoExisteEseUsuario {
+        Long idUsuarioASeguir = 1L;
+        when(requestMock.getSession()).thenReturn(sessionMock);
+        when(sessionMock.getAttribute("usuario")).thenReturn(null);
+
+        String vista = controladorUsuario.dejarDeSeguirUsuario(idUsuarioASeguir, requestMock);
+
+        assertThat(vista, equalTo("redirect:/login"));
+    }
+
+    @Test
+    public void dadoElMetodoDejarDeSeguirUsuarioCuandoQuieroSeguirAUnUsuarioQueNoExisteMeRedireccionaAlHome() throws NoExisteEseUsuario {
+        Long idUsuarioASeguir = 1L;
+        when(requestMock.getSession()).thenReturn(sessionMock);
+        when(sessionMock.getAttribute("usuario")).thenReturn(usuarioMock);
+        when(servicioUsuarioMock.buscarUsuarioPor(1L)).thenReturn(new Usuario());
+        when(servicioUsuarioMock.buscarUsuarioPor(usuarioMock.getId())).thenReturn(null);
+
+        String vista = controladorUsuario.dejarDeSeguirUsuario(idUsuarioASeguir, requestMock);
+
+        assertThat(vista, equalTo("redirect:/home"));
+        verify(servicioUsuarioMock,times(2)).buscarUsuarioPor(any());
+    }
+
+    @Test
+    public void dadoElMetodoDejarDeSeguirUsuarioCuandoSigoAUnUsuarioQueExisteMeRedireccionaALaVistaDeSuPerfil() throws NoExisteEseUsuario {
+        Usuario usuarioASeguir = new Usuario();
+        usuarioASeguir.setId(1L);
+        Usuario usuarioSeguidor = new Usuario();
+        when(requestMock.getSession()).thenReturn(sessionMock);
+        when(sessionMock.getAttribute("usuario")).thenReturn(usuarioMock);
+        when(servicioUsuarioMock.buscarUsuarioPor(usuarioASeguir.getId())).thenReturn(usuarioASeguir);
+        when(servicioUsuarioMock.buscarUsuarioPor(usuarioMock.getId())).thenReturn(usuarioSeguidor);
+
+        String vista = controladorUsuario.dejarDeSeguirUsuario(usuarioASeguir.getId(), requestMock);
+
+        assertThat(vista, equalTo("redirect:/perfil/" + usuarioASeguir.getId()));
+        verify(servicioUsuarioMock,times(2)).buscarUsuarioPor(any());
+        verify(servicioUsuarioMock,times(1)).dejarDeSeguirUsuario(usuarioASeguir,usuarioSeguidor);
+    }
+
 
 }

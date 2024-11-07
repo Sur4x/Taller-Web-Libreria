@@ -6,6 +6,7 @@ import org.hibernate.Session;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.ui.Model;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
@@ -16,6 +17,7 @@ import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.text.IsEqualIgnoringCase.equalToIgnoringCase;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -48,8 +50,6 @@ public class ControladorClubTest {
         controladorClub = new ControladorClub(servicioClubMock, servicioUsuarioMock, servicioPublicacionMock, servicioComentarioMock, servicioReporteMock, servicioLikeMock); // Controlador con mocks
         usuarioMock = mock(Usuario.class); // Mock de un usuario
         clubMock = mock(Club.class);
-
-
     }
 
     @Test
@@ -79,19 +79,22 @@ public class ControladorClubTest {
         when(requestMock.getSession()).thenReturn(sessionMock);
         when(sessionMock.getAttribute("usuario")).thenReturn(usuarioMock);
         when(servicioClubMock.agregar(any(Club.class))).thenReturn(true);
+        MultipartFile imagenMock = mock(MultipartFile.class);
 
-        ModelAndView model = controladorClub.crearNuevoClub(new Club(), requestMock, any());
+        ModelAndView model = controladorClub.crearNuevoClub(new Club(), requestMock, imagenMock);
+
         assertThat(model.getViewName(), equalToIgnoringCase("redirect:/club/{clubId}"));
-
     }
+
 
     @Test
     public void dadoElMetodoCrearNuevoClubCuandoNoSeCreaCorrectamenteMeRedirireccionaAlaVistaHome() throws ClubExistente, NoExisteEseUsuario {
         when(requestMock.getSession()).thenReturn(sessionMock);
         when(sessionMock.getAttribute("usuario")).thenReturn(usuarioMock);
         when(servicioClubMock.agregar(any(Club.class))).thenReturn(false);
+        MultipartFile imagenMock = mock(MultipartFile.class);
 
-        ModelAndView model = controladorClub.crearNuevoClub(new Club(), requestMock, any());
+        ModelAndView model = controladorClub.crearNuevoClub(new Club(), requestMock, imagenMock);
         assertThat(model.getViewName(), equalToIgnoringCase("redirect:/home"));
     }
 
@@ -529,6 +532,71 @@ public class ControladorClubTest {
     }
 
 
+    //Mover este test al controladorPuntuacion en algun futuro
+    @Test
+    public void dadoUnControladorPuntuacionCuandoPunteoUnClubMeRedirigeALaVistaEspecificaDelClub() throws NoExisteEseUsuario, NoExisteEseClub {
+        Long idClub = 1L;
+        Integer puntuacion = 5;
+        Club club = new Club();
+        club.setId(1L);
+        when(usuarioMock.getId()).thenReturn(1L);
+        when(requestMock.getSession()).thenReturn(sessionMock);
+        when(sessionMock.getAttribute("usuario")).thenReturn(usuarioMock);
+        when(servicioUsuarioMock.buscarUsuarioPor(usuarioMock.getId())).thenReturn(usuarioMock);
+        when(servicioClubMock.buscarClubPor(club.getId())).thenReturn(club);
+        when(servicioClubMock.obtenerPuntuacionPromedio(club)).thenReturn(5.0);
 
+        String vista = controladorClub.puntuarClub(idClub, puntuacion, requestMock);
+
+        verify(servicioUsuarioMock,times(1)).buscarUsuarioPor(1L);
+        verify(servicioClubMock,times(1)).buscarClubPor(1L);
+        verify(servicioClubMock,times(1)).agregarPuntuacion(club, usuarioMock,puntuacion);
+        verify(servicioClubMock,times(1)).obtenerPuntuacionPromedio(club);
+        verify(servicioClubMock,times(1)).actualizarPromedio(club, 5.0);
+        assertThat(vista, equalTo("redirect:/club/" + idClub));
+    }
+
+    @Test
+    public void dadoElMetodoIrARankingSiNoEstoyLogueadoEnviaUnModeloConUsuarioNuloYMeRedireccionaALaVistaRanking() throws NoExisteEseUsuario {
+        when(requestMock.getSession()).thenReturn(sessionMock);
+        when(sessionMock.getAttribute("usuario")).thenReturn(null);
+
+        ModelAndView model = controladorClub.irARanking(requestMock);
+
+        assertThat(model.getViewName(), equalTo("ranking"));
+        assertThat(model.getModel().get("usuario"), equalTo(null));
+    }
+
+    @Test
+    public void dadoElMetodoIrARankingSiEstoyLogueadoEnviaUnModeloUsuarioConElDeLaSesionYMeRedireccionaALaVistaRanking() throws NoExisteEseUsuario {
+        when(requestMock.getSession()).thenReturn(sessionMock);
+        when(sessionMock.getAttribute("usuario")).thenReturn(usuarioMock);
+        when(servicioUsuarioMock.buscarUsuarioPor(usuarioMock.getId())).thenReturn(usuarioMock);
+
+        ModelAndView model = controladorClub.irARanking(requestMock);
+
+        assertThat(model.getViewName(), equalTo("ranking"));
+        assertThat(model.getModel().get("usuario"), equalTo(usuarioMock));
+    }
+
+    @Test
+    public void dadoElMetodoIrARankingEnElModeloSeAgreganTodosLosRankings() throws NoExisteEseUsuario {
+        when(requestMock.getSession()).thenReturn(sessionMock);
+        when(sessionMock.getAttribute("usuario")).thenReturn(null);
+
+        when(servicioClubMock.obtenerClubsConMasMiembros()).thenReturn(new ArrayList<>());
+        when(servicioClubMock.obtenerClubsConMejorPuntuacion()).thenReturn(new ArrayList<>());
+        when(servicioUsuarioMock.obtenerUsuariosConMasSeguidores()).thenReturn(new ArrayList<>());
+        when(servicioClubMock.obtenerClubsConMasPublicaciones()).thenReturn(new ArrayList<>());
+
+        ModelAndView model = controladorClub.irARanking(requestMock);
+
+        assertThat(model.getModel().get("clubsMiembros"), notNullValue());
+        assertThat(model.getModel().get("clubsPuntuacion"), notNullValue());
+        assertThat(model.getModel().get("usuariosSeguidores"), notNullValue());
+        assertThat(model.getModel().get("clubsPublicaciones"), notNullValue());
+        verify(servicioClubMock,times(1)).obtenerClubsConMasMiembros();
+        verify(servicioClubMock,times(1)).obtenerClubsConMasPublicaciones();
+    }
 
 }

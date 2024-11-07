@@ -59,9 +59,10 @@ public class ControladorUsuario {
 
         if(usuarioASeguir!=null && usuarioActual!=null && !usuarioASeguir.equals(usuarioActual)){
             servicioUsuario.seguirUsuario(usuarioASeguir, usuarioActual);
-
+            return "redirect:/perfil/" + idUsuarioASeguir;
+        }else{
+            return "redirect:/home";
         }
-        return "redirect:/perfil/" + idUsuarioASeguir;
     }
 
     @RequestMapping(path = "perfil/{id}/dejarDeSeguir")
@@ -75,8 +76,11 @@ public class ControladorUsuario {
 
         if(usuarioASeguir!=null && usuarioActual!=null && !usuarioASeguir.equals(usuarioActual)){
             servicioUsuario.dejarDeSeguirUsuario(usuarioASeguir, usuarioActual);
+            return "redirect:/perfil/" + idUsuarioASeguir;
+        }else{
+            return "redirect:/home";
         }
-        return "redirect:/perfil/" + idUsuarioASeguir;
+
     }
 
     @RequestMapping(path = "/logout", method = RequestMethod.GET)

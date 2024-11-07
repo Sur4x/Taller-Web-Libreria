@@ -23,13 +23,13 @@ public class Club {
     private List<Usuario> integrantes;
 
     @OneToMany(mappedBy = "club", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Publicacion> publicaciones;
+    private List<Publicacion> publicaciones = new ArrayList<>();
 
     @OneToMany(mappedBy = "club", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Reporte> reportes;
 
     @OneToMany(mappedBy = "club", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
-    private List<Puntuacion> puntuaciones;
+    private List<Puntuacion> puntuaciones = new ArrayList<>();
 
     public Club() {
         this.reportes = new ArrayList<>();

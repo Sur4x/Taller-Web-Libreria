@@ -113,12 +113,17 @@ public class RepositorioClubImpl implements RepositorioClub {
         sessionFactory.getCurrentSession().delete(puntuacionClub);
     }
 
+    /*
     @Override
+    @Transactional
     public void actualizarPromedio(Long id, Double promedio) {
         String hql = "UPDATE Club c SET c.puntuacionPromedio = :puntuacionPromedio WHERE c.id = :clubId";
         Query query = sessionFactory.getCurrentSession().createQuery(hql);
         query.setParameter("puntuacionPromedio", promedio);
         query.setParameter("clubId", id);
         query.executeUpdate();
+
     }
+
+     */
 }

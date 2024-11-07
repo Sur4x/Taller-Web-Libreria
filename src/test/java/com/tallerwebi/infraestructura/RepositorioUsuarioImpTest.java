@@ -1,6 +1,7 @@
 package com.tallerwebi.infraestructura;
 
 
+import com.tallerwebi.dominio.Club;
 import com.tallerwebi.dominio.RepositorioUsuario;
 import com.tallerwebi.dominio.Usuario;
 import com.tallerwebi.integracion.config.HibernateTestConfig;
@@ -17,6 +18,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.*;
 
+import javax.persistence.Query;
 import javax.transaction.Transactional;
 import java.util.List;
 
@@ -118,6 +120,23 @@ public class RepositorioUsuarioImpTest {
         Usuario usuarioEncontrado = repositorioUsuario.buscarUsuarioPor(usuario.getId());
         assertThat(usuarioEncontrado, is(notNullValue()));
         assertThat(usuarioEncontrado.getEmail(), equalTo("test@example.com"));
+    }
+
+    @Test
+    public void dadoElMetodoBuscarTodosLosUsuariosSiTengo2UsuariosEnLaBDDMeDevuelveUnaListaDe2Posiciones(){
+        Usuario usuario1 = new Usuario();
+        Usuario usuario2 = new Usuario();
+
+        repositorioUsuario.guardar(usuario1);
+        repositorioUsuario.guardar(usuario2);
+
+        List<Usuario> usuarios = repositorioUsuario.buscarTodosLosUsuarios();
+
+        String hql = "FROM Usuario";
+        Query query = this.sessionFactory.getCurrentSession().createQuery(hql);
+        List<Usuario> usuariosEncontrados =  query.getResultList();
+
+        assertThat(usuariosEncontrados, equalTo(usuarios));
     }
 
 

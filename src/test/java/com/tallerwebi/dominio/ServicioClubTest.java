@@ -309,4 +309,136 @@ public class ServicioClubTest {
         assertThrows(ReporteExistente.class, () -> servicioClub.agregarNuevoReporteAlClub(1L,reporte));
         verify(repositorioReporteMock,times(0)).guardar(reporte);
     }
+
+    @Test
+    public void dadoUnServicioClubCuandoIntentoAgregarUnaPuntuacionAUnClubSinPuntuacionesPreviasSeSeteaCorrectamente(){
+        Club club = new Club();
+        Usuario usuario = new Usuario();
+        //Puntuacion puntuacion = new Puntuacion();
+        when(repositorioClubMock.buscarPuntuacion(club,usuario)).thenReturn(null);
+
+        servicioClub.agregarPuntuacion(club,usuario, 4);
+
+        verify(repositorioClubMock,times(1)).guardarPuntuacion(any());
+        assertThat(club.getPuntuaciones().get(0).getPuntuacion(), equalTo(4));
+    }
+    @Test
+    public void dadoUnServicioClubCuandoIntentoAgregarUnaPuntuacionAUnClubConUnaPuntuacionPreviaSeReemplaza(){
+        Club club = new Club();
+        Usuario usuario = new Usuario();
+        Puntuacion puntuacion = new Puntuacion();
+        puntuacion.setPuntuacion(5);
+        when(repositorioClubMock.buscarPuntuacion(club,usuario)).thenReturn(puntuacion);
+
+        servicioClub.agregarPuntuacion(club,usuario, 4);
+
+        verify(repositorioClubMock,times(1)).guardarPuntuacion(puntuacion);
+        assertThat(puntuacion.getPuntuacion(), equalTo(4));
+    }
+
+    @Test
+    public void dadoElMetodoObtenerPuntuacionPromedioCuandoUnClubTiene2PuntuacionesCalculaElPromedioCorrectamente(){
+        Puntuacion puntuacion1 = new Puntuacion();
+        puntuacion1.setPuntuacion(3);
+        Puntuacion puntuacion2 = new Puntuacion();
+        puntuacion2.setPuntuacion(4);
+        Club club = new Club();
+        club.getPuntuaciones().add(puntuacion1);
+        club.getPuntuaciones().add(puntuacion2);
+
+        Double resultado = servicioClub.obtenerPuntuacionPromedio(club);
+        assertThat(resultado, equalTo(3.5));
+    }
+
+
+    @Test
+    public void dadoElMetodoObtenerPuntuacionPromedioCuandoUnClubTiene0PuntuacionesSuPromedioEsCero(){
+        Club club = new Club();
+        Double resultado = servicioClub.obtenerPuntuacionPromedio(club);
+        assertThat(resultado, equalTo(0.0));
+    }
+
+    /*
+    @Test
+    public void dadoElMetodoActualizarPromedioDebeUtilizarElMetodoDelRepositorioCorrespondiente(){
+        Club club = new Club();
+        Double promedio = 3.0;
+
+        servicioClub.actualizarPromedio(club,promedio);
+
+        verify(repositorioClubMock,times(1)).actualizarPromedio(club.getId(),promedio);
+    }
+
+     */
+
+    @Test
+    public void dadoElMetodoActualizarPromedioCuandoCambioSuPromedioSeRealizaCorrectamente(){
+        Club club = new Club();
+        servicioClub.actualizarPromedio(club,3.0);
+        assertThat(club.getPuntuacionPromedio(), equalTo(3.0));
+    }
+
+    @Test
+    public void dadoElMetodoObtenerClubsConMasMiembrosMeDevuelveLaListaDeClubsOrdenada(){
+        Club club1 = new Club();
+        club1.setCantidadMiembros(3);
+
+        Club club2 = new Club();
+        club1.setCantidadMiembros(2);
+
+        List<Club> clubs = new ArrayList<>();
+        clubs.add(club1);
+        clubs.add(club2);
+
+        when(repositorioClubMock.obtenerClubsConMasMiembros()).thenReturn(clubs);
+        List<Club> clubsObtenidos = servicioClub.obtenerClubsConMasMiembros();
+
+        assertThat(clubsObtenidos.size(), equalTo(2));
+        verify(repositorioClubMock, times(1)).obtenerClubsConMasMiembros();
+    }
+
+    @Test
+    public void dadoElMetodoObtenerClubsConMejorPuntuacionMeDevuelveLaListaDeClubsOrdenada(){
+        Club club1 = new Club();
+        club1.setPuntuacionPromedio(3.5);
+
+        Club club2 = new Club();
+        club2.setPuntuacionPromedio(4.7);
+
+        List<Club> clubs = new ArrayList<>();
+        clubs.add(club1);
+        clubs.add(club2);
+
+        when(repositorioClubMock.obtenerClubsConMejorPuntuacion()).thenReturn(clubs);
+        List<Club> clubsObtenidos = servicioClub.obtenerClubsConMejorPuntuacion();
+
+        assertThat(clubsObtenidos.size(), equalTo(2));
+        verify(repositorioClubMock, times(1)).obtenerClubsConMejorPuntuacion();
+    }
+
+    @Test
+    public void dadoElMetodoObtenerClubsConMasPublicacionesMeDevuelveLaListaDeClubsOrdenada(){
+        Publicacion publicacion1 = new Publicacion();
+        Publicacion publicacion2 = new Publicacion();
+        Publicacion publicacion3 = new Publicacion();
+
+        Club club1 = new Club();
+        club1.getPublicaciones().add(publicacion1);
+        club1.getPublicaciones().add(publicacion2);
+        club1.getPublicaciones().add(publicacion3);
+
+        Club club2 = new Club();
+        club2.getPublicaciones().add(publicacion1);
+
+        List<Club> clubs = new ArrayList<>();
+        clubs.add(club1);
+        clubs.add(club2);
+
+        when(repositorioClubMock.obtenerTodosLosClubs()).thenReturn(clubs);
+
+        List<Club> clubsObtenidos = servicioClub.obtenerClubsConMasPublicaciones();
+
+        assertThat(clubsObtenidos.get(0), equalTo(club1));
+    }
+
 }

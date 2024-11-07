@@ -26,6 +26,6 @@ public interface RepositorioClub {
 
     void eliminarPuntuacion(Puntuacion puntuacionClub);
 
-    void actualizarPromedio(Long id, Double promedio);
+    //void actualizarPromedio(Long id, Double promedio);
 }
 
