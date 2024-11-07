@@ -1,6 +1,7 @@
 package com.tallerwebi.punta_a_punta;
 
 import com.microsoft.playwright.*;
+import com.tallerwebi.punta_a_punta.vistas.VistaCrearClub;
 import com.tallerwebi.punta_a_punta.vistas.VistaLogin;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
@@ -23,7 +24,6 @@ public class VistaLoginE2E {
         playwright = Playwright.create();
         browser = playwright.chromium().launch();
         //browser = playwright.chromium().launch(new BrowserType.LaunchOptions().setHeadless(false).setSlowMo(50));
-
     }
 
     @AfterAll
@@ -46,11 +46,11 @@ public class VistaLoginE2E {
     @Test
     void deberiaDecirClubDeLecturaEnElNavbar() {
         String texto = vistaLogin.obtenerTextoDeLaBarraDeNavegacion();
-        assertThat("Club de Lectura", equalToIgnoringCase(texto));
+        assertThat("DeUltima", equalToIgnoringCase(texto));
     }
 
     @Test
-    void deberiaDarUnErrorAlNoCompletarElLoginYTocarElBoton() {
+    void deberiaDarUnErrorAlIngresarValoresInvalidosEnElLoginYTocarElBoton() {
         vistaLogin.escribirEMAIL("damian@unlam.edu.ar");
         vistaLogin.escribirClave("unlam");
         vistaLogin.darClickEnIniciarSesion();
@@ -60,8 +60,8 @@ public class VistaLoginE2E {
 
     @Test
     void deberiaNavegarAlHomeSiElUsuarioExiste() {
-        vistaLogin.escribirEMAIL("test@unlam.edu.ar");
-        vistaLogin.escribirClave("test");
+        vistaLogin.escribirEMAIL("asd@asd");
+        vistaLogin.escribirClave("asd");
         vistaLogin.darClickEnIniciarSesion();
         String url = vistaLogin.obtenerURLActual();
         assertThat(url, containsStringIgnoringCase("/club/home"));
