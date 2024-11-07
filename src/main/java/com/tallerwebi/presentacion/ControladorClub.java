@@ -2,19 +2,17 @@ package com.tallerwebi.presentacion;
 
 import com.tallerwebi.dominio.*;
 import com.tallerwebi.dominio.excepcion.*;
-import org.dom4j.rule.Mode;
-import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
 @Controller
@@ -53,12 +51,29 @@ public class ControladorClub {
 
     // Crea un nuevo club
     @RequestMapping(path = "/crearNuevoClub", method = RequestMethod.POST)
-    public ModelAndView crearNuevoClub(@ModelAttribute("club") Club club, HttpServletRequest request) throws ClubExistente, NoExisteEseUsuario {
+    public ModelAndView crearNuevoClub(@ModelAttribute("club") Club club, HttpServletRequest request, @RequestParam("imagen") MultipartFile imagen) throws ClubExistente {
         Usuario usuario = (Usuario) request.getSession().getAttribute("usuario");
         ModelMap modelo = new ModelMap();
 
-        Boolean agregado = servicioClub.agregar(club);
+        if (!imagen.isEmpty()) {
+            // Usar una ruta absoluta o un directorio dentro de static
+            String uploadDir = System.getProperty("user.dir") + "/uploads/";  // Usando la raíz del proyecto
+            String imagePath = uploadDir + imagen.getOriginalFilename();
+            File dir = new File(uploadDir);
 
+            // Crear la carpeta si no existe
+            if (!dir.exists()) {
+                dir.mkdirs();
+            }
+
+            try {
+                imagen.transferTo(new File(imagePath)); // Guardar el archivo
+                club.setImagen("/uploads/" + imagen.getOriginalFilename()); // Usar la URL para mostrar la imagen
+            } catch (IOException e) {
+                throw new RuntimeException("Error al guardar la imagen", e);
+            }
+        }
+        Boolean agregado = servicioClub.agregar(club);
         if (agregado && usuario != null) {
             modelo.put("usuario", usuario);
             modelo.put("clubId", club.getId());
@@ -74,7 +89,9 @@ public class ControladorClub {
         Usuario usuario = (Usuario) request.getSession().getAttribute("usuario");
         Club club = servicioClub.buscarClubPor(id);
         ModelMap model = new ModelMap();
+        Puntuacion puntuacion = servicioClub.buscarPuntuacion(club, usuario);
         if (club != null) {
+            model.addAttribute("puntuacion", puntuacion);
             model.put("club", club);
             model.put("usuario", usuario);
             return new ModelAndView("detalleClub", model);
@@ -309,29 +326,45 @@ public class ControladorClub {
     }
 
     @RequestMapping(path = "/ranking")
-    public ModelAndView irARanking(HttpServletRequest request) {
+    public ModelAndView irARanking(HttpServletRequest request) throws NoExisteEseUsuario {
         ModelMap model = new ModelMap();
         Usuario usuario = (Usuario) request.getSession().getAttribute("usuario");
-        model.put("usuario", usuario);
+
+        if (usuario != null) {
+            Usuario usuarioActual = servicioUsuario.buscarUsuarioPor(usuario.getId());
+            model.put("usuario", usuarioActual);
+        } else {model.put("usuario", null);}
 
         List<Club> clubsMiembros = servicioClub.obtenerClubsConMasMiembros();
-        List<Club> clubsCalificacion = servicioClub.obtenerClubsConMejorCalificacion();
+        List<Club> clubsPuntuacion = servicioClub.obtenerClubsConMejorPuntuacion();
         List<Usuario> usuariosSeguidores = servicioUsuario.obtenerUsuariosConMasSeguidores();
         List<Club> clubsPublicaciones = servicioClub.obtenerClubsConMasPublicaciones();
 
-        model.put("clubsMiembros", clubsMiembros);
-        model.put("clubsCalificacion", clubsCalificacion);
-        model.put("usuariosSeguidores", usuariosSeguidores);
-        model.put("clubsPublicaciones", clubsPublicaciones);
+        model.addAttribute("clubsMiembros", clubsMiembros);
+        model.addAttribute("clubsPuntuacion", clubsPuntuacion);
+        model.addAttribute("usuariosSeguidores", usuariosSeguidores);
+        model.addAttribute("clubsPublicaciones", clubsPublicaciones);
 
         return new ModelAndView("ranking", model);
     }
 
     @RequestMapping(path = "/club/puntuar/{id}")
-    public String puntuarClub(@PathVariable Long id, @RequestParam Integer puntuacion, HttpServletRequest request) throws NoExisteEseClub {
+    public String puntuarClub(@PathVariable Long id, @RequestParam Integer puntuacion, HttpServletRequest request) throws NoExisteEseClub, NoExisteEseUsuario {
         Usuario usuario = (Usuario) request.getSession().getAttribute("usuario");
+        Usuario usuarioActual = servicioUsuario.buscarUsuarioPor(usuario.getId());
         Club club = servicioClub.buscarClubPor(id);
-        servicioClub.agregarPuntuacion(club, puntuacion);
+        servicioClub.agregarPuntuacion(club, usuarioActual, puntuacion);
+        Double puntuacionPromedio = servicioClub.actualizarPuntuacionPromedio(club);
+        servicioClub.actualizarPromedio(club, puntuacionPromedio);
+        return "redirect:/club/" + id;
+    }
+
+    @RequestMapping(path = "/club/despuntuar/{id}")
+    public String despuntuarClub(@PathVariable Long id, HttpServletRequest request) throws NoExisteEseClub, NoExisteEseUsuario {
+        Usuario usuario = (Usuario) request.getSession().getAttribute("usuario");
+        Usuario usuarioActual = servicioUsuario.buscarUsuarioPor(usuario.getId());
+        Club club = servicioClub.buscarClubPor(id);
+        servicioClub.removerPuntuacion(club, usuarioActual);
         return "redirect:/club/" + id;
     }
 }

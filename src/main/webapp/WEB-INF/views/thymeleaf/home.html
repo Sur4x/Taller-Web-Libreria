@@ -117,8 +117,9 @@
           <div th:each="club : ${clubs}" class="club-item">
             <div class="card h-100">
               <a th:href="@{/club/{id}(id=${club.id})}">
-                <img th:src="@{/images/{imagen}(imagen=${club.imagen})}" class="card-img-top" alt="Imagen del club">
+                <img th:src="@{${club.imagen}}" class="card-img-top" alt="Imagen del club">
               </a>
+              <p></p>
               <div class="card-body">
                 <h5 class="card-title">
                   <a th:href="@{/club/{id}(id=${club.id})}" th:text="${club.nombre}">Nombre del club</a>
@@ -140,7 +141,7 @@
           <div th:each="club : ${clubs}" th:if="${club.genero == 'terror'}" class="club-item">
             <div class="card h-100">
               <a th:href="@{/club/{id}(id=${club.id})}">
-                <img th:src="@{/images/{imagen}(imagen=${club.imagen})}" class="card-img-top" alt="Imagen del club">
+                <img th:src="@{${club.imagen}}" class="card-img-top" alt="Imagen del club">
               </a>
               <div class="card-body">
                 <h5 class="card-title">
@@ -163,7 +164,7 @@
           <div th:each="club : ${clubs}" th:if="${club.genero == 'romance'}" class="club-item">
             <div class="card h-100">
               <a th:href="@{/club/{id}(id=${club.id})}">
-                <img th:src="@{/images/{imagen}(imagen=${club.imagen})}" class="card-img-top" alt="Imagen del club">
+                <img th:src="@{${club.imagen}}" class="card-img-top" alt="Imagen del club">
               </a>
               <div class="card-body">
                 <h5 class="card-title">
@@ -186,7 +187,7 @@
           <div th:each="club : ${clubs}" th:if="${club.genero == 'aventura'}" class="club-item">
             <div class="card h-100">
               <a th:href="@{/club/{id}(id=${club.id})}">
-                <img th:src="@{/images/{imagen}(imagen=${club.imagen})}" class="card-img-top" alt="Imagen del club">
+                <img th:src="@{${club.imagen}}" class="card-img-top" alt="Imagen del club">
               </a>
               <div class="card-body">
                 <h5 class="card-title">
@@ -217,7 +218,7 @@
         <tr th:each="club : ${clubs}">
           <td th:text="${club.id}">1</td>
           <td>
-            <img th:src="@{/images/{imagen}(imagen=${club.imagen})}" alt="Imagen del club" class="img-fluid" style="width: 50px; height: 50px;">
+            <img th:src="@{${club.imagen}}" alt="Imagen del club" class="img-fluid" style="width: 50px; height: 50px;">
           </td>
           <td th:text="${club.nombre}">Nombre del club</td>
           <td th:text="${club.descripcion}">Descripción del club</td>

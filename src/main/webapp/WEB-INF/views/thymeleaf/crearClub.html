@@ -32,7 +32,7 @@
 <div class="container mt-5 pt-5">
     <h1 class="text-center mb-4">Cree su nuevo club</h1>
 
-    <form action="#" th:action="@{/crearNuevoClub}" method="POST" th:object="${club}">
+    <form action="#" th:action="@{/crearNuevoClub}" method="POST" th:object="${club}" enctype="multipart/form-data">
         <div class="mb-3">
             <label for="imagen" class="form-label">Imagen del Club</label>
             <input id="imagen" th:field="*{imagen}" type="file" class="form-control" placeholder="Suba la imagen de su club" required>
@@ -52,12 +52,13 @@
             <label for="genero" class="form-label">Género</label>
             <select id="genero" th:field="*{genero}" class="form-select" required>
                 <option value="" disabled selected>Seleccione un género</option>
-                <option value="aventura">Aventura</option>
-                <option value="romance">Romance</option>
-                <option value="misterio">Misterio</option>
-                <option value="terror">Terror</option>
-                <option value="auto-ayuda">Auto-ayuda</option>
-                <option value="ciencia ficcion">Ciencia ficción</option>
+                <option value="Aventura">Aventura</option>
+                <option value="Romance">Romance</option>
+                <option value="Misterio">Misterio</option>
+                <option value="Terror">Terror</option>
+                <option value="Auto-ayuda">Auto-ayuda</option>
+                <option value="Ciencia ficcion">Ciencia ficción</option>
+                <option value="Historia">Historia</option>
             </select>
         </div>
 

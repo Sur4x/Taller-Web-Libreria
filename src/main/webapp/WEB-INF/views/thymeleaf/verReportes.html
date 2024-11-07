@@ -44,7 +44,7 @@
       <strong>Estado de Reporte:</strong> <span th:text="${club.estaReportado}">Estado</span>
     </div>
     <div class="col-md-4">
-      <img th:src="@{/images/{imagen}(imagen=${club.imagen})}" alt="Imagen del club" class="img-fluid" style="width: 100px; height: 100px;">
+      <img th:src="@{${club.imagen}}" alt="Imagen del club" class="img-fluid" style="width: 100px; height: 100px;">
     </div>
   </div>
 

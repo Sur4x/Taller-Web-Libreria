@@ -10,7 +10,6 @@ public class Usuario {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String nombreUsuario;
-    private String descripcion;
     private String email;
     private String password;
 
@@ -43,6 +42,9 @@ public class Usuario {
 
     @OneToMany(mappedBy = "autorDelLike", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Like> likes = new ArrayList<>();
+
+    @OneToMany(mappedBy = "usuario", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
+    private List<Puntuacion> puntuaciones;
 
     public Usuario(){};
     public Usuario(String nombreUsuario, String email,String password, List<Club> clubsInscriptos) {
@@ -93,14 +95,6 @@ public class Usuario {
         this.confirmPassword = confirmPassword;
     }
 
-    public String getDescripcion() {
-        return descripcion;
-    }
-
-    public void setDescripcion(String descripcion) {
-        this.descripcion = descripcion;
-    }
-
     public List<Club> getClubsInscriptos() {
         return clubsInscriptos;
     }
@@ -142,6 +136,13 @@ public class Usuario {
         this.seguidos = seguidos;
     }
 
+    public List<Puntuacion> getPuntuaciones() {
+        return puntuaciones;
+    }
+
+    public void setPuntuaciones(List<Puntuacion> puntuaciones) {
+        this.puntuaciones = puntuaciones;
+    }
 
     @Override
     public boolean equals(Object o) {

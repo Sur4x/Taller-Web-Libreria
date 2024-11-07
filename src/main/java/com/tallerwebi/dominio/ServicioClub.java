@@ -34,9 +34,17 @@ public interface ServicioClub {
 
     List<Club> obtenerClubsConMasMiembros();
 
-    List<Club> obtenerClubsConMejorCalificacion();
+    List<Club> obtenerClubsConMejorPuntuacion();
 
     List<Club> obtenerClubsConMasPublicaciones();
 
-    void agregarPuntuacion(Club club, Integer puntuacion);
+    void agregarPuntuacion(Club club,Usuario usuario, Integer puntuacion);
+
+    Puntuacion buscarPuntuacion(Club club, Usuario usuario);
+
+    void removerPuntuacion(Club club, Usuario usuario);
+
+    Double actualizarPuntuacionPromedio(Club club);
+
+    void actualizarPromedio(Club club, Double promedio);
 }

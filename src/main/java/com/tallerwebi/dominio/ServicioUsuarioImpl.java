@@ -28,9 +28,10 @@ public class ServicioUsuarioImpl implements ServicioUsuario{
     @Override
     public Usuario buscarUsuarioPor(Long id) throws NoExisteEseUsuario {
         Usuario usuario = repositorioUsuario.buscarUsuarioPor(id);
+        Hibernate.initialize(usuario.getPuntuaciones());
+        Hibernate.initialize(usuario.getSeguidores());
+        Hibernate.initialize(usuario.getSeguidos());
         if (usuario != null){
-            Hibernate.initialize(usuario.getSeguidores());
-            Hibernate.initialize(usuario.getSeguidos());
             return usuario;
         }else{
             throw new NoExisteEseUsuario("No existe un usuario con ese id");
@@ -62,6 +63,11 @@ public class ServicioUsuarioImpl implements ServicioUsuario{
     @Override
     public List<Usuario> obtenerUsuariosConMasSeguidores() {
         List<Usuario> usuarios = repositorioUsuario.buscarTodosLosUsuarios();
+
+        for (Usuario usuario : usuarios) {
+            Hibernate.initialize(usuario.getSeguidores());
+        }
+
         usuarios.sort(Comparator.comparingInt(s -> s.getSeguidores().size()));
         Collections.reverse(usuarios);
         List<Usuario> usuariosConMasSeguidores = new ArrayList<>();

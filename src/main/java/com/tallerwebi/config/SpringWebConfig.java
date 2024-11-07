@@ -5,6 +5,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.filter.CharacterEncodingFilter;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -12,6 +13,8 @@ import org.thymeleaf.spring5.SpringTemplateEngine;
 import org.thymeleaf.spring5.templateresolver.SpringResourceTemplateResolver;
 import org.thymeleaf.spring5.view.ThymeleafViewResolver;
 import org.thymeleaf.templatemode.TemplateMode;
+
+import javax.servlet.MultipartConfigElement;
 
 @EnableWebMvc
 @Configuration
@@ -27,13 +30,16 @@ public class SpringWebConfig implements WebMvcConfigurer {
         registry.addResourceHandler("/css/**").addResourceLocations("/resources/core/css/");
         registry.addResourceHandler("/js/**").addResourceLocations("/resources/core/js/");
         registry.addResourceHandler("/webjars/**").addResourceLocations("/webjars/");
-        //EN TEORIA NECESITO ESTO PARA ACCEDER A LAS IMAGENES EN UNA CARPETA QUE NO SEA ESTATICA:
-        //registry.addResourceHandler("/images/**").addResourceLocations("/resources/core/imagenes/");
-        registry.addResourceHandler("/images/**")
-                .addResourceLocations("file:src/main/webapp/resources/core/imagenes/");
+        registry.addResourceHandler("/uploads/**").addResourceLocations("file:uploads/");
+    }
 
-
-
+    @Bean
+    public MultipartConfigElement multipartConfigElement() {
+        return new MultipartConfigElement(
+                "/tmp/uploads", // Directorio temporal para almacenar los archivos
+                10 * 1024 * 1024, // Tamaño máximo del archivo (10 MB)
+                20 * 1024 * 1024, // Tamaño máximo de la solicitud (20 MB)
+                0); // Sin límite en la cantidad de archivos
     }
 
     // https://www.thymeleaf.org/doc/tutorials/3.0/thymeleafspring.html

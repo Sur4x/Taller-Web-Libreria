@@ -80,7 +80,7 @@ public class ControladorClubTest {
         when(sessionMock.getAttribute("usuario")).thenReturn(usuarioMock);
         when(servicioClubMock.agregar(any(Club.class))).thenReturn(true);
 
-        ModelAndView model = controladorClub.crearNuevoClub(new Club(), requestMock);
+        ModelAndView model = controladorClub.crearNuevoClub(new Club(), requestMock, any());
         assertThat(model.getViewName(), equalToIgnoringCase("redirect:/club/{clubId}"));
 
     }
@@ -91,7 +91,7 @@ public class ControladorClubTest {
         when(sessionMock.getAttribute("usuario")).thenReturn(usuarioMock);
         when(servicioClubMock.agregar(any(Club.class))).thenReturn(false);
 
-        ModelAndView model = controladorClub.crearNuevoClub(new Club(), requestMock);
+        ModelAndView model = controladorClub.crearNuevoClub(new Club(), requestMock, any());
         assertThat(model.getViewName(), equalToIgnoringCase("redirect:/home"));
     }
 

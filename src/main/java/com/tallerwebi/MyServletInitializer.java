@@ -5,6 +5,9 @@ import com.tallerwebi.config.HibernateConfig;
 import com.tallerwebi.config.SpringWebConfig;
 import org.springframework.web.servlet.support.AbstractAnnotationConfigDispatcherServletInitializer;
 
+import javax.servlet.MultipartConfigElement;
+import javax.servlet.ServletRegistration;
+
 public class MyServletInitializer
         extends AbstractAnnotationConfigDispatcherServletInitializer {
 
@@ -23,5 +26,11 @@ public class MyServletInitializer
     @Override
     protected String[] getServletMappings() {
         return new String[]{"/"};
+    }
+
+    @Override
+    protected void customizeRegistration(ServletRegistration.Dynamic registration) {
+        MultipartConfigElement multipartConfig = new MultipartConfigElement("/tmp", 1000000, 1000000, 1000);
+        registration.setMultipartConfig(multipartConfig);
     }
 }

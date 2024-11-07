@@ -53,6 +53,7 @@ public class ServicioClubImpl implements ServicioClub {
         if (club == null) {
             throw new NoExisteEseClub("No existe un club con ese ID");
         }
+        Hibernate.initialize(club.getPuntuaciones());
         Hibernate.initialize(club.getPublicaciones());
         return club;
     }
@@ -74,7 +75,6 @@ public class ServicioClubImpl implements ServicioClub {
             }
         }
     }
-
     @Override
     public void borrarRegistroUsuarioEnElClub(Usuario usuario, Club club){
         if (usuario != null && club != null) {
@@ -158,14 +158,17 @@ public class ServicioClubImpl implements ServicioClub {
     }
 
     @Override
-    public List<Club> obtenerClubsConMejorCalificacion() {
-        List<Club> clubs = repositorioClub.obtenerClubsConMejorCalificacion();
+    public List<Club> obtenerClubsConMejorPuntuacion() {
+        List<Club> clubs = repositorioClub.obtenerClubsConMejorPuntuacion();
         return clubs;
     }
 
     @Override
     public List<Club> obtenerClubsConMasPublicaciones() {
         List<Club> clubs = repositorioClub.obtenerTodosLosClubs();
+        for (Club club : clubs) {
+            Hibernate.initialize(club.getPublicaciones());
+        }
         clubs.sort(Comparator.comparingInt(s -> s.getPublicaciones().size()));
         Collections.reverse(clubs);
         List<Club> clubsConMasPublicaciones = new ArrayList<>();
@@ -177,11 +180,54 @@ public class ServicioClubImpl implements ServicioClub {
         return clubsConMasPublicaciones;
     }
 
+    public Puntuacion buscarPuntuacion(Club club, Usuario usuario){
+        return repositorioClub.buscarPuntuacion(club, usuario);
+    }
+
     @Override
-    public void agregarPuntuacion(Club club, Integer puntuacion) {
-        club.setCalificacionTotal(club.getCalificacionTotal() + puntuacion);
-        club.setCantidadCalificaciones(club.getCantidadCalificaciones() + 1);
-        club.setCalificacion(club.getCalificacion());
-        repositorioClub.guardar(club);
+    public void agregarPuntuacion(Club club, Usuario usuario, Integer puntuacion) {
+        Puntuacion puntuacionClub = repositorioClub.buscarPuntuacion(club, usuario);
+        if(puntuacionClub!=null){
+            puntuacionClub.setPuntuacion(puntuacion);
+        }else {
+            puntuacionClub = new Puntuacion(club, usuario, puntuacion);
+            club.getPuntuaciones().add(puntuacionClub);
+            usuario.getPuntuaciones().add(puntuacionClub);
+        }
+        repositorioClub.guardarPuntuacion(puntuacionClub);
+    }
+
+    @Override
+    public void removerPuntuacion(Club club, Usuario usuario) {
+        Puntuacion puntuacionClub = repositorioClub.buscarPuntuacion(club, usuario);
+        if(puntuacionClub!=null){
+            club.getPuntuaciones().remove(puntuacionClub);
+            usuario.getPuntuaciones().remove(puntuacionClub);
+            repositorioClub.eliminarPuntuacion(puntuacionClub);
+
+            Double puntuacionPromedio = actualizarPuntuacionPromedio(club);
+            actualizarPromedio(club, puntuacionPromedio);
+
+            repositorioClub.guardar(club);
+        }
+        else throw new NoExisteEsaPuntuacion("No puntuaste aún este club.");
+    }
+
+    @Override
+    public Double actualizarPuntuacionPromedio(Club club){
+        Double puntuacionTotal = 0.0;
+        Double puntuacionPromedio = 0.0;
+        for(Puntuacion puntuacion : club.getPuntuaciones()){
+            puntuacionTotal += puntuacion.getPuntuacion();
+        }
+        if(!club.getPuntuaciones().isEmpty()){
+            puntuacionPromedio = puntuacionTotal / club.getPuntuaciones().size();
+        }
+        return puntuacionPromedio;
+    }
+
+    @Override
+    public void actualizarPromedio(Club club, Double promedio){
+        repositorioClub.actualizarPromedio(club.getId(), promedio);
     }
 }

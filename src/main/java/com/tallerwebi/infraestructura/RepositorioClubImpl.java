@@ -1,16 +1,16 @@
 package com.tallerwebi.infraestructura;
 
 import com.tallerwebi.dominio.Club;
+import com.tallerwebi.dominio.Puntuacion;
 import com.tallerwebi.dominio.RepositorioClub;
-import org.hibernate.Session;
+import com.tallerwebi.dominio.Usuario;
 import org.hibernate.SessionFactory;
-import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.NoResultException;
 import javax.persistence.Query;
-import java.util.ArrayList;
 import java.util.List;
 
 @Repository
@@ -82,10 +82,43 @@ public class RepositorioClubImpl implements RepositorioClub {
     }
 
     @Override
-    public List<Club> obtenerClubsConMejorCalificacion() {
-        String hql = "FROM Club c ORDER BY c.calificacion DESC";
+    public List<Club> obtenerClubsConMejorPuntuacion() {
+        String hql = "FROM Club c ORDER BY c.puntuacionPromedio DESC";
         Query query = this.sessionFactory.getCurrentSession().createQuery(hql, Club.class);
         query.setMaxResults(5); //SOLO DEVUELVE 5 CLUBS
         return query.getResultList();
+    }
+
+    @Override
+    public Puntuacion buscarPuntuacion(Club club, Usuario usuario) {
+        try{
+            String hql = "FROM Puntuacion p WHERE p.club = :club AND p.usuario = :usuario";
+            Query query = this.sessionFactory.getCurrentSession().createQuery(hql);
+            query.setParameter("club", club);
+            query.setParameter("usuario", usuario);
+            Puntuacion puntuacion = (Puntuacion) query.getSingleResult();
+            return puntuacion;
+        }catch (NoResultException e){
+            return null;
+        }
+    }
+
+    @Override
+    public void guardarPuntuacion(Puntuacion puntuacionClub) {
+        sessionFactory.getCurrentSession().merge(puntuacionClub);
+    }
+
+    @Override
+    public void eliminarPuntuacion(Puntuacion puntuacionClub) {
+        sessionFactory.getCurrentSession().delete(puntuacionClub);
+    }
+
+    @Override
+    public void actualizarPromedio(Long id, Double promedio) {
+        String hql = "UPDATE Club c SET c.puntuacionPromedio = :puntuacionPromedio WHERE c.id = :clubId";
+        Query query = sessionFactory.getCurrentSession().createQuery(hql);
+        query.setParameter("puntuacionPromedio", promedio);
+        query.setParameter("clubId", id);
+        query.executeUpdate();
     }
 }
