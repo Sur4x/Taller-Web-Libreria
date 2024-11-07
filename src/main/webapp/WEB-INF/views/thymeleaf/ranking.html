@@ -108,7 +108,7 @@
 
             <div class="col-md-6 mb-4">
                 <div class="card">
-                    <div class="card-header text-center font-weight-bold">Clubes con mejor calificación</div>
+                    <div class="card-header text-center font-weight-bold">Clubes con mejor puntuación</div>
                     <div class="card-body">
                         <table class="table table-bordered table-hover">
                             <thead class="thead-dark">
@@ -119,10 +119,10 @@
                             </tr>
                             </thead>
                             <tbody>
-                            <tr th:each="club, iterStat : ${clubsCalificacion}">
+                            <tr th:each="club, iterStat : ${clubsPuntuacion}">
                                 <td th:text="${iterStat.index + 1}">1</td>
                                 <td th:text="${club.nombre}"></td>
-                                <td th:text="${#numbers.formatDecimal(club.calificacion, 0, 2)}"></td>
+                                <td th:text="${club.puntuacionPromedio != 0 ? #numbers.formatDecimal(club.puntuacionPromedio, 0, 2) : '0,00'}"></td>
                             </tr>
                             </tbody>
                         </table>

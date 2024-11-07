@@ -17,10 +17,7 @@ public class Club {
     private String estaReportado;
     private Integer cantidadDeReportes;
     private Integer cantidadMiembros;
-    private Integer calificacionTotal;
-    private Integer cantidadCalificaciones;
-
-    private Double calificacion;
+    private Double puntuacionPromedio = 0.0;
 
     @ManyToMany(mappedBy = "clubsInscriptos", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.EAGER)
     private List<Usuario> integrantes;
@@ -30,6 +27,9 @@ public class Club {
 
     @OneToMany(mappedBy = "club", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Reporte> reportes;
+
+    @OneToMany(mappedBy = "club", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
+    private List<Puntuacion> puntuaciones;
 
     public Club() {
         this.reportes = new ArrayList<>();
@@ -49,9 +49,6 @@ public class Club {
         this.reportes = new ArrayList<>();
         this.cantidadDeReportes = 0;
         this.cantidadMiembros = 0;
-        this.calificacion = 0.0;
-        this.calificacionTotal = 0;
-        this.cantidadCalificaciones = 0;
     }
 
     public Long getId() {
@@ -136,22 +133,22 @@ public class Club {
 
     public void setCantidadMiembros(Integer cantidadMiembros) { this.cantidadMiembros = cantidadMiembros;}
 
-    public Double getCalificacion() {
-        Double cT = (double) calificacionTotal;
-        Double cC = (double) cantidadCalificaciones;
-        return cT/cC;
-    }
-    public void setCalificacion(Double calificacion){ this.calificacion = calificacion; };
 
-    public Integer getCantidadCalificaciones() { return cantidadCalificaciones; }
-
-    public Integer getCalificacionTotal() {
-        return calificacionTotal;
+    public List<Puntuacion> getPuntuaciones() {
+        return puntuaciones;
     }
 
-    public void setCantidadCalificaciones(Integer cantidadCalificaciones) { this.cantidadCalificaciones = cantidadCalificaciones;}
+    public void setPuntuaciones(List<Puntuacion> puntuaciones) {
+        this.puntuaciones = puntuaciones;
+    }
 
-    public void setCalificacionTotal(Integer calificacionTotal) { this.calificacionTotal = calificacionTotal;}
+    public Double getPuntuacionPromedio() {
+        return puntuacionPromedio;
+    }
+
+    public void setPuntuacionPromedio(Double puntuacionPromedio) {
+        this.puntuacionPromedio = puntuacionPromedio;
+    }
 
     @Override
     public boolean equals(Object o) {

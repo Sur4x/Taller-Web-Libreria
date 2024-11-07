@@ -27,7 +27,6 @@ public class ServicioLoginImpl implements ServicioLogin {
         Usuario usuarioEncontrado = repositorioUsuario.buscarUsuario(usuario.getEmail(), usuario.getPassword());
         if(usuarioEncontrado == null && usuario.getPassword().equals(usuario.getConfirmPassword())){
             usuario.setRol("usuario");
-            usuario.setDescripcion("");
             repositorioUsuario.guardar(usuario);
         }else{
             throw new UsuarioExistente();
