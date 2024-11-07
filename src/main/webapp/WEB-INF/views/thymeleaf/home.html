@@ -116,22 +116,19 @@
 
         <div th:if="${clubs} != null" class="row row-cols-4 g-4">
           <div th:each="club : ${clubs}" class="club-item">
+            <a th:id="'club-' + ${club.id}" th:href="@{/club/{id}(id=${club.id})}">
             <div class="card h-100">
-              <a th:href="@{/club/{id}(id=${club.id})}">
                 <img th:src="@{${club.imagen}}" class="card-img-top" alt="Imagen del club">
-              </a>
-              <p></p>
-              <div class="card-body">
-                <h5 class="card-title">
-                  <a th:href="@{/club/{id}(id=${club.id})}" th:text="${club.nombre}">Nombre del club</a>
-                </h5>
+                <div class="card-body">
+                  <h5 class="card-title text-decoration-none" th:text="${club.nombre}" >Nombre del club</h5>
+                </div>
               </div>
-            </div>
+            </a>
           </div>
         </div>
       </div>
+<p class="alert alert-info mt-3" id="clubTerror" >Explora nuestros clubs de Terror</p>
 
-      <p class="alert alert-info mt-3">Explora nuestros clubs de Terror</p>
       <div class="club-container">
         <div th:if="${clubs} == null">
           <p th:if="${error != null}" class="alert alert-danger mt-3" th:text="'Error: ' + ${error}"></p>
