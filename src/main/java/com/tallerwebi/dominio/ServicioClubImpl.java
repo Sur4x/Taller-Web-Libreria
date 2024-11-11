@@ -20,15 +20,16 @@ public class ServicioClubImpl implements ServicioClub {
     private RepositorioPublicacion repositorioPublicacion;
     private RepositorioUsuario repositorioUsuario;
     private RepositorioReporte repositorioReporte;
-    @Autowired
+
     private RepositorioNotificacion repositorioNotificacion;
 
     @Autowired
-    public ServicioClubImpl(RepositorioClub repositorioClub, RepositorioPublicacion repositorioPublicacion, RepositorioUsuario repositorioUsuario, RepositorioReporte repositorioReporte) {
+    public ServicioClubImpl(RepositorioClub repositorioClub, RepositorioPublicacion repositorioPublicacion, RepositorioUsuario repositorioUsuario, RepositorioReporte repositorioReporte,RepositorioNotificacion repositorioNotificacion) {
         this.repositorioClub = repositorioClub;
         this.repositorioPublicacion = repositorioPublicacion;
         this.repositorioUsuario = repositorioUsuario;
         this.repositorioReporte = repositorioReporte;
+        this.repositorioNotificacion = repositorioNotificacion;
     }
 
     @Override

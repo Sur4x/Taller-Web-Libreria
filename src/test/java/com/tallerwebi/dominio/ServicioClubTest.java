@@ -3,7 +3,11 @@ package com.tallerwebi.dominio;
 import com.tallerwebi.dominio.excepcion.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,13 +18,14 @@ import static org.mockito.Mockito.*;
 
 public class ServicioClubTest {
     //Voy a mockear el repositorio
-
     private ServicioClub servicioClub;
     private RepositorioClub repositorioClubMock;
     private RepositorioPublicacion repositorioPublicacionMock;
     private RepositorioUsuario repositorioUsuarioMock;
     private RepositorioReporte repositorioReporteMock;
+    private RepositorioNotificacion repositorioNotificacionMock;
     private  Club clubMock;
+    private Notificacion notificacionMock;
 
 
     @BeforeEach
@@ -29,19 +34,28 @@ public class ServicioClubTest {
         repositorioPublicacionMock = mock(RepositorioPublicacion.class);
         repositorioUsuarioMock = mock(RepositorioUsuario.class);
         repositorioReporteMock = mock(RepositorioReporte.class);
+        repositorioNotificacionMock = mock(RepositorioNotificacion.class);
 
-        this.servicioClub = new ServicioClubImpl(repositorioClubMock,repositorioPublicacionMock,repositorioUsuarioMock,repositorioReporteMock);
+        this.servicioClub = new ServicioClubImpl(repositorioClubMock,repositorioPublicacionMock,repositorioUsuarioMock,repositorioReporteMock,repositorioNotificacionMock);
         clubMock = mock(Club.class);
+        notificacionMock = mock(Notificacion.class);
     }
 
     @Test
     public void dadoQueUsoElMetodoAgregarYNoTengoElClubAgregadoEnLaBaseDeDatosEsteDevuelveTrueYLoAlmacena() throws ClubExistente {
-        when(repositorioClubMock.buscarClubPor(clubMock.getId())).thenReturn(null);
+        when(repositorioClubMock.buscarClubPor(clubMock.getId())).thenReturn(null);;
 
         Boolean agregado = servicioClub.agregar(clubMock);
 
         assertThat(agregado, is(true));
         verify(repositorioClubMock, times(1)).guardar(clubMock);
+
+        ArgumentCaptor<Notificacion> captorNotificacion = ArgumentCaptor.forClass(Notificacion.class);
+        verify(repositorioNotificacionMock, times(1)).crearNotificacion(captorNotificacion.capture());
+
+        Notificacion notificacionCapturada = captorNotificacion.getValue();
+        assertThat(notificacionCapturada.getEvento(), is("Se creo un nuevo club: " + clubMock.getNombre()));
+        assertThat(notificacionCapturada.getFecha(), is(LocalDate.now()));
     }
 
     @Test
@@ -171,13 +185,20 @@ public class ServicioClubTest {
         Club club = new Club();
         club.setIntegrantes(new ArrayList<>());
         Usuario usuario = new Usuario();
-        club.getIntegrantes().add(usuario); //agregue 1 usuario en la lista del club
+        club.getIntegrantes().add(usuario);
 
         servicioClub.eliminarClub(club);
 
         verify(repositorioUsuarioMock, times(1)).guardar(usuario);
         verify(repositorioClubMock, times(1)).guardar(club);
         verify(repositorioClubMock, times(1)).eliminar(club);
+
+        ArgumentCaptor<Notificacion> captorNotificacion = ArgumentCaptor.forClass(Notificacion.class);
+        verify(repositorioNotificacionMock, times(1)).crearNotificacion(captorNotificacion.capture());
+
+        Notificacion notificacionCapturada = captorNotificacion.getValue();
+        assertThat(notificacionCapturada.getEvento(), is("Se elimino un club existente: " + clubMock.getNombre()));
+        assertThat(notificacionCapturada.getFecha(), is(LocalDate.now()));
     }
 
     @Test
