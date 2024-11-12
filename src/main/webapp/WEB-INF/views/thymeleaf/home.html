@@ -81,7 +81,7 @@
 <header>
   <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
     <div class="collapse navbar-collapse d-flex justify-content-between" id="navbarNav">
-      <a class="navbar-brand" th:href="@{/home}">Club de Lectura</a>
+      <a class="navbar-brand" th:href="@{/home}">DeUltima</a>
       <form class="d-flex" th:action="@{/buscar}" method="GET">
         <input type="text" name="query" class="form-control me-2" placeholder="Buscar Club" aria-label="Buscar">
         <button type="submit" class="btn btn-outline-light">Buscar</button>
@@ -92,6 +92,7 @@
       </div>
       <div th:if="${usuario != null}">
         <a th:href="@{/crearClub}" class="btn btn-primary me-2">Crear nuevo club</a>
+        <a th:href="@{/notificacion/listar}" class="btn btn-primary me-2">Notificaciones</a>
         <div class="dropdown">
           <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">Menú</button>
           <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
@@ -117,7 +118,7 @@
         <div th:if="${clubs} != null" class="row row-cols-4 g-4">
           <div th:each="club : ${clubs}" class="club-item">
             <a th:id="'club-' + ${club.id}" th:href="@{/club/{id}(id=${club.id})}">
-            <div class="card h-100">
+              <div class="card h-100">
                 <img th:src="@{${club.imagen}}" class="card-img-top" alt="Imagen del club">
                 <div class="card-body">
                   <h5 class="card-title text-decoration-none" th:text="${club.nombre}" >Nombre del club</h5>
@@ -127,9 +128,8 @@
           </div>
         </div>
       </div>
-<p class="alert alert-info mt-3" id="clubTerror" >Explora nuestros clubs de Terror</p>
-
-      <div class="club-container">
+      <p class="alert alert-info mt-3" id="clubTerror">Explora nuestros clubs de Terror</p>
+        <div class="club-container">
         <div th:if="${clubs} == null">
           <p th:if="${error != null}" class="alert alert-danger mt-3" th:text="'Error: ' + ${error}"></p>
         </div>

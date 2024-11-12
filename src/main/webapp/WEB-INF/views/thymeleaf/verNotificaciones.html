@@ -2,7 +2,7 @@
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Notificaciones</title>
     <link rel="stylesheet" th:href="@{/webjars/bootstrap/5.2.0/css/bootstrap.min.css}"/>
     <link rel="stylesheet" th:href="@{/css/main.css}"/>
 </head>
@@ -21,6 +21,7 @@
             </div>
             <div th:if="${usuario != null}">
                 <a th:href="@{/crearClub}" class="btn btn-primary me-2">Crear nuevo club</a>
+                <a th:href="@{/notificacion/listar}" class="btn btn-primary me-2">Notificaciones</a>
                 <div class="dropdown">
                     <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">Menú</button>
                     <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
@@ -35,25 +36,26 @@
     </nav>
 </header>
 
-
-<h1 class="mb-4 text-center">Crear Nuevo Reporte</h1>
-
-<p th:if="${error != null}" class="alert alert-danger mt-3" th:text="'Error: ' + ${error}"></p>
-
-<form th:action="@{/club/{clubId}/nuevoReporte(clubId=${club.id})}" th:object="${reporte}" method="post" class="p-4 shadow-sm rounded bg-light">
-    <div class="mb-3">
-        <label for="titulo" class="form-label">Título</label>
-        <input type="text" id="titulo" class="form-control" th:field="*{motivo}" placeholder="Escribe el título aquí" required>
-    </div>
-
-    <div class="mb-3">
-        <label for="mensaje" class="form-label">Descripcion</label>
-        <textarea id="mensaje" class="form-control" th:field="*{descripcion}" placeholder="Escribe el mensaje aquí" rows="4" required></textarea>
-    </div>
-
-    <button type="submit" class="btn btn-primary w-100">Crear</button>
-</form>
-
+<div class="container mt-5 pt-5">
+    <h2 class="mb-4">Notificaciones</h2>
+    <table class="table table-striped table-responsive">
+        <thead>
+        <tr>
+            <th>Fecha</th>
+            <th>Evento</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="notificacion : ${notificaciones}">
+            <td th:text="${notificacion.fecha}">Fecha de notificación</td>
+            <td th:text="${notificacion.evento}">Evento</td>
+        </tr>
+        <tr th:if="${#lists.isEmpty(notificaciones)}">
+            <td colspan="4" class="text-center">No hay notificaciones</td>
+        </tr>
+        </tbody>
+    </table>
+</div>
 
 <script th:src="@{/webjars/bootstrap/5.2.0/js/bootstrap.bundle.min.js}"></script>
 </body>

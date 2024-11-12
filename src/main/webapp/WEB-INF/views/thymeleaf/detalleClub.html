@@ -15,7 +15,7 @@
 <header>
     <div th:if="${usuario == null}">
         <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
-            <a class="navbar-brand" th:href="@{/home}">Club de Lectura</a>
+            <a class="navbar-brand" th:href="@{/home}">DeUltima</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
                     aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
@@ -33,7 +33,7 @@
     <!-- USUARIO ADMIN -->
     <div th:if="${usuario != null and usuario.rol == 'admin'}">
         <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
-            <a class="navbar-brand" th:href="@{/home}">Club de Lectura</a>
+            <a class="navbar-brand" th:href="@{/home}">DeUltima</a>
             <h1>Bienvenido ADMIN</h1>
 
             <div class="d-flex ms-auto">
@@ -50,7 +50,7 @@
     <!-- USUARIO NORMAL -->
     <div th:if="${usuario != null and usuario.rol == 'usuario'}">
         <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
-            <a class="navbar-brand" th:href="@{/home}">Club de Lectura</a>
+            <a class="navbar-brand" th:href="@{/home}">DeUltima</a>
             <div class="d-flex ms-auto align-items-center">
                 <a th:href="@{/crearClub}" class="btn btn-primary me-2">Crear nuevo club</a>
                 <div class="dropdown">
@@ -80,7 +80,6 @@
 
 
         <div class="text-center">
-            <!-- Imagen con tamaño fijo -->
             <img th:src="@{${club.imagen}}" alt="Imagen del club" class="img-fluid rounded"
                  style="max-width: 300px; height: auto;">
         </div>
@@ -114,9 +113,11 @@
                         </div>
                     </form>
                 </div>
+                <!--
                 <div th:if="${puntuacion != null}">
                     <a th:href="@{/club/despuntuar/{id}(id=${club.id})}" class="btn btn-success text-center btn-lg mt-4">Eliminar puntuación</a>
                 </div>
+                -->
                 <form th:action="@{/club/{clubId}/abandonar(clubId=${club.id})}" method="post" class="text-center mt-4">
                     <button type="submit" class="btn btn-success btn-lg">Abandonar Club</button>
                 </form>

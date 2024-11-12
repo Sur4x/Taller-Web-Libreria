@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -20,12 +21,15 @@ public class ServicioClubImpl implements ServicioClub {
     private RepositorioUsuario repositorioUsuario;
     private RepositorioReporte repositorioReporte;
 
+    private RepositorioNotificacion repositorioNotificacion;
+
     @Autowired
-    public ServicioClubImpl(RepositorioClub repositorioClub, RepositorioPublicacion repositorioPublicacion, RepositorioUsuario repositorioUsuario, RepositorioReporte repositorioReporte) {
+    public ServicioClubImpl(RepositorioClub repositorioClub, RepositorioPublicacion repositorioPublicacion, RepositorioUsuario repositorioUsuario, RepositorioReporte repositorioReporte,RepositorioNotificacion repositorioNotificacion) {
         this.repositorioClub = repositorioClub;
         this.repositorioPublicacion = repositorioPublicacion;
         this.repositorioUsuario = repositorioUsuario;
         this.repositorioReporte = repositorioReporte;
+        this.repositorioNotificacion = repositorioNotificacion;
     }
 
     @Override
@@ -35,6 +39,13 @@ public class ServicioClubImpl implements ServicioClub {
             throw new ClubExistente("El club ya existe");
         }
         repositorioClub.guardar(club);
+
+        Notificacion notificacion = new Notificacion();
+        notificacion.setFecha(LocalDate.now());
+        notificacion.setEvento("Se creo un nuevo club: " + club.getNombre());
+
+        repositorioNotificacion.crearNotificacion(notificacion);
+
         return true;
     }
 
@@ -97,6 +108,13 @@ public class ServicioClubImpl implements ServicioClub {
         }
         club.getIntegrantes().clear();
         repositorioClub.guardar(club);
+
+        Notificacion notificacion = new Notificacion();
+        notificacion.setFecha(LocalDate.now());
+        notificacion.setEvento("Se elimino un club existente: " + club.getNombre());
+
+        repositorioNotificacion.crearNotificacion(notificacion);
+
         repositorioClub.eliminar(club);
     }
 

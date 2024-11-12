@@ -1,10 +1,7 @@
 package com.tallerwebi.punta_a_punta.vistas;
-
 import com.microsoft.playwright.Page;
 
-import java.io.File;
-
-public class VistaHome extends VistaWeb{
+public class VistaHome extends VistaWeb {
 
     public VistaHome(Page page) {
         super(page);
@@ -32,8 +29,8 @@ public class VistaHome extends VistaWeb{
         return this.obtenerTextoDelElemento("#clubTerror");
     }
 
-    public void hacerClickEnUnClub27(){
-        this.darClickEnElElemento("#club-27");
+    public void hacerClickEnElClub1(){
+        this.darClickEnElElemento("#club-1");
     }
 
 }
