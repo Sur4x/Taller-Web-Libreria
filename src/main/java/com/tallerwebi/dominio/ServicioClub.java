@@ -17,41 +17,15 @@ public interface ServicioClub {
 
     void registrarUsuarioEnElClub(Usuario usuario, Club club);
 
-    //void agregarNuevaPublicacion(Publicacion publicacion, Long id, Usuario usuario) throws NoExisteEseClub;
-    void agregarNuevaPublicacion(Publicacion publicacion, Long id) throws NoExisteEseClub;
-
-    void eliminarPublicacion(Publicacion publicacion, Club club);
-
     void borrarRegistroUsuarioEnElClub(Usuario usuario, Club club);
 
     void eliminarClub(Club club) throws NoExisteEseClub;
-
-    void agregarNuevoReporteAlClub(Long id, Reporte reporte) throws ReporteExistente, NoExisteEseClub;
-
-    void obtenerTodosLosReportesDeUnClub(Club club);
-
-    void incrementarCantidadDeReportesEnUnClubObteniendoSuCantidadTotalDeReportes(Long idClub);
 
     List<Club> obtenerClubsConMasMiembros();
 
     List<Club> obtenerClubsConMejorPuntuacion();
 
     List<Club> obtenerClubsConMasPublicaciones();
-
-    void agregarPuntuacion(Club club,Usuario usuario, Integer puntuacion);
-
-    Puntuacion buscarPuntuacion(Club club, Usuario usuario);
-
-/* DESPUNTUAR CLUB
-    void removerPuntuacion(Club club, Usuario usuario);
-
- */
-
-    Double obtenerPuntuacionPromedio(Club club);
-
-
-
-    void actualizarPromedio(Club club, Double promedio);
 
 
 }

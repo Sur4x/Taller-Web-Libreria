@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.Query;
 import java.util.List;
 
 @Repository("repositorioReporte")
@@ -48,5 +49,20 @@ public class RepositorioReporteImpl implements RepositorioReporte {
         return (List<Reporte>) session.createCriteria(Reporte.class)
                 .add(Restrictions.eq("club", idClub))
                 .list();
+    }
+
+    @Override
+    @Transactional
+    public Integer incrementarCantidadDeReportesEnUnClubObteniendoSuCantidadTotalDeReportes(Long idClub) {
+        String hql = "UPDATE Club SET cantidadDeReportes = cantidadDeReportes + 1 WHERE id = :idClub";
+        Query query = this.sessionFactory.getCurrentSession().createQuery(hql);
+        query.setParameter("idClub", idClub);
+        query.executeUpdate();
+
+        // Ahora obtiene la cantidad actual de reportes
+        String hqlSelect = "SELECT c.cantidadDeReportes FROM Club c WHERE c.id = :idClub";
+        Query selectQuery = this.sessionFactory.getCurrentSession().createQuery(hqlSelect);
+        selectQuery.setParameter("idClub", idClub);
+        return (Integer) selectQuery.getSingleResult();
     }
 }

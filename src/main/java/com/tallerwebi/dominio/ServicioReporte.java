@@ -15,5 +15,9 @@ public interface ServicioReporte {
 
     List<Reporte> listarReportesPorClub(Club club) throws NoExisteEseClub;
 
+    void incrementarCantidadDeReportesEnUnClubObteniendoSuCantidadTotalDeReportes(Long idClub);
 
+    void agregarNuevoReporteAlClub(Long id, Reporte reporte) throws ReporteExistente, NoExisteEseClub;
+
+    void obtenerTodosLosReportesDeUnClub(Club club);
 }

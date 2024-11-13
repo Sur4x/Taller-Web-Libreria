@@ -22,6 +22,7 @@ public class RepositorioClubImpl implements RepositorioClub {
     public RepositorioClubImpl(SessionFactory sessionFactory) {
         this.sessionFactory = sessionFactory;
     }
+
     @Override
     public List<Club> obtenerTodosLosClubs() {
         String hql = "FROM Club";
@@ -58,20 +59,6 @@ public class RepositorioClubImpl implements RepositorioClub {
         sessionFactory.getCurrentSession().delete(club);
     }
 
-    @Override
-    @Transactional
-    public Integer incrementarCantidadDeReportesEnUnClubObteniendoSuCantidadTotalDeReportes(Long idClub) {
-        String hql = "UPDATE Club SET cantidadDeReportes = cantidadDeReportes + 1 WHERE id = :idClub";
-        Query query = this.sessionFactory.getCurrentSession().createQuery(hql);
-        query.setParameter("idClub", idClub);
-        query.executeUpdate();
-
-        // Ahora obtiene la cantidad actual de reportes
-        String hqlSelect = "SELECT c.cantidadDeReportes FROM Club c WHERE c.id = :idClub";
-        Query selectQuery = this.sessionFactory.getCurrentSession().createQuery(hqlSelect);
-        selectQuery.setParameter("idClub", idClub);
-        return (Integer) selectQuery.getSingleResult();
-    }
 
     @Override
     public List<Club> obtenerClubsConMasMiembros() {
@@ -89,41 +76,4 @@ public class RepositorioClubImpl implements RepositorioClub {
         return query.getResultList();
     }
 
-    @Override
-    public Puntuacion buscarPuntuacion(Club club, Usuario usuario) {
-        try{
-            String hql = "FROM Puntuacion p WHERE p.club = :club AND p.usuario = :usuario";
-            Query query = this.sessionFactory.getCurrentSession().createQuery(hql);
-            query.setParameter("club", club);
-            query.setParameter("usuario", usuario);
-            Puntuacion puntuacion = (Puntuacion) query.getSingleResult();
-            return puntuacion;
-        }catch (NoResultException e){
-            return null;
-        }
-    }
-
-    @Override
-    public void guardarPuntuacion(Puntuacion puntuacionClub) {
-        sessionFactory.getCurrentSession().merge(puntuacionClub);
-    }
-
-    @Override
-    public void eliminarPuntuacion(Puntuacion puntuacionClub) {
-        sessionFactory.getCurrentSession().delete(puntuacionClub);
-    }
-
-    /*
-    @Override
-    @Transactional
-    public void actualizarPromedio(Long id, Double promedio) {
-        String hql = "UPDATE Club c SET c.puntuacionPromedio = :puntuacionPromedio WHERE c.id = :clubId";
-        Query query = sessionFactory.getCurrentSession().createQuery(hql);
-        query.setParameter("puntuacionPromedio", promedio);
-        query.setParameter("clubId", id);
-        query.executeUpdate();
-
-    }
-
-     */
 }

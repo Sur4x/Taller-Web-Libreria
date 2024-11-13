@@ -35,19 +35,20 @@ public class RepositorioLikeImpl implements RepositorioLike {
     }
 
     @Override
+    public void eliminarLikesDeUnComentario(Long comentarioId) {
+        String hql = "DELETE FROM Like l WHERE l.comentario.id = :comentarioId";
+        Query query = sessionFactory.getCurrentSession().createQuery(hql);
+        query.setParameter("comentarioId", comentarioId);
+        query.executeUpdate();
+    }
+
+    //borrar
+    @Override
     public Integer obtenerCantidadDeLikesDeUnComentario(Long comentarioId) {
         String hql = "SELECT COUNT(l) FROM Like l WHERE l.comentario.id = :comentarioId";
         Query query = this.sessionFactory.getCurrentSession().createQuery(hql);
         query.setParameter("comentarioId", comentarioId);
         Long contador = (Long) query.getSingleResult();
         return contador.intValue();
-    }
-
-    @Override
-    public void eliminarLikesDeUnComentario(Long comentarioId) {
-        String hql = "DELETE FROM Like l WHERE l.comentario.id = :comentarioId";
-        Query query = sessionFactory.getCurrentSession().createQuery(hql);
-        query.setParameter("comentarioId", comentarioId);
-        query.executeUpdate();
     }
 }

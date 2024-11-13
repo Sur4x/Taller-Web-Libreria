@@ -17,10 +17,9 @@ import java.util.List;
 public class ServicioClubImpl implements ServicioClub {
 
     private RepositorioClub repositorioClub;
-    private RepositorioPublicacion repositorioPublicacion;
+    private RepositorioPublicacion repositorioPublicacion; //borrar
     private RepositorioUsuario repositorioUsuario;
     private RepositorioReporte repositorioReporte;
-
     private RepositorioNotificacion repositorioNotificacion;
 
     @Autowired
@@ -119,57 +118,6 @@ public class ServicioClubImpl implements ServicioClub {
     }
 
     @Override
-    public void agregarNuevaPublicacion(Publicacion publicacion, Long id) throws NoExisteEseClub {
-
-        if (publicacion != null && id != null){
-            Club club = buscarClubPor(id);
-            publicacion.setClub(club);
-            club.getPublicaciones().add(publicacion);
-
-            repositorioPublicacion.guardar(publicacion);
-            repositorioClub.guardar(club);
-        }
-    }
-
-    @Override
-    public void eliminarPublicacion(Publicacion publicacion, Club club){
-        if (publicacion != null && club != null) {
-            club.getPublicaciones().remove(publicacion);
-            repositorioClub.guardar(club);
-            repositorioPublicacion.eliminar(publicacion);
-        }
-    }
-
-    @Override
-    public void obtenerTodosLosReportesDeUnClub(Club club) {
-
-        List<Reporte> listaReportes = repositorioReporte.obtenerTodosLosReportesDeUnClub(club);
-
-        if(listaReportes.size() >= 2){
-            club.setEstaReportado("CLUB REPORTADO");
-        }else{
-            club.setEstaReportado("CLUB ACCESIBLE");
-        }
-        repositorioClub.guardar(club);
-    }
-
-    @Override
-    public void agregarNuevoReporteAlClub(Long idClub, Reporte reporte) throws ReporteExistente, NoExisteEseClub {
-
-        Club club = buscarClubPor(idClub); //si el club existe
-        if(repositorioReporte.buscarReportePorId(reporte.getId()) != null){ //si el reporte existe
-                throw new ReporteExistente("El reporte ya existe");
-        }
-        reporte.setClub(club);
-        club.getReportes().add(reporte);
-        repositorioReporte.guardar(reporte);
-    }
-
-    public void incrementarCantidadDeReportesEnUnClubObteniendoSuCantidadTotalDeReportes(Long idClub){
-       repositorioClub.incrementarCantidadDeReportesEnUnClubObteniendoSuCantidadTotalDeReportes(idClub);
-    }
-
-    @Override
     public List<Club> obtenerClubsConMasMiembros() {
         List<Club> clubs = repositorioClub.obtenerClubsConMasMiembros();
         return clubs;
@@ -193,68 +141,5 @@ public class ServicioClubImpl implements ServicioClub {
         }
 
         return clubsConMasPublicaciones;
-    }
-
-    public Puntuacion buscarPuntuacion(Club club, Usuario usuario){
-        return repositorioClub.buscarPuntuacion(club, usuario);
-    }
-
-    @Override
-    public void agregarPuntuacion(Club club, Usuario usuario, Integer puntuacion) {
-        Puntuacion puntuacionClub = repositorioClub.buscarPuntuacion(club, usuario);
-        if(puntuacionClub!=null){
-            puntuacionClub.setPuntuacion(puntuacion);
-        }else {
-            puntuacionClub = new Puntuacion(club, usuario, puntuacion);
-            club.getPuntuaciones().add(puntuacionClub);
-            usuario.getPuntuaciones().add(puntuacionClub);
-        }
-        repositorioClub.guardarPuntuacion(puntuacionClub);
-    }
-/* DESPUNTUAR CLUB
-    @Override
-    public void removerPuntuacion(Club club, Usuario usuario) {
-        Puntuacion puntuacionClub = repositorioClub.buscarPuntuacion(club, usuario);
-        if(puntuacionClub!=null){
-            club.getPuntuaciones().remove(puntuacionClub);
-            usuario.getPuntuaciones().remove(puntuacionClub);
-            repositorioClub.eliminarPuntuacion(puntuacionClub);
-
-            Double puntuacionPromedio = actualizarPuntuacionPromedio(club);
-            actualizarPromedio(club, puntuacionPromedio);
-
-            repositorioClub.guardar(club);
-        }
-        else throw new NoExisteEsaPuntuacion("No puntuaste aún este club.");
-    }
-
- */
-
-    @Override
-    public Double obtenerPuntuacionPromedio(Club club){
-        Double puntuacionTotal = 0.0;
-        Double puntuacionPromedio = 0.0;
-        for(Puntuacion puntuacion : club.getPuntuaciones()){
-            puntuacionTotal += puntuacion.getPuntuacion();
-        }
-        if(!club.getPuntuaciones().isEmpty()){
-            puntuacionPromedio = puntuacionTotal / club.getPuntuaciones().size();
-        }
-        return puntuacionPromedio;
-    }
-
-
-    /*
-    @Override
-    public void actualizarPromedio(Club club, Double promedio){
-        repositorioClub.actualizarPromedio(club.getId(), promedio);
-    }
-
- */
-
-    @Override
-    public void actualizarPromedio(Club club, Double promedio){
-        club.setPuntuacionPromedio(promedio);
-        repositorioClub.guardar(club);
     }
 }

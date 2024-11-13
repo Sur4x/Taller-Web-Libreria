@@ -57,16 +57,20 @@ public class Puntuacion {
         this.puntuacion = puntuacion;
     }
 
+    public void setIdPuntuacion(Long idPuntuacion) {
+        this.idPuntuacion = idPuntuacion;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Puntuacion that = (Puntuacion) o;
-        return Objects.equals(idPuntuacion, that.idPuntuacion);
+        return Objects.equals(getIdPuntuacion(), that.getIdPuntuacion());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(idPuntuacion);
+        return Objects.hashCode(getIdPuntuacion());
     }
 }

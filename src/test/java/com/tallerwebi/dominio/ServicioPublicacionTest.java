@@ -1,5 +1,7 @@
 package com.tallerwebi.dominio;
 
+import com.tallerwebi.dominio.excepcion.NoExisteEseClub;
+import com.tallerwebi.infraestructura.RepositorioClubImpl;
 import com.tallerwebi.infraestructura.RepositorioPublicacionImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -14,12 +16,14 @@ import static org.mockito.Mockito.*;
 public class ServicioPublicacionTest {
 
     private RepositorioPublicacion repositorioPublicacionMock;
+    private RepositorioClub repositorioClubMock;
     private ServicioPublicacion servicioPublicacion;
 
     @BeforeEach
     public void init(){
         repositorioPublicacionMock = mock(RepositorioPublicacionImpl.class);
-        this.servicioPublicacion = new ServicioPublicacionImpl(repositorioPublicacionMock);
+        repositorioClubMock = mock(RepositorioClubImpl.class);
+        this.servicioPublicacion = new ServicioPublicacionImpl(repositorioPublicacionMock, repositorioClubMock);
     }
 
     @Test
@@ -69,6 +73,57 @@ public class ServicioPublicacionTest {
 
         Publicacion publicacionObtenida = servicioPublicacion.buscarPublicacionEnUnClub(publicacionId, club);
         assertThat(publicacionObtenida, equalTo(null));
+    }
+
+    @Test
+    public void dadoElMetodoAgregarNuevaPublicacionCorrectamenteDebeRealizarDosMetodosEspecificos() throws NoExisteEseClub {
+        Publicacion publicacion = new Publicacion();
+        Club club = new Club();
+        club.setId(1L);
+        club.setPublicaciones(new ArrayList<>());
+        when(repositorioClubMock.buscarClubPor(1L)).thenReturn(club);
+
+        servicioPublicacion.agregarNuevaPublicacion(publicacion, 1L);
+
+        verify(repositorioPublicacionMock, times(1)).guardar(publicacion);
+        verify(repositorioClubMock, times(1)).guardar(club);
+    }
+
+    @Test
+    public void dadoElMetodoAgregarNuevaPublicacionCuandoSuPublicacionOIDSonNulosNoRealizaLosMetodosEspecificos() throws NoExisteEseClub {
+        Publicacion publicacion = null;
+        Club club = new Club();
+        club.setId(1L);
+        club.setPublicaciones(new ArrayList<>());
+        when(repositorioClubMock.buscarClubPor(1L)).thenReturn(club);
+
+        servicioPublicacion.agregarNuevaPublicacion(publicacion, 1L);
+
+        verify(repositorioPublicacionMock, times(0)).guardar(publicacion);
+        verify(repositorioClubMock, times(0)).guardar(club);
+    }
+
+    @Test
+    public void dadoElMetodoEliminarPublicacionFuncionaCorretamenteRealizaElMetodoGuardarYEliminar(){
+        Publicacion publicacion = new Publicacion();
+        Club club = new Club();
+        club.setPublicaciones(new ArrayList<>());
+
+        servicioPublicacion.eliminarPublicacion(publicacion, club);
+
+        verify(repositorioClubMock, times(1)).guardar(club);
+        verify(repositorioPublicacionMock, times(1)).eliminar(publicacion);
+    }
+
+    @Test
+    public void dadoElMetodoEliminarPublicacionLeProporcionoAlgunObjetoNuloNoRealizaElMetodoGuardarYEliminar(){
+        Publicacion publicacion = new Publicacion();
+        Club club = null;
+
+        servicioPublicacion.eliminarPublicacion(publicacion, club);
+
+        verify(repositorioClubMock, times(0)).guardar(club);
+        verify(repositorioPublicacionMock, times(0)).eliminar(publicacion);
     }
 
 }

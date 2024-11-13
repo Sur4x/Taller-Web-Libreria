@@ -20,12 +20,14 @@ import static org.mockito.Mockito.*;
 public class ServicioReporteTest {
 
     private RepositorioReporte repositorioReporteMock;
+    private RepositorioClub repositorioClubMock;
     private ServicioReporte servicioReporte;
 
     @BeforeEach
     public void init(){
         repositorioReporteMock = mock(RepositorioReporte.class);
-        this.servicioReporte = new ServicioReporteImpl(repositorioReporteMock);
+        repositorioClubMock = mock(RepositorioClub.class);
+        this.servicioReporte = new ServicioReporteImpl(repositorioReporteMock, repositorioClubMock);
     }
 
     @Test
@@ -112,6 +114,77 @@ public class ServicioReporteTest {
         List<Reporte> resultado = servicioReporte.listarReportesPorClub(club);
 
         assertThat(resultado.size(), is(2));
+    }
+
+    @Test
+    public void dadoElMetodoObtenerTodosLosReportesDeUnClubCuandoElClubTieneUnSoloReporteUtilizaElMetodoGuardarYSigueComoClubAccesible(){
+        Club club = new Club();
+        club.setReportes(new ArrayList<>());
+        Reporte reporte = new Reporte();
+        club.getReportes().add(reporte);
+
+        when(repositorioReporteMock.obtenerTodosLosReportesDeUnClub(club)).thenReturn(club.getReportes());
+
+        servicioReporte.obtenerTodosLosReportesDeUnClub(club);
+
+        verify(repositorioClubMock, times(1)).guardar(club);
+        assertThat(club.getEstaReportado(), equalTo("CLUB ACCESIBLE"));
+    }
+
+    @Test
+    public void dadoElMetodoObtenerTodosLosReportesDeUnClubCuandoElClubTieneDosReportesUtilizaElMetodoGuardarYSigueComoClubReportado(){
+        Club club = new Club();
+        club.setReportes(new ArrayList<>());
+        Reporte reporte = new Reporte();
+        Reporte reporte2 = new Reporte();
+        club.getReportes().add(reporte);
+        club.getReportes().add(reporte2);
+
+        when(repositorioReporteMock.obtenerTodosLosReportesDeUnClub(club)).thenReturn(club.getReportes());
+
+        servicioReporte.obtenerTodosLosReportesDeUnClub(club);
+
+        verify(repositorioClubMock, times(1)).guardar(club);
+        assertThat(club.getEstaReportado(), equalTo("CLUB REPORTADO"));
+    }
+
+    @Test
+    public void dadoElMetodoagregarNuevoReporteAlClubSiFuncionaAgregaElReporteCorrectamente() throws ReporteExistente, NoExisteEseClub {
+        Club club = new Club();
+        club.setId(1L);
+        club.setReportes(new ArrayList<>());
+        Reporte reporte = new Reporte();
+
+
+        when(repositorioClubMock.buscarClubPor(anyLong())).thenReturn(club);
+        when(repositorioReporteMock.buscarReportePorId(anyLong())).thenReturn(null);
+        servicioReporte.agregarNuevoReporteAlClub(club.getId(),reporte);
+
+        assertThat(club.getReportes(), contains(reporte));
+        verify(repositorioReporteMock,times(1)).guardar(reporte);
+    }
+
+    @Test
+    public void dadoElMetodoagregarNuevoReporteAlClubCuandoElClubNoExisteLanzaLaExcepcion(){
+        Reporte reporte = new Reporte();
+
+        when(repositorioClubMock.buscarClubPor(1L)).thenReturn(null);
+
+        assertThrows(NoExisteEseClub.class, () -> servicioReporte.agregarNuevoReporteAlClub(1L,reporte));
+        verify(repositorioReporteMock,times(0)).guardar(reporte);
+    }
+
+    @Test
+    public void dadoElMetodoagregarNuevoReporteAlClubCuandoElReporteExisteLanzaLaExcepcion(){
+        Club club = new Club();
+        Reporte reporte = new Reporte();
+        reporte.setId(1L);
+
+        when(repositorioClubMock.buscarClubPor(anyLong())).thenReturn(club);
+        when(repositorioReporteMock.buscarReportePorId(anyLong())).thenReturn(reporte);
+
+        assertThrows(ReporteExistente.class, () -> servicioReporte.agregarNuevoReporteAlClub(1L,reporte));
+        verify(repositorioReporteMock,times(0)).guardar(reporte);
     }
     
 }

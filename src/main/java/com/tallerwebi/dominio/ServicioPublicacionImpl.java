@@ -11,10 +11,12 @@ import org.springframework.transaction.annotation.Transactional;
 public class ServicioPublicacionImpl implements ServicioPublicacion {
 
     private RepositorioPublicacion repositorioPublicacion;
+    private RepositorioClub repositorioClub;
 
     @Autowired
-    public ServicioPublicacionImpl(RepositorioPublicacion repositorioPublicacion) {
+    public ServicioPublicacionImpl(RepositorioPublicacion repositorioPublicacion,RepositorioClub repositorioClub) {
         this.repositorioPublicacion = repositorioPublicacion;
+        this.repositorioClub = repositorioClub;
     }
 
     @Override
@@ -32,5 +34,27 @@ public class ServicioPublicacionImpl implements ServicioPublicacion {
     @Override
     public Publicacion buscarPublicacionEnUnClub(Long publicacionId, Club club) {
         return repositorioPublicacion.buscarPublicacionEnUnClub(publicacionId, club);
+    }
+
+    @Override
+    public void agregarNuevaPublicacion(Publicacion publicacion, Long id) throws NoExisteEseClub {
+
+        if (publicacion != null && id != null){
+            Club club = repositorioClub.buscarClubPor(id);
+            publicacion.setClub(club);
+            club.getPublicaciones().add(publicacion);
+
+            repositorioPublicacion.guardar(publicacion);
+            repositorioClub.guardar(club);
+        }
+    }
+
+    @Override
+    public void eliminarPublicacion(Publicacion publicacion, Club club){
+        if (publicacion != null && club != null) {
+            club.getPublicaciones().remove(publicacion);
+            repositorioClub.guardar(club);
+            repositorioPublicacion.eliminar(publicacion);
+        }
     }
 }

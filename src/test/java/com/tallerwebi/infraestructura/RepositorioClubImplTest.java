@@ -95,55 +95,6 @@ public class RepositorioClubImplTest {
     }
 
 
-/* ESTOS TEST LOS HICE PARA EL ANTERIOR METODO repositorioClub.actualizarPromedio(club.getId(), promedio);
-    @Rollback
-    @Test
-    public void dadoElMetodoGuardarPuntuacionCuandoGuardaUnaPuedoObtenerlaDeLaBDD(){
-        Usuario usuario = new Usuario();
-        this.repositorioUsuario.guardar(usuario);
-
-        Club club = new Club();
-        this.repositorioClub.guardar(club);
-
-        Puntuacion puntuacion = new Puntuacion();
-        puntuacion.setClub(club);
-        puntuacion.setUsuario(usuario);
-        puntuacion.setPuntuacion(4);
-
-        this.repositorioClub.guardarPuntuacion(puntuacion);
-
-        String hql = "from Puntuacion where club.id = :clubId";
-        Query query = this.sessionFactory.getCurrentSession().createQuery(hql);
-        query.setParameter("clubId", club.getId());
-
-        Puntuacion puntuacionObtenida = (Puntuacion) query.getSingleResult();
-
-        assertThat(puntuacionObtenida.getPuntuacion(), equalTo(puntuacion.getPuntuacion()));
-        assertThat(puntuacionObtenida.getClub().getId(), equalTo(club.getId()));
-        assertThat(puntuacionObtenida.getUsuario().getId(), equalTo(usuario.getId()));
-    }
-
-    @Rollback
-    @Test
-    public void dadoElMetodoActualizarPromedioCuandoTengoUnClubEnLaBDDConUnPromedioPuedoActualizarloPorOtro() {
-        Club club = new Club();
-        club.setPuntuacionPromedio(1.0);
-        this.repositorioClub.guardar(club);
-
-        this.repositorioClub.actualizarPromedio(club.getId(), 3.5);
-
-        String hql = "from Club where id = :clubId";
-        Query query = this.sessionFactory.getCurrentSession().createQuery(hql);
-        query.setParameter("clubId", club.getId());
-        Club clubObtenido = (Club) query.getSingleResult();
-
-        assertThat(clubObtenido, equalTo(club));
-        assertThat(clubObtenido.getPuntuacionPromedio(), equalTo(3.5));
-    }
-
-
- */
-
     @Test
     public void dadoElMetodoBuscarTodosLosClubsSiTengo2ClubsEnLaBDDMeDevuelveUnaListaDe2Posiciones(){
         Club club1 = new Club();
