@@ -4,12 +4,14 @@ import com.tallerwebi.dominio.*;
 import com.tallerwebi.dominio.excepcion.NoExisteEseClub;
 import com.tallerwebi.dominio.excepcion.NoExisteEseUsuario;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpServletRequest;
 
+@Controller
 public class ControladorPuntuacion {
 
     private ServicioUsuario servicioUsuario;
