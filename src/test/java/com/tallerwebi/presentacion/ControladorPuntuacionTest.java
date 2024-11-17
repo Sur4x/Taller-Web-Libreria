@@ -9,6 +9,8 @@ import org.junit.jupiter.api.Test;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import java.util.ArrayList;
+
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.Mockito.*;
@@ -35,7 +37,7 @@ public class ControladorPuntuacionTest {
     }
 
     @Test
-    public void dadoUnControladorPuntuacionCuandoPunteoUnClubMeRedirigeALaVistaEspecificaDelClub() throws NoExisteEseUsuario, NoExisteEseClub {
+    public void dadoUnControladorPuntuacionCuandoUnClubTiene1SolaVotacionSuPromedioEs0() throws NoExisteEseUsuario, NoExisteEseClub {
         Long idClub = 1L;
         Integer puntuacion = 5;
         Club club = new Club();
@@ -45,7 +47,36 @@ public class ControladorPuntuacionTest {
         when(sessionMock.getAttribute("usuario")).thenReturn(usuarioMock);
         when(servicioUsuarioMock.buscarUsuarioPor(usuarioMock.getId())).thenReturn(usuarioMock);
         when(servicioClubMock.buscarClubPor(club.getId())).thenReturn(club);
-        when(servicioPuntuacionMock.obtenerPuntuacionPromedio(club)).thenReturn(5.0);
+        when(servicioPuntuacionMock.obtenerPuntuacionPromedio(club)).thenReturn(0.0);
+
+        String vista = controladorPuntuacion.puntuarClub(idClub, puntuacion, requestMock);
+
+        verify(servicioUsuarioMock,times(1)).buscarUsuarioPor(1L);
+        verify(servicioClubMock,times(1)).buscarClubPor(1L);
+        verify(servicioPuntuacionMock,times(1)).agregarPuntuacion(club, usuarioMock,puntuacion);
+        verify(servicioPuntuacionMock,times(0)).obtenerPuntuacionPromedio(club);
+        verify(servicioPuntuacionMock,times(0)).actualizarPromedio(club, 5.0);
+        assertThat(vista, equalTo("redirect:/club/" + idClub));
+    }
+
+    @Test
+    public void dadoUnControladorPuntuacionCuandoUnClubTiene3VotacionesSeCalculaSuPromedio() throws NoExisteEseUsuario, NoExisteEseClub {
+        Long idClub = 1L;
+        Integer puntuacion = 5;
+        Club club = new Club();
+        club.setId(1L);
+        club.setPuntuaciones(new ArrayList<>());
+
+        club.getPuntuaciones().add(new Puntuacion());
+        club.getPuntuaciones().add(new Puntuacion());
+        club.getPuntuaciones().add(new Puntuacion());
+
+        when(usuarioMock.getId()).thenReturn(1L);
+        when(requestMock.getSession()).thenReturn(sessionMock);
+        when(sessionMock.getAttribute("usuario")).thenReturn(usuarioMock);
+        when(servicioUsuarioMock.buscarUsuarioPor(usuarioMock.getId())).thenReturn(usuarioMock);
+        when(servicioClubMock.buscarClubPor(club.getId())).thenReturn(club);
+        when(servicioPuntuacionMock.obtenerPuntuacionPromedio(club)).thenReturn(4.0);
 
         String vista = controladorPuntuacion.puntuarClub(idClub, puntuacion, requestMock);
 
@@ -53,7 +84,7 @@ public class ControladorPuntuacionTest {
         verify(servicioClubMock,times(1)).buscarClubPor(1L);
         verify(servicioPuntuacionMock,times(1)).agregarPuntuacion(club, usuarioMock,puntuacion);
         verify(servicioPuntuacionMock,times(1)).obtenerPuntuacionPromedio(club);
-        verify(servicioPuntuacionMock,times(1)).actualizarPromedio(club, 5.0);
+        verify(servicioPuntuacionMock,times(1)).actualizarPromedio(club, 4.0);
         assertThat(vista, equalTo("redirect:/club/" + idClub));
     }
 }
