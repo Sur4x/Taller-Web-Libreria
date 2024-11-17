@@ -124,11 +124,14 @@
                             <tbody>
                             <tr th:each="club, iterStat : ${clubsMiembros}">
                                 <td th:text="${iterStat.index + 1}">1</td>
-                                <td th:text="${club.nombre}"></td>
+                                <td>
+                                    <a th:href="@{/club/{idClub}(idClub=${club.id})}" th:text="${club.nombre}"></a>
+                                </td>
                                 <td th:text="${club.cantidadMiembros}"></td>
                             </tr>
                             </tbody>
                         </table>
+
                     </div>
                 </div>
             </div>
@@ -148,7 +151,9 @@
                             <tbody>
                             <tr th:each="club, iterStat : ${clubsPuntuacion}">
                                 <td th:text="${iterStat.index + 1}">1</td>
-                                <td th:text="${club.nombre}"></td>
+                                <td>
+                                    <a th:href="@{/club/{idClub}(idClub=${club.id})}" th:text="${club.nombre}"></a>
+                                </td>
                                 <td th:text="${club.puntuacionPromedio != 0 ? #numbers.formatDecimal(club.puntuacionPromedio, 0, 2) : '0,00'}"></td>
                             </tr>
                             </tbody>
@@ -173,7 +178,9 @@
                             <tbody>
                             <tr th:each="usuario, iterStat : ${usuariosSeguidores}">
                                 <td th:text="${iterStat.index + 1}">1</td>
-                                <td th:text="${usuario.nombreUsuario}"></td>
+                                <td>
+                                    <a th:href="@{/perfil/{id}(id=${usuario.id})}" th:text="${usuario.nombreUsuario}"></a>
+                                </td>
                                 <td th:text="${usuario.getSeguidores().size()}"></td>
                             </tr>
                             </tbody>
@@ -197,7 +204,9 @@
                             <tbody>
                             <tr th:each="club, iterStat : ${clubsPublicaciones}">
                                 <td th:text="${iterStat.index + 1}">1</td>
-                                <td th:text="${club.nombre}"></td>
+                                <td>
+                                <a th:href="@{/club/{idClub}(idClub=${club.id})}" th:text="${club.nombre}"></a>
+                                </td>
                                 <td th:text="${club.getPublicaciones().size()}"></td>
                             </tr>
                             </tbody>

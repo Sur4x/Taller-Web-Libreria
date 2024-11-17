@@ -56,14 +56,14 @@ public class ControladorUsuarioTest {
     }
 
     @Test
-    public void dadoQueElMetodoIrAPerfilIntentaAccederAUnPerfilQueNoEsElDelUsuarioLogueadoRedireccionaALaVistaLogin() throws NoExisteEseUsuario {
+    public void dadoQueElMetodoIrAPerfilSiUnUsuarioNoLogueadoIntentaAccederAUnPerfilLeMuestraLaVistaDelPerfil() throws NoExisteEseUsuario {
         when(requestMock.getSession()).thenReturn(sessionMock);
         Usuario usuario = new Usuario();
         when(servicioUsuarioMock.buscarUsuarioPor(1L)).thenReturn(usuario);
 
         ModelAndView model = controladorUsuario.irAPerfil(2L,requestMock);
 
-        assertThat(model.getViewName(), equalToIgnoringCase("redirect:/login"));
+        assertThat(model.getViewName(), equalToIgnoringCase("perfil"));
         assertThat(model.getModel().get("usuario"), equalTo(null));
     }
 

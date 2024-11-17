@@ -34,18 +34,17 @@ public class ControladorUsuario {
     @RequestMapping(path = "/perfil/{id}", method = RequestMethod.GET)
     public ModelAndView irAPerfil(@PathVariable("id") Long id, HttpServletRequest request) throws NoExisteEseUsuario {
             ModelMap model = new ModelMap();
+            Usuario usuario = servicioUsuario.buscarUsuarioPor(id);
             Usuario usuarioSesion = (Usuario) request.getSession().getAttribute("usuario");
             if (usuarioSesion != null) {
                 Usuario usuarioActual = servicioUsuario.buscarUsuarioPor(usuarioSesion.getId());
-                Usuario usuario = servicioUsuario.buscarUsuarioPor(id);
                 boolean sigueAlUsuario = usuarioActual.getSeguidos().contains(usuario);
                 model.put("usuario", usuario);
                 model.addAttribute("sigueAlUsuario", sigueAlUsuario);
                 model.addAttribute("usuarioActual", usuarioActual);
-                return new ModelAndView("perfil", model);
-            } else {
-                return new ModelAndView("redirect:/login", model);
             }
+        model.put("usuario", usuario);
+        return new ModelAndView("perfil", model);
         }
 
     @RequestMapping(path = "perfil/{id}/seguir")
