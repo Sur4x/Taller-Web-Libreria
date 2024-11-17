@@ -69,12 +69,21 @@
                 </div>
                 <p class="mb-1" th:text="${comentario.texto}">Texto del comentario</p>
 
-                <!-- Botón de Like -->
-                <form th:action="@{/club/{clubId}/detallePublicacion/{publicacionId}/likear/{comentarioId}(clubId=${club.id}, publicacionId=${publicacion.id}, comentarioId=${comentario.id})}" method="post">
-                    <input type="hidden" name="comentarioId" value="${comentario.id}">
-                    <button type="submit" class="btn btn-primary btn-sm">Like</button>
-                </form>
+                <div th:if="${usuario != null}">
+                    <!-- Botón de Like (se muestra si el usuario NO ha dado like) -->
+                    <form th:if="${!comentario.tienelikeDeEsteUsuario(usuario)}"
+                          th:action="@{/club/{clubId}/detallePublicacion/{publicacionId}/likear/{comentarioId}(clubId=${club.id}, publicacionId=${publicacion.id}, comentarioId=${comentario.id})}"
+                          method="post">
+                        <button type="submit" class="btn btn-primary btn-sm">Like</button>
+                    </form>
 
+                    <!-- Botón de Unlike (se muestra si el usuario SÍ ha dado like) -->
+                    <form th:if="${comentario.tienelikeDeEsteUsuario(usuario)}"
+                          th:action="@{/club/{clubId}/detallePublicacion/{publicacionId}/deslikear/{comentarioId}(clubId=${club.id}, publicacionId=${publicacion.id}, comentarioId=${comentario.id})}"
+                          method="post">
+                        <button type="submit" class="btn btn-secondary btn-sm">Eliminar like</button>
+                    </form>
+                </div>
 
                 <!-- Contador de Likes -->
                 <span id="like-count-[[${comentario.id}]]" th:text="${comentario.likes.size()}"></span> Me gusta

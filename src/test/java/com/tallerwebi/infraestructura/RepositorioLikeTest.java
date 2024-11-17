@@ -61,4 +61,52 @@ public class RepositorioLikeTest {
         assertThat(likeObtenido.getAutorDelLike().getId(), equalTo(usuario.getId()));
         assertThat(likeObtenido.getComentario().getId(), equalTo(comentario.getId()));
     }
+
+    @Test
+    @Rollback
+    @Transactional
+    public void dadoQueExisteUnRepositorioLikeCuandoEliminoUnLikeExistenteLoEliminaDeLaBDDCorrectamente() {
+        Usuario usuario = new Usuario();
+        usuario.setEmail("usuarioEjemplo");
+        sessionFactory.getCurrentSession().save(usuario);
+
+        Comentario comentario = new Comentario();
+        comentario.setTexto("Comentario de prueba");
+        sessionFactory.getCurrentSession().save(comentario);
+
+        Like like = new Like();
+        like.setAutorDelLike(usuario);
+        like.setComentario(comentario);
+        this.repositorioLike.agregarLike(like);
+
+        String hql = "DELETE FROM Like l WHERE l.autorDelLike.id = :usuarioId and comentario.id = : comentarioId";
+        Query query = this.sessionFactory.getCurrentSession().createQuery(hql);
+        query.setParameter("usuarioId", usuario.getId());
+        query.setParameter("comentarioId", comentario.getId());
+        int filasAfectadas = query.executeUpdate();
+
+        assertThat(filasAfectadas, equalTo(1));
+    }
+
+    @Test
+    @Rollback
+    @Transactional
+    public void dadoQueExisteUnRepositorioLikeCuandoEliminoUnLikeQueNoExisteNoEsPosibleEliminarlo() {
+        Usuario usuario = new Usuario();
+        usuario.setEmail("usuarioEjemplo");
+        sessionFactory.getCurrentSession().save(usuario);
+
+        Comentario comentario = new Comentario();
+        comentario.setTexto("Comentario de prueba");
+        sessionFactory.getCurrentSession().save(comentario);
+        //Nunca agrego el like a la base de datos
+
+        String hql = "DELETE FROM Like l WHERE l.autorDelLike.id = :usuarioId and comentario.id = : comentarioId";
+        Query query = this.sessionFactory.getCurrentSession().createQuery(hql);
+        query.setParameter("usuarioId", usuario.getId());
+        query.setParameter("comentarioId", comentario.getId());
+        int filasAfectadas = query.executeUpdate();
+
+        assertThat(filasAfectadas, equalTo(0));
+    }
 }

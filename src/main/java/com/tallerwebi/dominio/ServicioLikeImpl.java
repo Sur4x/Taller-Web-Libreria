@@ -36,4 +36,9 @@ public class ServicioLikeImpl implements ServicioLike{
     public Integer obtenerCantidadDeLikesDeUnComentario(Long comentarioId) {
         return repositorioLike.obtenerCantidadDeLikesDeUnComentario(comentarioId);
     }
+
+    @Override
+    public Boolean quitarLikeDeUnUsuario(Long comentarioId, Usuario usuario) {
+        return repositorioLike.quitarLikeDeUnUsuario(comentarioId, usuario.getId());
+    }
 }

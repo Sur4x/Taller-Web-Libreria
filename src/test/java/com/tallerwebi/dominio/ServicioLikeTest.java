@@ -52,4 +52,32 @@ public class ServicioLikeTest {
         verify(repositorioLikeMock, times(0)).agregarLike(any(Like.class)); // acepta cualquier objeto pero de la clase Like especificamente
         assertThat(agregado, equalTo(false));
     }
+
+    @Test
+    public void dadoUnServicioCuandoSeLograEliminarUnLikeExitosamenteRetornaTrue(){
+        Long comentarioId = 1L;
+        Usuario usuario = new Usuario();
+        usuario.setEmail("asd@asd");
+
+        when(repositorioLikeMock.quitarLikeDeUnUsuario(comentarioId,usuario.getId())).thenReturn(true);
+
+        Boolean eliminado = servicioLike.quitarLikeDeUnUsuario(comentarioId, usuario);
+
+        assertThat(eliminado, equalTo(true));
+        verify(repositorioLikeMock,times(1)).quitarLikeDeUnUsuario(comentarioId, usuario.getId());
+    }
+
+    @Test
+    public void dadoUnServicioCuandoNoSeLograEliminarUnLikeExitosamenteRetornaFalse(){
+        Long comentarioId = 1L;
+        Usuario usuario = new Usuario();
+        usuario.setEmail("asd@asd");
+
+        when(repositorioLikeMock.quitarLikeDeUnUsuario(comentarioId,usuario.getId())).thenReturn(false);
+
+        Boolean eliminado = servicioLike.quitarLikeDeUnUsuario(comentarioId, usuario);
+
+        assertThat(eliminado, equalTo(false));
+        verify(repositorioLikeMock,times(1)).quitarLikeDeUnUsuario(comentarioId, usuario.getId());
+    }
 }

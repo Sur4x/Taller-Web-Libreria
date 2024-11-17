@@ -9,4 +9,6 @@ public interface RepositorioLike {
     Integer obtenerCantidadDeLikesDeUnComentario(Long comentarioId);
 
     void eliminarLikesDeUnComentario(Long id);
+
+    Boolean quitarLikeDeUnUsuario(Long comentarioId, Long id);
 }

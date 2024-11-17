@@ -6,4 +6,6 @@ public interface ServicioLike {
 
     //borrar
     Integer obtenerCantidadDeLikesDeUnComentario(Long comentarioId);
+
+    Boolean quitarLikeDeUnUsuario(Long comentarioId, Usuario usuario);
 }

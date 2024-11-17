@@ -74,5 +74,12 @@ public class Comentario {
         this.likes = likes;
     }
 
-
+    public boolean tienelikeDeEsteUsuario(Usuario usuario) {
+        for(Like like : this.likes) {
+            if(like.getAutorDelLike().getId().equals(usuario.getId())) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

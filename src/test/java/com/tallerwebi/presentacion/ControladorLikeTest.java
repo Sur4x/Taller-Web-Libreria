@@ -81,4 +81,54 @@ public class ControladorLikeTest {
         assertThat(model.getViewName(),equalTo("detallePublicacion"));
         assertThat(model.getModel().get("mensaje"),equalTo("Problemas al agregar el like."));
     }
+
+    @Test
+    public void dadoUnControladorConUnComentarioCon1LikeSiLoEliminoSeEliminaCorrectamente() throws NoExisteEseClub {
+        Usuario usuario = new Usuario();
+        usuario.setEmail("asd");
+        Comentario comentario = new Comentario();
+        comentario.setAutor(usuario);
+        Club club = new Club();
+        club.setNombre("clubsito");
+        Publicacion publicacion = new Publicacion();
+        publicacion.setMensaje("Asd");
+        servicioLikeMock.agregarLike(comentario.getId(),usuario);
+
+        when(servicioLikeMock.agregarLike(any(),any())).thenReturn(true);
+        when(requestMock.getSession()).thenReturn(sessionMock);
+        when(sessionMock.getAttribute("usuario")).thenReturn(usuario);
+        when(servicioLikeMock.quitarLikeDeUnUsuario(any(),any())).thenReturn(true);
+
+        ModelAndView model = controladorLike.desLikear(comentario.getId(), club.getId(), publicacion.getId(), requestMock);
+
+        verify(servicioLikeMock,times(1)).quitarLikeDeUnUsuario(comentario.getId(),usuario);
+        verify(servicioPublicacionMock,times(1)).buscarPublicacionPorId(publicacion.getId());
+        verify(servicioClubMock,times(0)).buscarClubPor(club.getId());
+        assertThat(model.getViewName(),equalTo("detallePublicacion"));
+        assertThat(model.getModel().get("mensaje"),equalTo("Like eliminado correctamente."));
+    }
+
+    @Test
+    public void dadoUnControladorConUnComentarioCon0LikeSiLoEliminoNoSeElimina() throws NoExisteEseClub {
+        Usuario usuario = new Usuario();
+        usuario.setEmail("asd");
+        Comentario comentario = new Comentario();
+        comentario.setAutor(usuario);
+        Club club = new Club();
+        club.setNombre("clubsito");
+        Publicacion publicacion = new Publicacion();
+        publicacion.setMensaje("Asd");
+
+        when(requestMock.getSession()).thenReturn(sessionMock);
+        when(sessionMock.getAttribute("usuario")).thenReturn(usuario);
+        when(servicioLikeMock.quitarLikeDeUnUsuario(any(),any())).thenReturn(false);
+
+        ModelAndView model = controladorLike.desLikear(comentario.getId(), club.getId(), publicacion.getId(), requestMock);
+
+        verify(servicioLikeMock,times(1)).quitarLikeDeUnUsuario(comentario.getId(),usuario);
+        verify(servicioPublicacionMock,times(1)).buscarPublicacionPorId(publicacion.getId());
+        verify(servicioClubMock,times(0)).buscarClubPor(club.getId());
+        assertThat(model.getViewName(),equalTo("detallePublicacion"));
+        assertThat(model.getModel().get("mensaje"),equalTo("Problemas al eliminado el like."));
+    }
 }

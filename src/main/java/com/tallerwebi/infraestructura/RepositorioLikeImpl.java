@@ -42,6 +42,16 @@ public class RepositorioLikeImpl implements RepositorioLike {
         query.executeUpdate();
     }
 
+    @Override
+    public Boolean quitarLikeDeUnUsuario(Long comentarioId, Long usuarioId) {
+        String hql = "DELETE FROM Like l WHERE l.comentario.id = :comentarioId AND l.autorDelLike.id = :usuarioId";
+        Query query = sessionFactory.getCurrentSession().createQuery(hql);
+        query.setParameter("comentarioId", comentarioId);
+        query.setParameter("usuarioId", usuarioId);
+        int filasAfectadas = query.executeUpdate();
+        return filasAfectadas > 0;
+    }
+
     //borrar
     @Override
     public Integer obtenerCantidadDeLikesDeUnComentario(Long comentarioId) {

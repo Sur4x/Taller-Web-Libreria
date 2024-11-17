@@ -28,8 +28,6 @@ public class ControladorPublicacion {
         this.servicioUsuario = servicioUsuario;
     }
 
-
-    //mover a controlador publicacion
     @RequestMapping(path = "/club/{clubId}/irANuevaPublicacion")
     public ModelAndView irANuevaPublicacion(@PathVariable("clubId") Long id, HttpServletRequest request) throws NoExisteEseClub {
         Usuario usuario = (Usuario) request.getSession().getAttribute("usuario");
@@ -44,7 +42,6 @@ public class ControladorPublicacion {
         }
     }
 
-    //arreglar
     @RequestMapping(path = "/club/{clubId}/nuevaPublicacion", method = RequestMethod.POST)
     public ModelAndView realizarPublicacion(@PathVariable("clubId") Long id, @ModelAttribute("publicacion") Publicacion publicacion, HttpServletRequest request) throws NoExisteEseClub {
         Usuario usuario = (Usuario) request.getSession().getAttribute("usuario");
@@ -52,12 +49,10 @@ public class ControladorPublicacion {
         return new ModelAndView("redirect:/club/{clubId}");
     }
 
-    //arreglar
     @RequestMapping(path = "/club/{clubId}/eliminarPublicacion/{publicacionId}")
     @Transactional
     public ModelAndView eliminarPublicacion(@PathVariable("clubId") Long id, @PathVariable("publicacionId") Long idPublicacion, HttpServletRequest request) throws NoExisteEseClub {
         Usuario usuario = (Usuario) request.getSession().getAttribute("usuario");
-        ModelMap modelo = new ModelMap();
         Club club = this.servicioClub.buscarClubPor(id);
         Publicacion publicacion = servicioPublicacion.buscarPublicacionPorId(idPublicacion);
 
@@ -68,7 +63,6 @@ public class ControladorPublicacion {
     }
 
     @RequestMapping(path = "/club/{clubId}/detallePublicacion/{publicacionId}")
-    @Transactional
     public ModelAndView irAdetallePublicacion(@PathVariable("clubId") Long clubId, @PathVariable("publicacionId") Long publicacionId, HttpServletRequest request) throws NoExisteEseClub {
         Usuario usuario = (Usuario) request.getSession().getAttribute("usuario");
         ModelMap modelo = new ModelMap();

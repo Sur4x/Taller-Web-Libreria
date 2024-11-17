@@ -50,4 +50,30 @@ public class ControladorLike {
         }
         return new ModelAndView("detallePublicacion", model);
     }
+
+    @RequestMapping(path = "/club/{clubId}/detallePublicacion/{publicacionId}/deslikear/{comentarioId}")
+    public ModelAndView desLikear(@PathVariable Long comentarioId, @PathVariable Long clubId, @PathVariable Long publicacionId, HttpServletRequest request) throws NoExisteEseClub {
+        ModelMap model = new ModelMap();
+        Usuario usuario = (Usuario) request.getSession().getAttribute("usuario");
+        Boolean eliminado = false;
+
+        if (usuario != null) {
+            eliminado = servicioLike.quitarLikeDeUnUsuario(comentarioId, usuario);
+        }
+        if (eliminado) {
+            model.put("mensaje", "Like eliminado correctamente.");
+        } else {
+            model.put("mensaje", "Problemas al eliminado el like.");
+        }
+        //Agrego los mismos datos al modelo para que la vista detallePublicacion sea la misma.
+        Publicacion publicacion = servicioPublicacion.buscarPublicacionPorId(publicacionId);
+        if (publicacion != null) {
+            model.put("comentarios", publicacion.getComentarios());
+            model.put("comentario", new Comentario());
+            model.put("publicacion", publicacion);
+            model.put("usuario", usuario);
+            model.put("club", servicioClub.buscarClubPor(clubId));
+        }
+        return new ModelAndView("detallePublicacion", model);
+    }
 }
