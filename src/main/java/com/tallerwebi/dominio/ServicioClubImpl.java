@@ -142,4 +142,9 @@ public class ServicioClubImpl implements ServicioClub {
 
         return clubsConMasPublicaciones;
     }
+
+    @Override
+    public void refrescarClub(Club club){
+        repositorioClub.refrescarClub(club);
+    }
 }

@@ -17,5 +17,9 @@ public interface RepositorioClub {
     List<Club> obtenerClubsConMasMiembros();
 
     List<Club> obtenerClubsConMejorPuntuacion();
+
+    void actualizarPromedioDeUnClub(Long idClub, Double nuevoPromedio);
+
+    void refrescarClub(Club club);
 }
 

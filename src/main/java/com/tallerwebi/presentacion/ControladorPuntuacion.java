@@ -33,8 +33,9 @@ public class ControladorPuntuacion {
 
         servicioPuntuacion.agregarPuntuacion(club, usuarioActual, puntuacion);
 
-        int votos = club.getPuntuaciones().size();
+        servicioClub.refrescarClub(club);
 
+        int votos = club.getPuntuaciones().size();
         if (votos >= 3) {
             Double puntuacionPromedio = servicioPuntuacion.obtenerPuntuacionPromedio(club);
             servicioPuntuacion.actualizarPromedio(club, puntuacionPromedio);

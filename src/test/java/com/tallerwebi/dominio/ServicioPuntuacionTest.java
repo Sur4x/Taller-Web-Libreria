@@ -69,10 +69,10 @@ public class ServicioPuntuacionTest {
     }
 
     @Test
-    public void dadoElMetodoActualizarPromedioCuandoCambioSuPromedioSeRealizaCorrectamente(){
+    public void dadoElMetodoActualizarPromedioCuandoUnClubNoTieneNingunaVotacionSuPromedioSigueSiendo0(){
         Club club = new Club();
         servicioPuntuacion.actualizarPromedio(club,3.0);
-        assertThat(club.getPuntuacionPromedio(), equalTo(3.0));
+        assertThat(club.getPuntuacionPromedio(), equalTo(0.0));
     }
 
 

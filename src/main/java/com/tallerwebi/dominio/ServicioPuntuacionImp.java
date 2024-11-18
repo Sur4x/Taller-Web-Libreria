@@ -22,12 +22,14 @@ public class ServicioPuntuacionImp implements ServicioPuntuacion{
         Puntuacion puntuacionClub = repositorioPuntuacion.buscarPuntuacion(club, usuario);
         if(puntuacionClub!=null){
             puntuacionClub.setPuntuacion(puntuacion);
+            repositorioPuntuacion.guardarPuntuacion(puntuacionClub);
         }else {
             puntuacionClub = new Puntuacion(club, usuario, puntuacion);
             club.getPuntuaciones().add(puntuacionClub);
             usuario.getPuntuaciones().add(puntuacionClub);
+            repositorioPuntuacion.guardarPuntuacion(puntuacionClub);
         }
-        repositorioPuntuacion.guardarPuntuacion(puntuacionClub);
+
     }
 
     @Override
@@ -45,8 +47,7 @@ public class ServicioPuntuacionImp implements ServicioPuntuacion{
 
     @Override
     public void actualizarPromedio(Club club, Double promedio){
-        club.setPuntuacionPromedio(promedio);
-        repositorioClub.guardar(club);
+        repositorioClub.actualizarPromedioDeUnClub(club.getId(), promedio);
     }
 
     @Override

@@ -76,4 +76,18 @@ public class RepositorioClubImpl implements RepositorioClub {
         return query.getResultList();
     }
 
+    @Override
+    @Transactional
+    public void actualizarPromedioDeUnClub(Long idClub, Double nuevoPromedio) {
+        String hql = "UPDATE Club c SET c.puntuacionPromedio = :nuevoPromedio WHERE c.id = :idClub";
+        Query query = this.sessionFactory.getCurrentSession().createQuery(hql);
+        query.setParameter("nuevoPromedio", nuevoPromedio);
+        query.setParameter("idClub", idClub);
+        query.executeUpdate();
+    }
+
+    @Override
+    public void refrescarClub(Club club) {
+        sessionFactory.getCurrentSession().refresh(club);
+    }
 }

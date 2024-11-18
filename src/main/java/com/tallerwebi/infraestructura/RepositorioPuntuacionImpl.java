@@ -34,7 +34,7 @@ public class RepositorioPuntuacionImpl implements RepositorioPuntuacion {
 
     @Override
     public void guardarPuntuacion(Puntuacion puntuacionClub) {
-        sessionFactory.getCurrentSession().merge(puntuacionClub);
+        sessionFactory.getCurrentSession().saveOrUpdate(puntuacionClub);
     }
 
     @Override
