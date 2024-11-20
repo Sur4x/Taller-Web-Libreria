@@ -233,4 +233,86 @@ public class ControladorClubTest {
         verify(servicioClubMock,times(1)).obtenerClubsConMasPublicaciones();
     }
 
+    @Test
+    public void dadoElMetodoEcharUsuarioSiElUsuarioNoEstaInscriptoNoLoElimina() throws NoExisteEseClub, NoExisteEseUsuario {
+        Club club = new Club();
+        Usuario usuario = new Usuario();
+        Puntuacion puntuacion = new Puntuacion();
+
+        when(requestMock.getSession()).thenReturn(sessionMock);
+        when(sessionMock.getAttribute("usuario")).thenReturn(null);
+
+        when(servicioClubMock.buscarClubPor(1L)).thenReturn(club);
+        when(servicioUsuarioMock.buscarUsuarioPor(1L)).thenReturn(usuario);
+        when(servicioClubMock.usuarioInscriptoEnUnClub(club,usuario)).thenReturn(false);
+        when(servicioPuntuacionMock.buscarPuntuacion(club, usuario)).thenReturn(puntuacion);
+
+        ModelAndView model = controladorClub.echarUsuario(1L,1L, requestMock);
+
+        verify(servicioClubMock,times(0)).echarUsuarioDeUnClub(club,usuario);
+        assertThat(model.getViewName(), equalTo("redirect:/club/1"));
+    }
+
+    @Test
+    public void dadoElMetodoEcharUsuarioSiElUsuarioEstaInscriptoLoEliminaCorrectamente() throws NoExisteEseClub, NoExisteEseUsuario {
+        Club club = new Club();
+        Usuario usuario = new Usuario();
+        Puntuacion puntuacion = new Puntuacion();
+
+        when(requestMock.getSession()).thenReturn(sessionMock);
+        when(sessionMock.getAttribute("usuario")).thenReturn(null);
+
+        when(servicioClubMock.buscarClubPor(1L)).thenReturn(club);
+        when(servicioUsuarioMock.buscarUsuarioPor(1L)).thenReturn(usuario);
+        when(servicioClubMock.usuarioInscriptoEnUnClub(club,usuario)).thenReturn(true);
+        when(servicioPuntuacionMock.buscarPuntuacion(club, usuario)).thenReturn(puntuacion);
+
+        ModelAndView model = controladorClub.echarUsuario(1L,1L, requestMock);
+
+        verify(servicioClubMock,times(1)).echarUsuarioDeUnClub(club,usuario);
+        assertThat(model.getViewName(), equalTo("redirect:/club/1"));
+    }
+
+    @Test
+    public void dadoElMetodoHacerAdminSiElUsuarioEstaInscriptoLoHaceAdminCorrectamente() throws NoExisteEseClub, NoExisteEseUsuario {
+        Club club = new Club();
+        Usuario usuario = new Usuario();
+        Puntuacion puntuacion = new Puntuacion();
+
+        when(requestMock.getSession()).thenReturn(sessionMock);
+        when(sessionMock.getAttribute("usuario")).thenReturn(null);
+
+        when(servicioClubMock.buscarClubPor(1L)).thenReturn(club);
+        when(servicioUsuarioMock.buscarUsuarioPor(1L)).thenReturn(usuario);
+        when(servicioClubMock.usuarioInscriptoEnUnClub(club,usuario)).thenReturn(true);
+        when(servicioPuntuacionMock.buscarPuntuacion(club, usuario)).thenReturn(puntuacion);
+
+        ModelAndView model = controladorClub.hacerAdmin(1L,1L, requestMock);
+
+        verify(servicioClubMock,times(1)).hacerAdminAUnUsuarioDeUnClub(club,usuario);
+        assertThat(model.getViewName(), equalTo("redirect:/club/1"));
+    }
+
+    @Test
+    public void dadoElMetodoSacarAdminSiElUsuarioEstaInscriptoLeSacaElAdminCorrectamente() throws NoExisteEseClub, NoExisteEseUsuario {
+        Club club = new Club();
+        Usuario usuario = new Usuario();
+        Puntuacion puntuacion = new Puntuacion();
+
+        when(requestMock.getSession()).thenReturn(sessionMock);
+        when(sessionMock.getAttribute("usuario")).thenReturn(null);
+
+        when(servicioClubMock.buscarClubPor(1L)).thenReturn(club);
+        when(servicioUsuarioMock.buscarUsuarioPor(1L)).thenReturn(usuario);
+        when(servicioClubMock.usuarioInscriptoEnUnClub(club,usuario)).thenReturn(true);
+        when(servicioPuntuacionMock.buscarPuntuacion(club, usuario)).thenReturn(puntuacion);
+
+        ModelAndView model = controladorClub.sacarAdmin(1L,1L, requestMock);
+
+        verify(servicioClubMock,times(1)).sacarAdminAUnUsuarioDeUnClub(club,usuario);
+        assertThat(model.getViewName(), equalTo("redirect:/club/1"));
+    }
+
+
+
 }

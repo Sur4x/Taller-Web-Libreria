@@ -25,6 +25,7 @@ public class ServicioClubTest {
     private RepositorioReporte repositorioReporteMock;
     private RepositorioNotificacion repositorioNotificacionMock;
     private  Club clubMock;
+    private  Usuario usuarioMock;
     private Notificacion notificacionMock;
 
 
@@ -38,6 +39,7 @@ public class ServicioClubTest {
 
         this.servicioClub = new ServicioClubImpl(repositorioClubMock,repositorioPublicacionMock,repositorioUsuarioMock,repositorioReporteMock,repositorioNotificacionMock);
         clubMock = mock(Club.class);
+        usuarioMock = mock(Usuario.class);
         notificacionMock = mock(Notificacion.class);
     }
 
@@ -271,5 +273,62 @@ public class ServicioClubTest {
 
         assertThat(clubsObtenidos.get(0), equalTo(club1));
     }
+
+    @Test
+    public void dadoElMetodoEcharUsuarioDeUnClubCuandoElUsuarioEsIntegranteYAdminSecundarioSeEliminaDeAmbos() {
+        List<Usuario> adminsSecundarios = new ArrayList<>();
+        List<Usuario> integrantes = new ArrayList<>();
+        List<Club> clubsAdminSecundarios = new ArrayList<>();
+        List<Club> clubsInscriptos = new ArrayList<>();
+
+        adminsSecundarios.add(usuarioMock);
+        integrantes.add(usuarioMock);
+        clubsAdminSecundarios.add(clubMock);
+        clubsInscriptos.add(clubMock);
+
+        when(clubMock.getAdminsSecundarios()).thenReturn(adminsSecundarios);
+        when(clubMock.getIntegrantes()).thenReturn(integrantes);
+        when(usuarioMock.getClubsAdminSecundarios()).thenReturn(clubsAdminSecundarios);
+        when(usuarioMock.getClubsInscriptos()).thenReturn(clubsInscriptos);
+
+        servicioClub.echarUsuarioDeUnClub(clubMock, usuarioMock);
+
+        assertTrue(adminsSecundarios.isEmpty());  // El usuario debe haber sido eliminado de los admins
+        assertTrue(integrantes.isEmpty());        // El usuario debe haber sido eliminado de los integrantes
+        assertTrue(clubsAdminSecundarios.isEmpty());  // El club debe haber sido eliminado de la lista de clubs del usuario
+        assertTrue(clubsInscriptos.isEmpty());    // El club debe haber sido eliminado de la lista de clubs del usuario
+    }
+
+    @Test
+    public void dadoElMetodoHacerAdminAUnUsuarioDeUnClubCuandoElUsuarioEsIntegranteYNoEsAdminSeActualizanLasListasCorrespondientes() {
+        List<Usuario> adminsSecundarios = new ArrayList<>();
+        List<Club> clubsAdminSecundarios = new ArrayList<>();
+
+        when(clubMock.getAdminsSecundarios()).thenReturn(adminsSecundarios);
+        when(usuarioMock.getClubsAdminSecundarios()).thenReturn(clubsAdminSecundarios);
+
+        servicioClub.hacerAdminAUnUsuarioDeUnClub(clubMock, usuarioMock);
+
+        assertTrue(adminsSecundarios.contains(usuarioMock));
+        assertTrue(clubsAdminSecundarios.contains(clubMock));
+    }
+
+    @Test
+    public void dadoElMetodoSacarAdminAUnUsuarioDeUnClubCuandoElUsuarioEsAdminSeEliminaDeLaListaDeAdmins() {
+        List<Usuario> adminsSecundarios = new ArrayList<>();
+        List<Club> clubsAdminSecundarios = new ArrayList<>();
+
+        adminsSecundarios.add(usuarioMock);
+        clubsAdminSecundarios.add(clubMock);
+
+        when(clubMock.getAdminsSecundarios()).thenReturn(adminsSecundarios);
+        when(usuarioMock.getClubsAdminSecundarios()).thenReturn(clubsAdminSecundarios);
+
+        servicioClub.sacarAdminAUnUsuarioDeUnClub(clubMock, usuarioMock);
+
+        assertFalse(adminsSecundarios.contains(usuarioMock));
+        assertFalse(clubsAdminSecundarios.contains(clubMock));
+    }
+
 
 }

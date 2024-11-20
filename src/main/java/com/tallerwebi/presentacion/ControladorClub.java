@@ -180,7 +180,8 @@ public class ControladorClub {
         modelo.put("club",club);
         modelo.put("puntuacion",puntuacion);
 
-        return new ModelAndView("redirect:/club/{clubId}", modelo);
+        return new ModelAndView("redirect:/club/" + clubId, modelo);
+
     }
 
     @RequestMapping(path = "/club/{clubId}/agregarAdmin/{usuarioId}", method = RequestMethod.POST)
@@ -202,7 +203,7 @@ public class ControladorClub {
         modelo.put("club",club);
         modelo.put("puntuacion",puntuacion);
 
-        return new ModelAndView("redirect:/club/{clubId}", modelo);
+        return new ModelAndView("redirect:/club/" + clubId, modelo);
     }
 
     @RequestMapping(path = "/club/{clubId}/sacarAdmin/{usuarioId}", method = RequestMethod.POST)
@@ -224,6 +225,6 @@ public class ControladorClub {
         modelo.put("club",club);
         modelo.put("puntuacion",puntuacion);
 
-        return new ModelAndView("redirect:/club/{clubId}", modelo);
+        return new ModelAndView("redirect:/club/" + clubId, modelo);
     }
 }
