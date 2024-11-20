@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,10 +17,13 @@ public class ServicioReporteImpl implements ServicioReporte{
     private RepositorioReporte repositorioReporte;
     private RepositorioClub repositorioClub;
 
+    private RepositorioNotificacion repositorioNotificacion;
+
     @Autowired
-    public ServicioReporteImpl(RepositorioReporte repositorioReporte,RepositorioClub repositorioClub) {
+    public ServicioReporteImpl(RepositorioReporte repositorioReporte,RepositorioClub repositorioClub,RepositorioNotificacion repositorioNotificacion) {
         this.repositorioReporte = repositorioReporte;
         this.repositorioClub = repositorioClub;
+        this.repositorioNotificacion = repositorioNotificacion;
     }
 
     @Override
@@ -36,12 +40,25 @@ public class ServicioReporteImpl implements ServicioReporte{
             throw new ReporteExistente("El reporte ya fue realizado");
         }
         repositorioReporte.guardar(reporte);
+
+        Notificacion notificacion = new Notificacion();
+        notificacion.setFecha(LocalDate.now());
+        notificacion.setEvento("Se realizó un reporte a un club existente: " + reporte.getClub().getNombre());
+
+        repositorioNotificacion.crearNotificacion(notificacion);
     }
 
     @Override
     public void eliminarReporte(Long id) {
         Reporte reporte = repositorioReporte.buscarReportePorId(id);
         if (reporte != null) {
+            Notificacion notificacion = new Notificacion();
+            notificacion.setFecha(LocalDate.now());
+            notificacion.setEvento("Se elimino un reporte realizado al club: "
+                    + reporte.getClub().getNombre() + " que tenia como motivo: " + reporte.getMotivo());
+
+            repositorioNotificacion.crearNotificacion(notificacion);
+
             repositorioReporte.eliminar(reporte);
         }
     }

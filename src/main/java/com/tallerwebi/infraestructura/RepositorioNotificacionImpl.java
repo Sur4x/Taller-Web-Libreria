@@ -13,8 +13,12 @@ import java.util.List;
 
 @Repository
 public class RepositorioNotificacionImpl implements RepositorioNotificacion {
-    @Autowired
+
     private SessionFactory sessionFactory;
+    @Autowired
+    public RepositorioNotificacionImpl(SessionFactory sessionFactory) {
+        this.sessionFactory = sessionFactory;
+    }
 
     @Override
     public void crearNotificacion(Notificacion notificacion) {

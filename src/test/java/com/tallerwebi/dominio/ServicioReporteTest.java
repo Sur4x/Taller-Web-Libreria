@@ -5,7 +5,9 @@ import com.tallerwebi.dominio.excepcion.NoExisteEseClub;
 import com.tallerwebi.dominio.excepcion.ReporteExistente;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,12 +24,17 @@ public class ServicioReporteTest {
     private RepositorioReporte repositorioReporteMock;
     private RepositorioClub repositorioClubMock;
     private ServicioReporte servicioReporte;
+    private RepositorioNotificacion repositorioNotificacionMock;
+
+    private Notificacion notificacionMock;
 
     @BeforeEach
     public void init(){
         repositorioReporteMock = mock(RepositorioReporte.class);
         repositorioClubMock = mock(RepositorioClub.class);
-        this.servicioReporte = new ServicioReporteImpl(repositorioReporteMock, repositorioClubMock);
+        repositorioNotificacionMock = mock(RepositorioNotificacion.class);
+        notificacionMock = mock(Notificacion.class);
+        this.servicioReporte = new ServicioReporteImpl(repositorioReporteMock, repositorioClubMock,repositorioNotificacionMock);
     }
 
     @Test
@@ -55,12 +62,21 @@ public class ServicioReporteTest {
     @Test
     public void dadoElMetodoGuardarReporteCuandoLeEntregoUnReporteQueNoExisteEnElSistemaEsteDebeRealizarElMetodoGuardar() throws ReporteExistente {
         Reporte reporte = new Reporte();
+        Club club = new Club();
+        club.setNombre("Club de Lectura");
         reporte.setId(1L);
+        reporte.setClub(club);
         when(repositorioReporteMock.buscarReportePorId(any())).thenReturn(null);
 
         servicioReporte.guardarReporte(reporte);
 
         verify(repositorioReporteMock, times(1)).guardar(reporte);
+
+        verify(repositorioNotificacionMock).crearNotificacion(argThat(notificacion ->
+                notificacion.getFecha().equals(LocalDate.now()) &&
+                        notificacion.getEvento().equals("Se realizó un reporte a un club existente: Club de Lectura")
+        ));
+
     }
 
     @Test
@@ -78,12 +94,21 @@ public class ServicioReporteTest {
     @Test
     public void dadoElMetodoEliminarReporteSiLeEntregoUnReporteQueEstaEnElSistemaDebeRealizarElMetodoEliminar(){
         Reporte reporte = new Reporte();
+        Club club = new Club();
+        club.setNombre("Club de Lectura");
         reporte.setId(1L);
+        reporte.setClub(club);
+        reporte.setMotivo("Testing");
         when(repositorioReporteMock.buscarReportePorId(any())).thenReturn(reporte);
 
         servicioReporte.eliminarReporte(1L);
 
         verify(repositorioReporteMock,times(1)).eliminar(reporte);
+
+        verify(repositorioNotificacionMock).crearNotificacion(argThat(notificacion ->
+                notificacion.getFecha().equals(LocalDate.now()) &&
+                        notificacion.getEvento().equals("Se elimino un reporte realizado al club: Club de Lectura que tenia como motivo: Testing")
+        ));
     }
 
     @Test
