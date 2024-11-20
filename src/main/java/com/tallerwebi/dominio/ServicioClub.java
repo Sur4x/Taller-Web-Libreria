@@ -28,5 +28,8 @@ public interface ServicioClub {
     List<Club> obtenerClubsConMasPublicaciones();
 
     void refrescarClub(Club club);
-    
+
+    Boolean usuarioInscriptoEnUnClub(Club club, Usuario usuario);
+
+    void echarUsuarioDeUnClub(Club club, Usuario usuario);
 }

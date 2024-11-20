@@ -49,6 +49,15 @@ public class Usuario {
     @OneToMany(mappedBy = "usuario")
     private List<Publicacion> publicaciones = new ArrayList<>();
 
+    @ManyToMany
+    @JoinTable(
+            name = "club_admins",  // Nombre de la tabla intermedia
+            joinColumns = @JoinColumn(name = "usuario_id"),  // Llave foránea para el usuario
+            inverseJoinColumns = @JoinColumn(name = "club_id")  // Llave foránea para el club
+    )
+    private List<Club> clubsAdminSecundarios = new ArrayList<>();
+
+
     public Usuario(){};
     public Usuario(String nombreUsuario, String email,String password, List<Club> clubsInscriptos) {
         this.nombreUsuario = nombreUsuario;

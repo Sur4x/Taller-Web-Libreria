@@ -89,6 +89,7 @@ public class ControladorLogin {
         ModelMap model = new ModelMap();
         try {
             List<Club> clubs = servicioClub.obtenerTodosLosClubs(); //ESTO ES LOGICA DEL CLUB NO DEL LOGIN MOVERLO
+
             model.put("clubs",clubs);
         }catch (NoExistenClubs e){
             model.put("error", "No existen clubs para mostrar");

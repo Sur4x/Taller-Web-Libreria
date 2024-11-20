@@ -65,6 +65,7 @@ public class ServicioClubImpl implements ServicioClub {
         }
         Hibernate.initialize(club.getPuntuaciones());
         Hibernate.initialize(club.getPublicaciones());
+        Hibernate.initialize(club.getAdminsSecundarios());
         return club;
     }
 
@@ -150,5 +151,19 @@ public class ServicioClubImpl implements ServicioClub {
     @Override
     public void refrescarClub(Club club){
         repositorioClub.refrescarClub(club);
+    }
+
+    @Override
+    public Boolean usuarioInscriptoEnUnClub(Club club, Usuario usuario) {
+        return club.getIntegrantes().contains(usuario);
+    }
+
+    @Override
+    public void echarUsuarioDeUnClub(Club club, Usuario usuario) {
+        club.getIntegrantes().remove(usuario);
+        usuario.getClubsInscriptos().remove(club);
+
+        repositorioClub.guardar(club);
+        repositorioUsuario.guardar(usuario);
     }
 }

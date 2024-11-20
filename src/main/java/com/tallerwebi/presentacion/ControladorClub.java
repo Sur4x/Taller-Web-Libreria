@@ -2,6 +2,7 @@ package com.tallerwebi.presentacion;
 
 import com.tallerwebi.dominio.*;
 import com.tallerwebi.dominio.excepcion.*;
+import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
@@ -65,7 +66,9 @@ public class ControladorClub {
                 throw new RuntimeException("Error al guardar la imagen", e);
             }
         }
+        club.setAdminPrincipal(usuario);
         Boolean agregado = servicioClub.agregar(club);
+        servicioClub.registrarUsuarioEnElClub(usuario,club);
         if (agregado && usuario != null) {
             modelo.put("usuario", usuario);
             modelo.put("clubId", club.getId());
@@ -156,5 +159,27 @@ public class ControladorClub {
         model.addAttribute("clubsPublicaciones", clubsPublicaciones);
 
         return new ModelAndView("ranking", model);
+    }
+
+    @RequestMapping(path = "/club/{clubId}/echarUsuario/{usuarioId}", method = RequestMethod.POST)
+    public ModelAndView echarUsuario(@PathVariable("clubId") Long clubId, @PathVariable("usuarioId") Long usuarioId, HttpServletRequest request) throws NoExisteEseClub, NoExisteEseUsuario {
+        Usuario usuario = (Usuario) request.getSession().getAttribute("usuario");
+        ModelMap modelo = new ModelMap();
+
+        Club club = servicioClub.buscarClubPor(clubId);
+        Usuario usuarioPorEchar = servicioUsuario.buscarUsuarioPor(usuarioId);
+        Boolean inscripto = servicioClub.usuarioInscriptoEnUnClub(club, usuarioPorEchar);
+
+        if (inscripto){
+            servicioClub.echarUsuarioDeUnClub(club, usuarioPorEchar);
+        }
+
+        Puntuacion puntuacion = servicioPuntuacion.buscarPuntuacion(club, usuario);
+
+        modelo.put("usuario",usuario);
+        modelo.put("club",club);
+        modelo.put("puntuacion",puntuacion);
+
+        return new ModelAndView("redirect:/club/{clubId}", modelo);
     }
 }

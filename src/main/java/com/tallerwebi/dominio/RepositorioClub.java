@@ -23,5 +23,6 @@ public interface RepositorioClub {
     void refrescarClub(Club club);
 
     Double obtenerPromedioDeUnClub(Long id);
+
 }
 

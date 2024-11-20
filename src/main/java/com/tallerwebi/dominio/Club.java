@@ -20,7 +20,7 @@ public class Club {
     private Double puntuacionPromedio = 0.0;
 
     @ManyToMany(mappedBy = "clubsInscriptos", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.EAGER)
-    private List<Usuario> integrantes;
+    private List<Usuario> integrantes = new ArrayList<>();
 
     @OneToMany(mappedBy = "club", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Publicacion> publicaciones = new ArrayList<>();
@@ -30,6 +30,13 @@ public class Club {
 
     @OneToMany(mappedBy = "club", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Puntuacion> puntuaciones = new ArrayList<>();
+
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JoinColumn(name = "admin_principal_id") // Llave foránea en la tabla Club
+    private Usuario adminPrincipal;
+
+    @ManyToMany(mappedBy = "clubsAdminSecundarios")
+    private List<Usuario> adminsSecundarios = new ArrayList<>();
 
     public Club() {
         this.reportes = new ArrayList<>();
@@ -148,6 +155,22 @@ public class Club {
 
     public void setPuntuacionPromedio(Double puntuacionPromedio) {
         this.puntuacionPromedio = puntuacionPromedio;
+    }
+
+    public Usuario getAdminPrincipal() {
+        return adminPrincipal;
+    }
+
+    public void setAdminPrincipal(Usuario adminPrincipal) {
+        this.adminPrincipal = adminPrincipal;
+    }
+
+    public List<Usuario> getAdminsSecundarios() {
+        return adminsSecundarios;
+    }
+
+    public void setAdminsSecundarios(List<Usuario> adminsSecundarios) {
+        this.adminsSecundarios = adminsSecundarios;
     }
 
     @Override
