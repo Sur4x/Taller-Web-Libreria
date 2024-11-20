@@ -160,8 +160,32 @@ public class ServicioClubImpl implements ServicioClub {
 
     @Override
     public void echarUsuarioDeUnClub(Club club, Usuario usuario) {
+
+        if (club.getAdminsSecundarios().contains(usuario)){
+            club.getAdminsSecundarios().remove(usuario);
+            usuario.getClubsAdminSecundarios().remove(club);
+        }
+
         club.getIntegrantes().remove(usuario);
         usuario.getClubsInscriptos().remove(club);
+
+        repositorioClub.guardar(club);
+        repositorioUsuario.guardar(usuario);
+    }
+
+    @Override
+    public void hacerAdminAUnUsuarioDeUnClub(Club club, Usuario nuevoAdmin) {
+        club.getAdminsSecundarios().add(nuevoAdmin);
+        nuevoAdmin.getClubsAdminSecundarios().add(club);
+
+        repositorioClub.guardar(club);
+        repositorioUsuario.guardar(nuevoAdmin);
+    }
+
+    @Override
+    public void sacarAdminAUnUsuarioDeUnClub(Club club, Usuario usuario) {
+        club.getAdminsSecundarios().remove(usuario);
+        usuario.getClubsAdminSecundarios().remove(club);
 
         repositorioClub.guardar(club);
         repositorioUsuario.guardar(usuario);

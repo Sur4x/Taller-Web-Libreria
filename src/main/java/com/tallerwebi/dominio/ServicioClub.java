@@ -32,4 +32,8 @@ public interface ServicioClub {
     Boolean usuarioInscriptoEnUnClub(Club club, Usuario usuario);
 
     void echarUsuarioDeUnClub(Club club, Usuario usuario);
+
+    void hacerAdminAUnUsuarioDeUnClub(Club club, Usuario nuevoAdmin);
+
+    void sacarAdminAUnUsuarioDeUnClub(Club club, Usuario usuario);
 }

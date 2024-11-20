@@ -33,6 +33,7 @@ public class ServicioUsuarioImpl implements ServicioUsuario{
             Hibernate.initialize(usuario.getPuntuaciones());
             Hibernate.initialize(usuario.getSeguidores());
             Hibernate.initialize(usuario.getSeguidos());
+            Hibernate.initialize(usuario.getClubsAdminSecundarios());
             return usuario;
         }else{
             throw new NoExisteEseUsuario("No existe un usuario con ese id");

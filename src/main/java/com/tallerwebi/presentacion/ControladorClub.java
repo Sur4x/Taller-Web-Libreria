@@ -182,4 +182,48 @@ public class ControladorClub {
 
         return new ModelAndView("redirect:/club/{clubId}", modelo);
     }
+
+    @RequestMapping(path = "/club/{clubId}/agregarAdmin/{usuarioId}", method = RequestMethod.POST)
+    public ModelAndView hacerAdmin(@PathVariable("clubId") Long clubId, @PathVariable("usuarioId") Long usuarioId, HttpServletRequest request) throws NoExisteEseClub, NoExisteEseUsuario {
+        Usuario usuario = (Usuario) request.getSession().getAttribute("usuario");
+        ModelMap modelo = new ModelMap();
+
+        Club club = servicioClub.buscarClubPor(clubId);
+        Usuario nuevoAdmin = servicioUsuario.buscarUsuarioPor(usuarioId);
+        Boolean inscripto = servicioClub.usuarioInscriptoEnUnClub(club, nuevoAdmin);
+
+        if (inscripto){
+            servicioClub.hacerAdminAUnUsuarioDeUnClub(club, nuevoAdmin);
+        }
+
+        Puntuacion puntuacion = servicioPuntuacion.buscarPuntuacion(club, usuario);
+
+        modelo.put("usuario",usuario);
+        modelo.put("club",club);
+        modelo.put("puntuacion",puntuacion);
+
+        return new ModelAndView("redirect:/club/{clubId}", modelo);
+    }
+
+    @RequestMapping(path = "/club/{clubId}/sacarAdmin/{usuarioId}", method = RequestMethod.POST)
+    public ModelAndView sacarAdmin(@PathVariable("clubId") Long clubId, @PathVariable("usuarioId") Long usuarioId, HttpServletRequest request) throws NoExisteEseClub, NoExisteEseUsuario {
+        Usuario usuario = (Usuario) request.getSession().getAttribute("usuario");
+        ModelMap modelo = new ModelMap();
+
+        Club club = servicioClub.buscarClubPor(clubId);
+        Usuario usuarioNormal = servicioUsuario.buscarUsuarioPor(usuarioId);
+        Boolean inscripto = servicioClub.usuarioInscriptoEnUnClub(club, usuarioNormal);
+
+        if (inscripto){
+            servicioClub.sacarAdminAUnUsuarioDeUnClub(club, usuarioNormal);
+        }
+
+        Puntuacion puntuacion = servicioPuntuacion.buscarPuntuacion(club, usuario);
+
+        modelo.put("usuario",usuario);
+        modelo.put("club",club);
+        modelo.put("puntuacion",puntuacion);
+
+        return new ModelAndView("redirect:/club/{clubId}", modelo);
+    }
 }

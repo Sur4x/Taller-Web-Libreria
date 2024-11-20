@@ -33,7 +33,7 @@ public class Club {
 
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "admin_principal_id") // Llave foránea en la tabla Club
-    private Usuario adminPrincipal;
+    private Usuario adminPrincipal = new Usuario();
 
     @ManyToMany(mappedBy = "clubsAdminSecundarios")
     private List<Usuario> adminsSecundarios = new ArrayList<>();

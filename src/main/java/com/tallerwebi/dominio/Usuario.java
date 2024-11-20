@@ -156,6 +156,21 @@ public class Usuario {
         this.puntuaciones = puntuaciones;
     }
 
+    public List<Publicacion> getPublicaciones() {
+        return publicaciones;
+    }
+
+    public void setPublicaciones(List<Publicacion> publicaciones) {
+        this.publicaciones = publicaciones;
+    }
+
+    public List<Club> getClubsAdminSecundarios() {
+        return clubsAdminSecundarios;
+    }
+
+    public void setClubsAdminSecundarios(List<Club> clubsAdminSecundarios) {
+        this.clubsAdminSecundarios = clubsAdminSecundarios;
+    }
 
     @Override
     public boolean equals(Object o) {
