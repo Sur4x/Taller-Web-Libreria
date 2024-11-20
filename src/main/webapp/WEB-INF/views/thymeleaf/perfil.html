@@ -1,44 +1,12 @@
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Perfil</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <link rel="stylesheet" th:href="@{/webjars/bootstrap/5.2.0/css/bootstrap.min.css}"/>
     <title>Perfil del Usuario</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" th:href="@{/webjars/bootstrap/5.2.0/css/bootstrap.min.css}"/>
     <style>
         body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f9;
-            margin: 0;
-            padding: 20px;
-        }
-        .container {
-            max-width: 600px;
-            background-color: #fff;
-            margin-top: 100px;
-            padding: 20px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
-        h1, h2 {
-            color: #333;
-        }
-        .profile-info {
-            margin-bottom: 20px;
-        }
-        .profile-info h3 {
-            color: #555;
-        }
-        .btn {
-            display: inline-block;
-            padding: 10px 20px;
-            background-color: #007bff;
-            color: white;
-            text-decoration: none;
-            border-radius: 5px;
-        }
-        .btn:hover {
-            background-color: #0056b3;
+            padding-top: 70px;
         }
     </style>
 </head>
@@ -71,49 +39,49 @@
         </div>
     </nav>
 </header>
-<main>
-<div class="container">
-    <div class="profile-info">
-        <h1>Perfil del Usuario</h1>
 
-        <div class="profile-info">
+<main class="mt-5">
+    <div class="container">
+        <div class="profile-info d-flex align-items-center">
+            <h1 class="me-4" th:text="${usuario.nombreUsuario}">Nombre de Usuario</h1>
+            <div class="d-flex align-items-center me-4">
+                <h3 class="mb-0">Seguidores:</h3>
+                <p class="mb-0 ms-2 fs-3" th:text="${seguidores}">0</p>
+            </div>
+            <div class="d-flex align-items-center">
+                <h3 class="mb-0">Seguidos:</h3>
+                <p class="mb-0 ms-2 fs-3" th:text="${seguidos}">0</p>
+            </div>
+        </div>
+
+        <div class="profile-info mt-4">
             <h2>Información General</h2>
-            <!--
-            <h3>Id:</h3>
-            <p th:text="${usuario.id}"></p>
-            -->
-            <h3>Nombre de usuario:</h3>
-            <p th:text="${usuario.nombreUsuario}"></p>
-
             <h3>Correo:</h3>
-            <p th:text="${usuario.email}"></p>
+            <p th:text="${usuario.email}">correo@ejemplo.com</p>
 
-            <!--
-            <h3>Rol:</h3>
-            <p th:text="${usuario.rol}"></p>
-            -->
-
-            <h3>Clubes de Lectura Asociados: </h3>
+            <h3>Clubes de Lectura Asociados:</h3>
             <ul>
                 <li th:each="club : ${usuario.clubsInscriptos}">
                     <p th:text="${club.nombre}">Nombre del club</p>
                 </li>
             </ul>
         </div>
+
         <div th:if="${usuario != null and usuarioActual != null}">
-        <div th:if="${usuario.id} != ${usuarioActual.id}">
-            <div th:if="${sigueAlUsuario}"><a class="btn" th:href="@{/perfil/{id}/dejarDeSeguir(id=${usuario.id})}"> Dejar de seguir</a></div>
-            <div th:if="!${sigueAlUsuario}"><a class="btn" th:href="@{/perfil/{id}/seguir(id=${usuario.id})}">Seguir</a></div>
-        </div>
+            <div th:if="${usuario.id} != ${usuarioActual.id}">
+                <div th:if="${sigueAlUsuario}">
+                    <a class="btn btn-danger" th:href="@{/perfil/{id}/dejarDeSeguir(id=${usuario.id})}">Dejar de seguir</a>
+                </div>
+                <div th:if="!${sigueAlUsuario}">
+                    <a class="btn btn-success" th:href="@{/perfil/{id}/seguir(id=${usuario.id})}">Seguir</a>
+                </div>
+            </div>
         </div>
 
+        <a class="btn btn-secondary mt-4" th:href="@{/home}">Volver atrás</a>
     </div>
-
-    <a class="btn" th:href="@{/home}"> Volver atras</a>
-</div>
-
 </main>
+
 <script th:src="@{/webjars/bootstrap/5.2.0/js/bootstrap.bundle.min.js}"></script>
 </body>
-</html>
 </html>

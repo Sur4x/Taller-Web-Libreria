@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
 
 @Service
 @Transactional
@@ -77,5 +78,11 @@ public class ServicioUsuarioImpl implements ServicioUsuario{
         }
 
         return usuariosConMasSeguidores;
+    }
+
+    @Override
+    public Set<Usuario> obtenerUsuariosSeguidos(Usuario usuario){
+        Hibernate.initialize(usuario.getSeguidos());
+        return usuario.getSeguidos();
     }
 }

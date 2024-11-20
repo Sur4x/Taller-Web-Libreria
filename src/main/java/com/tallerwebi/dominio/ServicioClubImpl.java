@@ -132,6 +132,10 @@ public class ServicioClubImpl implements ServicioClub {
     @Override
     public List<Club> obtenerClubsConMasPublicaciones() {
         List<Club> clubs = repositorioClub.obtenerTodosLosClubs();
+        for (Club club : clubs) {
+            Hibernate.initialize(club.getPublicaciones());
+        }
+
         clubs.sort(Comparator.comparingInt(s -> s.getPublicaciones().size()));
         Collections.reverse(clubs);
         List<Club> clubsConMasPublicaciones = new ArrayList<>();

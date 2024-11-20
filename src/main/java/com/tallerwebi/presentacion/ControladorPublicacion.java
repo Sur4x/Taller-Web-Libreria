@@ -45,7 +45,7 @@ public class ControladorPublicacion {
     @RequestMapping(path = "/club/{clubId}/nuevaPublicacion", method = RequestMethod.POST)
     public ModelAndView realizarPublicacion(@PathVariable("clubId") Long id, @ModelAttribute("publicacion") Publicacion publicacion, HttpServletRequest request) throws NoExisteEseClub {
         Usuario usuario = (Usuario) request.getSession().getAttribute("usuario");
-        servicioPublicacion.agregarNuevaPublicacion(publicacion, id);
+        servicioPublicacion.agregarNuevaPublicacion(publicacion, id, usuario);
         return new ModelAndView("redirect:/club/{clubId}");
     }
 

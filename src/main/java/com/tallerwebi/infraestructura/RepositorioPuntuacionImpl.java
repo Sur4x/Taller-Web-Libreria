@@ -38,21 +38,11 @@ public class RepositorioPuntuacionImpl implements RepositorioPuntuacion {
     }
 
     @Override
-    public void eliminarPuntuacion(Puntuacion puntuacionClub) {
-        sessionFactory.getCurrentSession().delete(puntuacionClub);
-    }
-
-    /*
-    @Override
-    @Transactional
-    public void actualizarPromedio(Long id, Double promedio) {
-        String hql = "UPDATE Club c SET c.puntuacionPromedio = :puntuacionPromedio WHERE c.id = :clubId";
+    public void eliminarPuntuacion(Long idClub, Long idUsuario) {
+        String hql = "DELETE FROM Puntuacion p WHERE p.club.id = :idClub AND p.usuario.id = :idUsuario";
         Query query = sessionFactory.getCurrentSession().createQuery(hql);
-        query.setParameter("puntuacionPromedio", promedio);
-        query.setParameter("clubId", id);
+        query.setParameter("idClub", idClub);
+        query.setParameter("idUsuario", idUsuario);
         query.executeUpdate();
-
     }
-
-     */
 }

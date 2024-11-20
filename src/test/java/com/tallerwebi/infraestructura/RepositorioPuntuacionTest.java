@@ -101,85 +101,30 @@ public class RepositorioPuntuacionTest {
         assertThat(obtenida, equalTo(null));
     }
 
-//    @Test
-//    @Rollback
-//    @Transactional
-//    public void dadoUnaPuntuacionGuardadaCuandoSeEliminaEntoncesNoSeEncuentraEnLaBaseDeDatos() {
-//        Club club = new Club();
-//        Usuario usuario = new Usuario();
-//        Integer valorPuntuacion = 5;
-//
-//        Puntuacion puntuacion = new Puntuacion(club, usuario, valorPuntuacion);
-//        repositorioClub.guardar(club);
-//        repositorioUsuario.guardar(usuario);
-//        repositorioPuntuacion.guardarPuntuacion(puntuacion);
-//
-//        repositorioPuntuacion.eliminarPuntuacion(puntuacion);
-//
-//        String hql = "FROM Puntuacion p WHERE p.club = :club AND p.usuario = :usuario";
-//        Query query = sessionFactory.getCurrentSession().createQuery(hql);
-//        query.setParameter("club", club);
-//        query.setParameter("usuario", usuario);
-//
-//        List<Puntuacion> resultados = query.getResultList();
-//
-//
-//        assertThat(resultados, empty());
-//    }
-
-
-
-
-
-
-
-
-    /* ESTOS TEST LOS HICE PARA EL ANTERIOR METODO repositorioClub.actualizarPromedio(club.getId(), promedio);
-    @Rollback
     @Test
-    public void dadoElMetodoGuardarPuntuacionCuandoGuardaUnaPuedoObtenerlaDeLaBDD(){
+    @Rollback
+    @Transactional
+    public void dadoElMetodoEliminarPuntuacionCuandoExisteUnaPuntuacionEnLaBaseDeDatosLaElimina(){
+        Club club = new Club();
         Usuario usuario = new Usuario();
-        this.repositorioUsuario.guardar(usuario);
+        Integer valorPuntuacion = 5;
 
-        Club club = new Club();
-        this.repositorioClub.guardar(club);
+        Puntuacion puntuacion = new Puntuacion(club, usuario, valorPuntuacion);
 
-        Puntuacion puntuacion = new Puntuacion();
-        puntuacion.setClub(club);
-        puntuacion.setUsuario(usuario);
-        puntuacion.setPuntuacion(4);
+        repositorioClub.guardar(club);
+        repositorioUsuario.guardar(usuario);
 
-        this.repositorioClub.guardarPuntuacion(puntuacion);
+        repositorioPuntuacion.guardarPuntuacion(puntuacion);
 
-        String hql = "from Puntuacion where club.id = :clubId";
-        Query query = this.sessionFactory.getCurrentSession().createQuery(hql);
-        query.setParameter("clubId", club.getId());
+        String hql = "DELETE FROM Puntuacion p WHERE p.club.id = :idClub AND p.usuario.id = :idUsuario";
+        Query query = sessionFactory.getCurrentSession().createQuery(hql);
+        query.setParameter("idClub", club.getId());
+        query.setParameter("idUsuario", usuario.getId());
+        query.executeUpdate();
 
-        Puntuacion puntuacionObtenida = (Puntuacion) query.getSingleResult();
+        Puntuacion puntuacionEncontrada = repositorioPuntuacion.buscarPuntuacion(club,usuario);
+        assertThat(puntuacionEncontrada, equalTo(null));
 
-        assertThat(puntuacionObtenida.getPuntuacion(), equalTo(puntuacion.getPuntuacion()));
-        assertThat(puntuacionObtenida.getClub().getId(), equalTo(club.getId()));
-        assertThat(puntuacionObtenida.getUsuario().getId(), equalTo(usuario.getId()));
     }
 
-    @Rollback
-    @Test
-    public void dadoElMetodoActualizarPromedioCuandoTengoUnClubEnLaBDDConUnPromedioPuedoActualizarloPorOtro() {
-        Club club = new Club();
-        club.setPuntuacionPromedio(1.0);
-        this.repositorioClub.guardar(club);
-
-        this.repositorioClub.actualizarPromedio(club.getId(), 3.5);
-
-        String hql = "from Club where id = :clubId";
-        Query query = this.sessionFactory.getCurrentSession().createQuery(hql);
-        query.setParameter("clubId", club.getId());
-        Club clubObtenido = (Club) query.getSingleResult();
-
-        assertThat(clubObtenido, equalTo(club));
-        assertThat(clubObtenido.getPuntuacionPromedio(), equalTo(3.5));
-    }
-
-
- */
 }

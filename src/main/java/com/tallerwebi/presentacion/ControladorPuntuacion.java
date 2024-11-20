@@ -38,20 +38,18 @@ public class ControladorPuntuacion {
         int votos = club.getPuntuaciones().size();
         if (votos >= 3) {
             Double puntuacionPromedio = servicioPuntuacion.obtenerPuntuacionPromedio(club);
-            servicioPuntuacion.actualizarPromedio(club, puntuacionPromedio);
+            servicioPuntuacion.actualizarPromedio(club);
         }
         return "redirect:/club/" + id;
     }
 
-
-    /* DESPUNTUAR CLUB
     @RequestMapping(path = "/club/despuntuar/{id}")
     public String despuntuarClub(@PathVariable Long id, HttpServletRequest request) throws NoExisteEseClub, NoExisteEseUsuario {
         Usuario usuario = (Usuario) request.getSession().getAttribute("usuario");
         Usuario usuarioActual = servicioUsuario.buscarUsuarioPor(usuario.getId());
         Club club = servicioClub.buscarClubPor(id);
-        servicioClub.removerPuntuacion(club, usuarioActual);
+        servicioPuntuacion.removerPuntuacion(club, usuarioActual);
         return "redirect:/club/" + id;
     }
-     */
+
 }

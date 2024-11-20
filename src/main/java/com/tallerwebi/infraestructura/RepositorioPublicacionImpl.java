@@ -12,7 +12,10 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.Query;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 @Repository("repositorioPublicacion")
 public class RepositorioPublicacionImpl implements RepositorioPublicacion {
@@ -53,6 +56,22 @@ public class RepositorioPublicacionImpl implements RepositorioPublicacion {
         query.setParameter("clubId",clubId);
         List<Publicacion> resultList = query.getResultList(); //si no encuentra una publicacion no tire excepcion
         return resultList.isEmpty() ? null : resultList.get(0);
+    }
+
+    @Override
+    public List<Publicacion> buscarPublicacionesMasRecientesDeUsuariosSeguidos(Set<Usuario> usuariosSeguidos){
+        List<Long> usuariosSeguidosIds = new ArrayList<>();
+
+        for(Usuario usuario : usuariosSeguidos){
+            usuariosSeguidosIds.add(usuario.getId());
+        }
+
+        String hql = "FROM Publicacion p WHERE p.usuario.id IN :usuariosSeguidos ORDER BY p.id DESC";
+        Query query = this.sessionFactory.getCurrentSession().createQuery(hql);
+        query.setParameter("usuariosSeguidos", usuariosSeguidosIds);
+        query.setMaxResults(5); //DEVUELVE LAS 5 PUBLICACIONES MÁS RECIENTES DE SUS SEGUIDORES
+        List <Publicacion> publicacionesUsuariosSeguidos = query.getResultList();
+        return publicacionesUsuariosSeguidos.isEmpty() ? Collections.emptyList() : publicacionesUsuariosSeguidos;
     }
 
 }

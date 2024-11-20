@@ -27,7 +27,6 @@ public class RepositorioClubImpl implements RepositorioClub {
     public List<Club> obtenerTodosLosClubs() {
         String hql = "FROM Club";
         Query query = this.sessionFactory.getCurrentSession().createQuery(hql);
-
         return query.getResultList();
     }
 
@@ -77,17 +76,25 @@ public class RepositorioClubImpl implements RepositorioClub {
     }
 
     @Override
-    @Transactional
+    public void refrescarClub(Club club) {
+        sessionFactory.getCurrentSession().refresh(club);
+    }
+
+    @Override
+    public Double obtenerPromedioDeUnClub(Long id) {
+        String hql = "SELECT AVG(p.puntuacion) FROM Puntuacion p WHERE p.club.id = :id";
+        Query query = this.sessionFactory.getCurrentSession().createQuery(hql);
+        query.setParameter("id", id);
+        Double promedio = (Double) query.getSingleResult();
+        return promedio != null ? promedio : 0.0;
+    }
+
+    @Override
     public void actualizarPromedioDeUnClub(Long idClub, Double nuevoPromedio) {
         String hql = "UPDATE Club c SET c.puntuacionPromedio = :nuevoPromedio WHERE c.id = :idClub";
         Query query = this.sessionFactory.getCurrentSession().createQuery(hql);
         query.setParameter("nuevoPromedio", nuevoPromedio);
         query.setParameter("idClub", idClub);
         query.executeUpdate();
-    }
-
-    @Override
-    public void refrescarClub(Club club) {
-        sessionFactory.getCurrentSession().refresh(club);
     }
 }

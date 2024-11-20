@@ -28,7 +28,7 @@ public class Club {
     @OneToMany(mappedBy = "club", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Reporte> reportes;
 
-    @OneToMany(mappedBy = "club", cascade = {CascadeType.ALL, CascadeType.MERGE}, orphanRemoval = true)
+    @OneToMany(mappedBy = "club", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Puntuacion> puntuaciones = new ArrayList<>();
 
     public Club() {

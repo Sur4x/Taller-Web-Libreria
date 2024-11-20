@@ -6,6 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.Set;
+
 @Service
 @Transactional
 public class ServicioPublicacionImpl implements ServicioPublicacion {
@@ -37,11 +40,12 @@ public class ServicioPublicacionImpl implements ServicioPublicacion {
     }
 
     @Override
-    public void agregarNuevaPublicacion(Publicacion publicacion, Long id) throws NoExisteEseClub {
+    public void agregarNuevaPublicacion(Publicacion publicacion, Long id, Usuario usuario) throws NoExisteEseClub {
 
         if (publicacion != null && id != null){
             Club club = repositorioClub.buscarClubPor(id);
             publicacion.setClub(club);
+            publicacion.setUsuario(usuario);
             club.getPublicaciones().add(publicacion);
 
             repositorioPublicacion.guardar(publicacion);
@@ -56,5 +60,10 @@ public class ServicioPublicacionImpl implements ServicioPublicacion {
             repositorioClub.guardar(club);
             repositorioPublicacion.eliminar(publicacion);
         }
+    }
+
+    @Override
+    public List<Publicacion> obtenerPublicacionesDeUsuariosSeguidos(Set<Usuario> usuariosSeguidos){
+        return repositorioPublicacion.buscarPublicacionesMasRecientesDeUsuariosSeguidos(usuariosSeguidos);
     }
 }

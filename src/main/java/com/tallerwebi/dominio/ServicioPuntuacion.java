@@ -6,11 +6,9 @@ public interface ServicioPuntuacion {
 
     Double obtenerPuntuacionPromedio(Club club);
 
-    void actualizarPromedio(Club club, Double promedio);
+    void actualizarPromedio(Club club);
 
     Puntuacion buscarPuntuacion(Club club, Usuario usuario);
 
-    /* DESPUNTUAR CLUB
     void removerPuntuacion(Club club, Usuario usuario);
-    */
 }

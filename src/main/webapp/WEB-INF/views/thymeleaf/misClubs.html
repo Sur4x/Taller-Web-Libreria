@@ -106,7 +106,7 @@
           <div th:each="club : ${usuario.clubsInscriptos}" class="club-item">
             <div class="card h-100">
               <a th:href="@{/club/{id}(id=${club.id})}">
-                <img th:src="@{/images/{imagen}(imagen=${club.imagen})}" class="card-img-top" alt="Imagen del club">
+                <img th:src="@{${club.imagen}}" class="card-img-top" alt="Imagen del club">
               </a>
               <div class="card-body">
                 <h5 class="card-title">

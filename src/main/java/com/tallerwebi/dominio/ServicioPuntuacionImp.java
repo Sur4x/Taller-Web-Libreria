@@ -46,8 +46,9 @@ public class ServicioPuntuacionImp implements ServicioPuntuacion{
     }
 
     @Override
-    public void actualizarPromedio(Club club, Double promedio){
-        repositorioClub.actualizarPromedioDeUnClub(club.getId(), promedio);
+    public void actualizarPromedio(Club club){
+        Double puntuacionPromedio = obtenerPuntuacionPromedio(club);
+        repositorioClub.actualizarPromedioDeUnClub(club.getId(), puntuacionPromedio);
     }
 
     @Override
@@ -55,31 +56,19 @@ public class ServicioPuntuacionImp implements ServicioPuntuacion{
         return repositorioPuntuacion.buscarPuntuacion(club, usuario);
     }
 
-    /* DESPUNTUAR CLUB
     @Override
     public void removerPuntuacion(Club club, Usuario usuario) {
-        Puntuacion puntuacionClub = repositorioClub.buscarPuntuacion(club, usuario);
-        if(puntuacionClub!=null){
-            club.getPuntuaciones().remove(puntuacionClub);
-            usuario.getPuntuaciones().remove(puntuacionClub);
-            repositorioClub.eliminarPuntuacion(puntuacionClub);
+        Puntuacion puntuacionClub = repositorioPuntuacion.buscarPuntuacion(club, usuario);
+        if(puntuacionClub != null) {
+            // Elimina la puntuación
+            repositorioPuntuacion.eliminarPuntuacion(club.getId(), usuario.getId());
 
-            Double puntuacionPromedio = actualizarPuntuacionPromedio(club);
-            actualizarPromedio(club, puntuacionPromedio);
+            // Obtiene el nuevo promedio usando la consulta optimizada
+            Double promedio = repositorioClub.obtenerPromedioDeUnClub(club.getId());
 
-            repositorioClub.guardar(club);
+            // Actualiza el promedio en el club
+            repositorioClub.actualizarPromedioDeUnClub(club.getId(), promedio);
         }
-        else throw new NoExisteEsaPuntuacion("No puntuaste aún este club.");
     }
-
- */
-
-        /*
-    @Override
-    public void actualizarPromedio(Club club, Double promedio){
-        repositorioClub.actualizarPromedio(club.getId(), promedio);
-    }
-
- */
 
 }

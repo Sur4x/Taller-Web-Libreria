@@ -46,6 +46,9 @@ public class Usuario {
     @OneToMany(mappedBy = "usuario", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
     private List<Puntuacion> puntuaciones = new ArrayList<>();
 
+    @OneToMany(mappedBy = "usuario")
+    private List<Publicacion> publicaciones = new ArrayList<>();
+
     public Usuario(){};
     public Usuario(String nombreUsuario, String email,String password, List<Club> clubsInscriptos) {
         this.nombreUsuario = nombreUsuario;

@@ -7,6 +7,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
@@ -83,7 +85,7 @@ public class ServicioPublicacionTest {
         club.setPublicaciones(new ArrayList<>());
         when(repositorioClubMock.buscarClubPor(1L)).thenReturn(club);
 
-        servicioPublicacion.agregarNuevaPublicacion(publicacion, 1L);
+        servicioPublicacion.agregarNuevaPublicacion(publicacion, 1L, new Usuario());
 
         verify(repositorioPublicacionMock, times(1)).guardar(publicacion);
         verify(repositorioClubMock, times(1)).guardar(club);
@@ -97,7 +99,7 @@ public class ServicioPublicacionTest {
         club.setPublicaciones(new ArrayList<>());
         when(repositorioClubMock.buscarClubPor(1L)).thenReturn(club);
 
-        servicioPublicacion.agregarNuevaPublicacion(publicacion, 1L);
+        servicioPublicacion.agregarNuevaPublicacion(publicacion, 1L, new Usuario());
 
         verify(repositorioPublicacionMock, times(0)).guardar(publicacion);
         verify(repositorioClubMock, times(0)).guardar(club);
@@ -124,6 +126,22 @@ public class ServicioPublicacionTest {
 
         verify(repositorioClubMock, times(0)).guardar(club);
         verify(repositorioPublicacionMock, times(0)).eliminar(publicacion);
+    }
+
+    @Test
+    public void dadoElMetodoObtenerPublicacionesDeUsuariosSeguidosSiTengoEnLaBDD2PublicacionesLasRetorna(){
+        Publicacion publicacion1 = new Publicacion();
+        Publicacion publicacion2 = new Publicacion();
+        List<Publicacion> publicaciones = new ArrayList<>();
+        publicaciones.add(publicacion1);
+        publicaciones.add(publicacion2);
+
+        when(repositorioPublicacionMock.buscarPublicacionesMasRecientesDeUsuariosSeguidos(any())).thenReturn(publicaciones);
+
+        List<Publicacion> publicacionesObtenidas = servicioPublicacion.obtenerPublicacionesDeUsuariosSeguidos(new HashSet<>());
+
+        assertThat(publicacionesObtenidas.size(), equalTo(2));
+        verify(repositorioPublicacionMock,times(1)).buscarPublicacionesMasRecientesDeUsuariosSeguidos(any());
     }
 
 }

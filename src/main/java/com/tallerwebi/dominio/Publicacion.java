@@ -14,7 +14,9 @@ public class Publicacion {
 
     private String titulo;
 
-    private Long idClub;
+    @ManyToOne
+    @JoinColumn(name = "usuario_id")
+    private Usuario usuario;
 
     @ManyToOne
     @JoinColumn(name = "club_id")
@@ -37,10 +39,6 @@ public class Publicacion {
     public Long getId() {
         return id;
     }
-
-    public Long getIdClub() { return idClub; }
-
-    public void setIdClub(Long idClub) { this.idClub = idClub; }
 
     public void setId(Long id) {
         this.id = id;
@@ -74,5 +72,13 @@ public class Publicacion {
 
     public Club getClub() {
         return club;
+    }
+
+    public Usuario getUsuario() {
+        return usuario;
+    }
+
+    public void setUsuario(Usuario usuario) {
+        this.usuario = usuario;
     }
 }

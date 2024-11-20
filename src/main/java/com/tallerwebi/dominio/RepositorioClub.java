@@ -21,5 +21,7 @@ public interface RepositorioClub {
     void actualizarPromedioDeUnClub(Long idClub, Double nuevoPromedio);
 
     void refrescarClub(Club club);
+
+    Double obtenerPromedioDeUnClub(Long id);
 }
 

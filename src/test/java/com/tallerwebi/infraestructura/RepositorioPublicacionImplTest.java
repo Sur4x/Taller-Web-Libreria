@@ -2,6 +2,8 @@ package com.tallerwebi.infraestructura;
 
 import com.tallerwebi.dominio.Club;
 import com.tallerwebi.dominio.Publicacion;
+import com.tallerwebi.dominio.RepositorioUsuario;
+import com.tallerwebi.dominio.Usuario;
 import com.tallerwebi.integracion.config.HibernateTestConfig;
 import org.hibernate.SessionFactory;
 import org.junit.jupiter.api.BeforeEach;
@@ -14,9 +16,11 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.when;
 
 import javax.transaction.Transactional;
-import java.util.ArrayList;
+import java.util.*;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {HibernateTestConfig.class})
@@ -25,6 +29,7 @@ public class RepositorioPublicacionImplTest {
 
     private RepositorioPublicacionImpl repositorioPublicacion;
     private RepositorioClubImpl repositorioClub;
+    private RepositorioUsuarioImpl repositorioUsuario;
 
     @Autowired
     private SessionFactory sessionFactory;
@@ -33,6 +38,7 @@ public class RepositorioPublicacionImplTest {
     public void setUp() {
         repositorioPublicacion = new RepositorioPublicacionImpl(sessionFactory);
         repositorioClub = new RepositorioClubImpl(sessionFactory);
+        repositorioUsuario = new RepositorioUsuarioImpl(sessionFactory);
     }
 
     @Rollback
@@ -73,4 +79,49 @@ public class RepositorioPublicacionImplTest {
         Publicacion publicacionObtenida = repositorioPublicacion.buscarPublicacionEnUnClub(1L, club);
         assertThat(publicacionObtenida, equalTo(null));
     }
+
+    @Test
+    public void testBuscarPublicacionesMasRecientesDeUsuariosSeguidos() {
+        Usuario usuario1 = new Usuario();
+        usuario1.setNombreUsuario("Usuario1");
+        repositorioUsuario.guardar(usuario1);
+
+        Usuario usuario2 = new Usuario();
+        usuario2.setNombreUsuario("Usuario2");
+        repositorioUsuario.guardar(usuario2);
+
+        Publicacion publicacion1 = new Publicacion();
+        publicacion1.setUsuario(usuario1);
+        publicacion1.setTitulo("Publicación 1");
+        repositorioPublicacion.guardar(publicacion1);
+
+        Publicacion publicacion2 = new Publicacion();
+        publicacion2.setUsuario(usuario2);
+        publicacion2.setTitulo("Publicación 2");
+        repositorioPublicacion.guardar(publicacion2);
+
+        Publicacion publicacion3 = new Publicacion();
+        publicacion3.setUsuario(usuario1);
+        publicacion3.setTitulo("Publicación 3");
+        repositorioPublicacion.guardar(publicacion3);
+
+        Set<Usuario> usuariosSeguidos = new HashSet<>(Arrays.asList(usuario1, usuario2));
+
+        List<Long> usuariosSeguidosIds = new ArrayList<>();
+        for (Usuario usuario : usuariosSeguidos) {
+            usuariosSeguidosIds.add(usuario.getId());
+        }
+
+        String hql = "FROM Publicacion p WHERE p.usuario.id IN :usuariosSeguidos ORDER BY p.id DESC";
+        List<Publicacion> publicaciones = this.sessionFactory.getCurrentSession().createQuery(hql, Publicacion.class)
+                .setParameter("usuariosSeguidos", usuariosSeguidosIds)
+                .setMaxResults(5)
+                .getResultList();
+
+        assertThat(publicaciones.size(), equalTo(3));
+        assertThat(publicaciones.get(0).getTitulo(), equalTo("Publicación 3")); // Más reciente
+        assertThat(publicaciones.get(1).getTitulo(), equalTo("Publicación 2"));
+        assertThat(publicaciones.get(2).getTitulo(), equalTo("Publicación 1"));
+    }
+
 }

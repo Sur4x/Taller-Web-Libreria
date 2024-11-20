@@ -39,9 +39,13 @@ public class ControladorUsuario {
             if (usuarioSesion != null) {
                 Usuario usuarioActual = servicioUsuario.buscarUsuarioPor(usuarioSesion.getId());
                 boolean sigueAlUsuario = usuarioActual.getSeguidos().contains(usuario);
+                Integer cantidadSeguidores = usuarioActual.getSeguidores().size();
+                Integer cantidadSeguidos = usuarioActual.getSeguidos().size();
                 model.put("usuario", usuario);
                 model.addAttribute("sigueAlUsuario", sigueAlUsuario);
                 model.addAttribute("usuarioActual", usuarioActual);
+                model.addAttribute("seguidores", cantidadSeguidores);
+                model.addAttribute("seguidos", cantidadSeguidos);
             }
         model.put("usuario", usuario);
         return new ModelAndView("perfil", model);

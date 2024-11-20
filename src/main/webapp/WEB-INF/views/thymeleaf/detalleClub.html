@@ -116,11 +116,11 @@
                             <label for="star1" title="1 estrella"><i class="fas fa-star"></i></label>
                         </div>
                     </form>
-                <!--
+
                 <div th:if="${puntuacion != null}">
                     <a th:href="@{/club/despuntuar/{id}(id=${club.id})}" class="btn btn-success text-center btn-lg mt-4">Eliminar puntuación</a>
                 </div>
-                -->
+
                 <form th:action="@{/club/{clubId}/abandonar(clubId=${club.id})}" method="post" class="text-center mt-4">
                     <button type="submit" class="btn btn-success btn-lg">Abandonar Club</button>
                 </form>

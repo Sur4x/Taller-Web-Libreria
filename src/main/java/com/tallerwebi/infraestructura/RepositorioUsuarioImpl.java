@@ -68,6 +68,15 @@ public class RepositorioUsuarioImpl implements RepositorioUsuario {
         return (Usuario) query.getSingleResult();
     }
 
+    @Override
+    public List<Usuario> buscarUsuariosSeguidosPorUsuario(Usuario usuario){
+        Long usuarioId = usuario.getId();
+
+        String hql = "SELECT u FROM usuario u WHERE u.id IN (SELECT us.id.seguido FROM usuario.seguimiento us WHERE us.id.seguidor = : usuarioId)";
+        Query query = this.sessionFactory.getCurrentSession().createQuery(hql);
+        query.setParameter("usuarioId", usuario.getId());
+        return query.getResultList();
+    }
 
 
 }

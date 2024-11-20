@@ -71,21 +71,43 @@ public class ServicioPuntuacionTest {
     @Test
     public void dadoElMetodoActualizarPromedioCuandoUnClubNoTieneNingunaVotacionSuPromedioSigueSiendo0(){
         Club club = new Club();
-        servicioPuntuacion.actualizarPromedio(club,3.0);
+        servicioPuntuacion.actualizarPromedio(club);
         assertThat(club.getPuntuacionPromedio(), equalTo(0.0));
     }
 
-
-        /*
     @Test
-    public void dadoElMetodoActualizarPromedioDebeUtilizarElMetodoDelRepositorioCorrespondiente(){
+    public void dadoElMetodoRemoverPuntuacionCuandoNoExisteEsaPuntuacionNoHaceNada(){
         Club club = new Club();
-        Double promedio = 3.0;
+        Usuario usuario = new Usuario();
+        Puntuacion puntuacion = new Puntuacion();
 
-        servicioClub.actualizarPromedio(club,promedio);
+        when(repositorioPuntuacionMock.buscarPuntuacion(club,usuario)).thenReturn(null);
 
-        verify(repositorioClubMock,times(1)).actualizarPromedio(club.getId(),promedio);
+        servicioPuntuacion.removerPuntuacion(club,usuario);
+
+        verify(repositorioPuntuacionMock,times(1)).buscarPuntuacion(club, usuario);
+
+        verify(repositorioPuntuacionMock,times(0)).eliminarPuntuacion(any(), any());
+        verify(repositorioClubMock,times(0)).obtenerPromedioDeUnClub(any());
+        verify(repositorioClubMock,times(0)).actualizarPromedioDeUnClub(any(), any());
     }
 
-     */
+    @Test
+    public void dadoElMetodoRemoverPuntuacionCuandoExisteUnaPuntuacionEliminaLaPuntuacionYActualizaSuPromedio(){
+        Club club = new Club();
+        Usuario usuario = new Usuario();
+        Puntuacion puntuacion = new Puntuacion();
+        club.getPuntuaciones().add(puntuacion);
+
+        when(repositorioPuntuacionMock.buscarPuntuacion(club,usuario)).thenReturn(puntuacion);
+
+        servicioPuntuacion.removerPuntuacion(club,usuario);
+
+        verify(repositorioPuntuacionMock,times(1)).buscarPuntuacion(club, usuario);
+        verify(repositorioPuntuacionMock,times(1)).eliminarPuntuacion(any(), any());
+        verify(repositorioClubMock,times(1)).obtenerPromedioDeUnClub(any());
+        verify(repositorioClubMock,times(1)).actualizarPromedioDeUnClub(any(), any());
+    }
+
+
 }

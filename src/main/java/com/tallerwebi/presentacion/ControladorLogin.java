@@ -4,6 +4,7 @@ import com.tallerwebi.dominio.*;
 import com.tallerwebi.dominio.excepcion.NoExisteEseUsuario;
 import com.tallerwebi.dominio.excepcion.NoExistenClubs;
 import com.tallerwebi.dominio.excepcion.UsuarioExistente;
+import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -14,7 +15,9 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import javax.transaction.Transactional;
 import java.util.List;
+import java.util.Set;
 
 @Controller
 public class ControladorLogin {
@@ -24,6 +27,10 @@ public class ControladorLogin {
     private ServicioClub servicioClub; //Lo puse aca y no en el constructor porque se rompia un test que trae default el proyecto
     @Autowired
     private ServicioUsuario servicioUsuario;
+    @Autowired
+    private ServicioNoticia servicioNoticia;
+    @Autowired
+    private ServicioPublicacion servicioPublicacion;
     @Autowired
     public ControladorLogin(ServicioLogin servicioLogin){
         this.servicioLogin = servicioLogin;
@@ -79,7 +86,6 @@ public class ControladorLogin {
     public ModelAndView irAHome(HttpServletRequest request) throws NoExistenClubs, NoExisteEseUsuario {
         Usuario usuario = (Usuario) request.getSession().getAttribute("usuario");
 
-        //String rol = (String) session.getAttribute("rol");
         ModelMap model = new ModelMap();
         try {
             List<Club> clubs = servicioClub.obtenerTodosLosClubs(); //ESTO ES LOGICA DEL CLUB NO DEL LOGIN MOVERLO
@@ -91,11 +97,18 @@ public class ControladorLogin {
         if (usuario != null){
             Usuario usuarioBuscado = servicioUsuario.buscarUsuarioPor(usuario.getId());
             model.put("usuario", usuarioBuscado);
+            Set<Usuario> usuariosSeguidos = servicioUsuario.obtenerUsuariosSeguidos(usuarioBuscado);
+            List<Publicacion> publicacionesRecientes = servicioPublicacion.obtenerPublicacionesDeUsuariosSeguidos(usuariosSeguidos);
+            model.addAttribute("publicacionesRecientes", publicacionesRecientes);
         }else{
             model.put("usuario", null);
         }
 
+        List<Noticia> noticias = servicioNoticia.obtenerNoticiasRandom(3);
+        model.addAttribute("noticias", noticias);
+
         return new ModelAndView("home", model);
+
     }
 
     @RequestMapping(path = "/", method = RequestMethod.GET)
