@@ -118,7 +118,7 @@
                                         </div>
                                     </div>
 
-                                    <div th:if="${usuario.clubsInscriptos.contains(club)}" class="d-flex justify-content-between mb-4">
+                                    <div th:if="${club.adminPrincipal != usuario and usuario.clubsInscriptos.contains(club)}" class="d-flex justify-content-between mb-4">
                                         <form th:action="@{/club/{clubId}/abandonar(clubId=${club.id})}" method="post"
                                               class="w-50 me-2">
                                             <button type="submit" class="btn btn-lg btn-success w-100">Abandonar Club
