@@ -20,17 +20,16 @@
                 <div class="club-container mb-5">
                     <h2 th:if="${usuario == null or #lists.isEmpty(usuario.categoriasPreferidas)}">Explora nuestros clubes</h2>
                     <h2 th:if="${usuario != null and !#lists.isEmpty(usuario.categoriasPreferidas)}">Recomendaciones de clubes según tus preferencias</h2>
-                    <div th:if="${clubs} == null">
+                    <div th:if="${#lists.isEmpty(clubs)}">
                         <h4>No hay clubes registrados</h4>
                     </div>
-                    <div th:if="${clubs} != null" class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
+                    <div th:if="${!#lists.isEmpty(clubs)}" class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
                         <div th:each="club : ${clubs}" class="col">
                             <a th:href="@{/club/{id}(id=${club.id})}" class="text-decoration-none">
                                 <div class="card shadow-sm h-100">
                                     <img th:src="@{${club.imagen}}" class="card-img-top" alt="Imagen del club">
                                     <div class="card-body">
-                                        <h5 class="card-title text-center" th:text="${club.nombre}">Nombre del
-                                            club</h5>
+                                        <h5 class="card-title text-center" th:text="${club.nombre}">Nombre del club</h5>
                                     </div>
                                 </div>
                             </a>

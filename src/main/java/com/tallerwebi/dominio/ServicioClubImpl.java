@@ -45,9 +45,7 @@ public class ServicioClubImpl implements ServicioClub {
     @Override
     public List<Club> obtenerTodosLosClubs() throws NoExistenClubs {
         List<Club> clubs = repositorioClub.obtenerTodosLosClubs();
-        if (clubs.isEmpty()) {
-            throw new NoExistenClubs("No existen clubs registrados");
-        }
+
         return clubs;
     }
 
