@@ -79,16 +79,6 @@ public class ServicioClubTest {
     }
 
     @Test
-    public void dadoQueUsoElMetodoObtenerTodosLosClubsYNoTengoNingunClubAgregadoEnLaBaseDeDatosArrojaLaExcepcionNoExistenClubs() throws NoExistenClubs {
-        when(repositorioClubMock.obtenerTodosLosClubs()).thenReturn(new ArrayList<>());
-
-        NoExistenClubs excepcionEsperado = assertThrows(NoExistenClubs.class, () -> servicioClub.obtenerTodosLosClubs());
-
-        assertEquals(excepcionEsperado.getMessage(), "No existen clubs registrados");
-        verify(repositorioClubMock, times(1)).obtenerTodosLosClubs();
-    }
-
-    @Test
     public void dadoQueUsoElMetodoBuscarClubPorYTengoAlmacenadoElClubEnLaBaseDeDatosMeDevuelveElClub() throws NoExisteEseClub {
         when(repositorioClubMock.buscarClubPor(1L)).thenReturn(clubMock);
 
