@@ -162,7 +162,7 @@
         </div>
     </div>
 
-    <div class="modal fade" id="modalUsuarios" tabindex="-1" aria-labelledby="modalUsuariosLabel"
+    <div th:i class="modal fade" id="modalUsuarios" tabindex="-1" aria-labelledby="modalUsuariosLabel"
          aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -220,7 +220,7 @@
 
     <div class="container mt-2 pt-2">
         <div class="d-flex justify-content-between align-items-center mb-4">
-            <h1 class="text">Foro y sus Publicaciones</h1>
+            <h1 class="text">Publicaciones del club</h1>
             <div th:if="${usuario != null}">
                 <!-- Recorremos los clubes a los que el usuario está inscripto -->
                 <div th:each="clubsInscripto : ${usuario.clubsInscriptos}">
@@ -237,6 +237,7 @@
             <thead class="thead-dark">
             <tr>
                 <th>Título</th>
+                <th>Creador de la publicación</th>
             </tr>
             </thead>
             <tbody>
@@ -244,6 +245,10 @@
                 <td>
                     <a th:href="@{/club/{clubId}/detallePublicacion/{publicacionId}(clubId=${club.id}, publicacionId=${publicacion.id})}"
                        th:text="${publicacion.titulo}" class="text-decoration-none"></a>
+                </td>
+                <td>
+                    <a th:href="@{/perfil/{id}(id=${publicacion.usuario.id})}"
+                       th:text="${publicacion.usuario.nombreUsuario}" class="text-decoration-none"></a>
                 </td>
             </tr>
             </tbody>

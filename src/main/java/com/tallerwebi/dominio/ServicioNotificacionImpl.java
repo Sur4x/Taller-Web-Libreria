@@ -56,17 +56,17 @@ public class ServicioNotificacionImpl implements ServicioNotificacion{
         notificacion.setFecha(LocalDateTime.now());
         switch (tipoNotificacion){
             case "nuevoReporte":
-                notificacion.setEvento("Admins, en su club " + nombreClub + " fue aprobada un reporte: " + mensajeReporte);
+                notificacion.setEvento("El reporte en el club " + nombreClub + " fue aprobado" + mensajeReporte);
                 break;
             case "clubEliminado":
-                notificacion.setEvento("El club " + nombreClub + " fue eliminado de nuestra web, lo sentimos");
+                notificacion.setEvento("El club " + nombreClub + " fue eliminado de nuestra web.");
                 break;
             case "usuarioEchado":
-                notificacion.setEvento("Usted ha sido eliminado del club: " + nombreClub + " debido a una conducta inapropiada.");
+                notificacion.setEvento("Usted ha sido eliminado del club: " + nombreClub);
                 break;
 
             case "nuevoSeguidor":
-                notificacion.setEvento("Usted posee un nuevo seguidor");
+                notificacion.setEvento("Un usuario acaba de seguirte.");
                 break;
         }
         notificacion.setUsuario(usuario);

@@ -33,7 +33,7 @@
                 </div>
 
                 <div th:if="${usuario != null}" class="d-flex align-items-center">
-                    <a th:href="@{/crearClub}" class="btn btn-primary me-2">Crear nuevo club</a>
+                    <a th:href="@{/crearClub}" id="botonNuevoClub" class="btn btn-primary me-2">Crear nuevo club</a>
                     <a th:href="@{/notificacion/listar}" class="btn btn-primary me-2">Notificaciones</a>
 
                     <!-- Menú desplegable -->
@@ -43,7 +43,6 @@
                         </button>
                         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton">
                             <li><a class="dropdown-item" th:href="@{/perfil/{id}(id=${usuario.id})}">Perfil</a></li>
-                            <li><a class="dropdown-item" th:href="@{/misClubs/{usuarioId}(usuarioId=${usuario.id})}">Mis clubs</a></li>
                             <li><a class="dropdown-item" th:href="@{/ranking}">Ranking</a></li>
                             <li><a class="dropdown-item" th:href="@{/logout}">Cerrar sesión</a></li>
                         </ul>

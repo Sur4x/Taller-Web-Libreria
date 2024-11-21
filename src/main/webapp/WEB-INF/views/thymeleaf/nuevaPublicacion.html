@@ -14,7 +14,7 @@
 
 <p th:if="${error != null}" class="alert alert-danger mt-3" th:text="'Error: ' + ${error}"></p>
 
-<form th:action="@{/club/{clubId}/nuevaPublicacion(clubId=${clubId})}" th:object="${publicacion}" method="post" class="p-4 shadow-sm rounded bg-light">
+<form th:action="@{/club/{clubId}/nuevaPublicacion(clubId=${clubId})}" th:object="${publicacion}" method="post" class="p-4 shadow-sm rounded bg-light" enctype="multipart/form-data">
     <div class="mb-3">
         <label for="titulo" class="form-label">Título</label>
         <input type="text" id="titulo" class="form-control" th:field="*{titulo}" placeholder="Escribe el título aquí" required>

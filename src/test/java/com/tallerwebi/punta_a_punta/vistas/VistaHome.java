@@ -10,7 +10,7 @@ public class VistaHome extends VistaWeb {
     }
 
     public void darClickEnCrearNuevoClub(){
-        this.darClickEnElElemento("div a.btn.btn-primary.me-2");
+        this.darClickEnElElemento("#botonNuevoClub");
     }
 
     public void darClickEnElLogo(){

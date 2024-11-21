@@ -91,16 +91,17 @@ public class ControladorLogin {
         ModelMap model = new ModelMap();
         List<Club> clubs = servicioClub.obtenerTodosLosClubs(); //ESTO ES LOGICA DEL CLUB NO DEL LOGIN MOVERLO
 
-        List<Noticia> noticias = servicioNoticia.obtenerNoticiasRandom(3);
+        List<Noticia> noticias = servicioNoticia.obtenerNoticiasRandom(5);
         model.addAttribute("noticias", noticias);
 
         if (usuario != null) {
-            model.addAttribute("usuario", usuario);
-            Set<Usuario> usuariosSeguidos = servicioUsuario.obtenerUsuariosSeguidos(usuario);
+            Usuario usuarioBuscado = servicioUsuario.buscarUsuarioPor(usuario.getId());
+            model.addAttribute("usuario", usuarioBuscado);
+            Set<Usuario> usuariosSeguidos = servicioUsuario.obtenerUsuariosSeguidos(usuarioBuscado);
             List<Publicacion> publicacionesRecientes = servicioPublicacion.obtenerPublicacionesDeUsuariosSeguidos(usuariosSeguidos);
             model.addAttribute("publicacionesRecientes", publicacionesRecientes);
 
-            if (!usuario.getCategoriasPreferidas().isEmpty()) {
+            if (!usuario.getCategoriasPreferidas().isEmpty() && !usuario.getRol().equals("admin")) {
                 List<String> categoriasPreferidas = usuario.getCategoriasPreferidas();
                 List<Club> clubsFiltrados = new ArrayList<>();
 
