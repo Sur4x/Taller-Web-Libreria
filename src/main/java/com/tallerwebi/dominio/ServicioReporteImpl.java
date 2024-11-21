@@ -16,7 +16,6 @@ public class ServicioReporteImpl implements ServicioReporte{
 
     private RepositorioReporte repositorioReporte;
     private RepositorioClub repositorioClub;
-
     private RepositorioNotificacion repositorioNotificacion;
 
     @Autowired
@@ -40,24 +39,12 @@ public class ServicioReporteImpl implements ServicioReporte{
             throw new ReporteExistente("El reporte ya fue realizado");
         }
         repositorioReporte.guardar(reporte);
-
-        Notificacion notificacion = new Notificacion();
-        notificacion.setFecha(LocalDate.now());
-        notificacion.setEvento("Se realizó un reporte a un club existente: " + reporte.getClub().getNombre());
-
-        repositorioNotificacion.crearNotificacion(notificacion);
     }
 
     @Override
     public void eliminarReporte(Long id) {
         Reporte reporte = repositorioReporte.buscarReportePorId(id);
         if (reporte != null) {
-            Notificacion notificacion = new Notificacion();
-            notificacion.setFecha(LocalDate.now());
-            notificacion.setEvento("Se elimino un reporte realizado al club: "
-                    + reporte.getClub().getNombre() + " que tenia como motivo: " + reporte.getMotivo());
-
-            repositorioNotificacion.crearNotificacion(notificacion);
 
             repositorioReporte.eliminar(reporte);
         }
@@ -88,16 +75,15 @@ public class ServicioReporteImpl implements ServicioReporte{
         repositorioClub.guardar(club);
     }
 
-    //Mover a servicio reporte
     @Override
     public void agregarNuevoReporteAlClub(Long idClub, Reporte reporte) throws ReporteExistente, NoExisteEseClub {
         Club club = repositorioClub.buscarClubPor(idClub); // si el club existe
 
-        if (club == null) { // verificar si el club no existe
+        if (club == null) {
             throw new NoExisteEseClub("No existe un club con el id proporcionado");
         }
 
-        if (repositorioReporte.buscarReportePorId(reporte.getId()) != null) { // si el reporte existe
+        if (repositorioReporte.buscarReportePorId(reporte.getId()) != null) {
             throw new ReporteExistente("El reporte ya existe");
         }
 

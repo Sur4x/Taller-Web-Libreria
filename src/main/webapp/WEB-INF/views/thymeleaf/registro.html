@@ -1,90 +1,209 @@
 <!DOCTYPE HTML>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-  <title>Taller Web I</title>
+    <title>Taller Web I</title>
 
-  <!-- Bootstrap core css -->
-  <link rel="stylesheet" th:href="@{/webjars/bootstrap/5.2.0/css/bootstrap.min.css}"/>
+    <!-- Bootstrap core css -->
+    <link rel="stylesheet" th:href="@{/webjars/bootstrap/5.2.0/css/bootstrap.min.css}"/>
 
-  <!-- Custom style -->
-  <link rel="stylesheet" th:href="@{/css/main.css}"/>
-  <style>
-    body {
-      background-color: #f7f7f7;
-    }
-    .registration-container {
-      margin-top: 100px;
-    }
-    .registration-form {
-      background: white;
-      padding: 30px;
-      border-radius: 8px;
-      box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
-    }
-    .registration-form h3 {
-      margin-bottom: 20px;
-      font-weight: bold;
-    }
-    .registration-form .form-control {
-      border-radius: 5px;
-    }
-    .registration-form .btn {
-      border-radius: 5px;
-      font-weight: bold;
-    }
-    .text-center a {
-      color: #007bff;
-    }
-  </style>
+    <!-- Custom style -->
+    <link rel="stylesheet" th:href="@{/css/main.css}"/>
+    <style>
+        body {
+            background-color: #f7f7f7;
+        }
+
+        .registration-container {
+            margin-top: 100px;
+        }
+
+        .registration-form {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .registration-form h3 {
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+
+        .registration-form .form-control {
+            border-radius: 5px;
+        }
+
+        .registration-form .btn {
+            border-radius: 5px;
+            font-weight: bold;
+        }
+
+        .text-center a {
+            color: #007bff;
+        }
+    </style>
 </head>
 
 <body>
 
 <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
-  <a class="navbar-brand" th:href="@{/home}">DeUltima</a>
+    <div class="container-fluid">
+        <a class="navbar-brand" th:href="@{/home}">DeUltima</a>
+    </div>
 </nav>
 
 <main role="main" class="container registration-container">
-  <div class="row justify-content-center">
-    <div class="col-md-4">
-      <div class="registration-form">
-        <h3 class="text-center">Nuevo Usuario</h3>
-        <form action="#" th:action="@{/registrarme}" method="POST" th:object="${usuario}">
-          <div class="mb-3">
-            <label for="nombreUsuario" class="form-label">Nombre de Usuario</label>
-            <input th:field="*{nombreUsuario}" id="nombreUsuario" class="form-control" placeholder="Ingrese su nombre de usuario" required />
-          </div>
+    <div class="row justify-content-center">
+        <div class="col-md-4">
+            <div class="registration-form">
+                <h3 class="text-center">Nuevo Usuario</h3>
+                <form action="#" th:action="@{/registrarme}" method="POST" th:object="${usuario}">
+                    <div class="mt-2 mb-2">
+                        <label for="nombreUsuario" class="form-label">Nombre de Usuario</label>
+                        <input th:field="*{nombreUsuario}" id="nombreUsuario" class="form-control"
+                               placeholder="Ingrese su nombre de usuario" required/>
+                    </div>
 
-          <div class="mb-3">
-            <label for="email" class="form-label">Correo Electrónico</label>
-            <input th:field="*{email}" id="email" class="form-control" placeholder="Ingrese su correo" required />
-          </div>
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Correo Electrónico</label>
+                        <input th:field="*{email}" id="email" class="form-control" placeholder="Ingrese su correo"
+                               required/>
+                    </div>
 
-          <div class="mb-3">
-            <label for="password" class="form-label">Contraseña</label>
-            <input th:field="*{password}" type="password" id="password" class="form-control" placeholder="Ingrese su contraseña" required />
-          </div>
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Contraseña</label>
+                        <input th:field="*{password}" type="password" id="password" class="form-control"
+                               placeholder="Ingrese su contraseña" required/>
+                    </div>
 
-          <div class="mb-3">
-            <label for="confirmPassword" class="form-label">Confirmar Contraseña</label>
-            <input th:field="*{confirmPassword}" type="password" id="confirmPassword" class="form-control" placeholder="Confirme su contraseña" required />
-          </div>
+                    <div class="mb-3">
+                        <label for="confirmPassword" class="form-label">Confirmar Contraseña</label>
+                        <input th:field="*{confirmPassword}" type="password" id="confirmPassword" class="form-control"
+                               placeholder="Confirme su contraseña" required/>
+                    </div>
 
-          <button id="btn-registrarme" class="btn btn-primary w-100" type="submit">Registrarme</button>
+                    <div class="mb-3">
+                        <label class="form-label">Categorías preferidas</label>
+                        <div th:field="*{categoriasPreferidas}">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-check">
+                                        <input type="checkbox" id="arte" name="categoriasPreferidas" value="Arte"
+                                               class="form-check-input">
+                                        <label for="arte" class="form-check-label">Arte</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input type="checkbox" id="autodesarrollo" name="categoriasPreferidas"
+                                               value="Autodesarrollo" class="form-check-input">
+                                        <label for="autodesarrollo" class="form-check-label">Autodesarrollo</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input type="checkbox" id="ciencia" name="categoriasPreferidas"
+                                               value="Ciencia Ficcion" class="form-check-input">
+                                        <label for="ciencia" class="form-check-label">Ciencia Ficción</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input type="checkbox" id="ciencia-tecnologia" name="categoriasPreferidas"
+                                               value="Ciencia y tecnologia" class="form-check-input">
+                                        <label for="ciencia-tecnologia" class="form-check-label">Ciencia y
+                                            tecnología</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input type="checkbox" id="clasicos" name="categoriasPreferidas"
+                                               value="Clasicos Literarios" class="form-check-input">
+                                        <label for="clasicos" class="form-check-label">Clásicos Literarios</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input type="checkbox" id="cocina" name="categoriasPreferidas"
+                                               value="Cocina y gastronomia" class="form-check-input">
+                                        <label for="cocina" class="form-check-label">Gastronomía</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-check">
+                                        <input type="checkbox" id="deportes" name="categoriasPreferidas"
+                                               value="Deportes" class="form-check-input">
+                                        <label for="deportes" class="form-check-label">Deportes</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input type="checkbox" id="fantasia" name="categoriasPreferidas"
+                                               value="Fantasia" class="form-check-input">
+                                        <label for="fantasia" class="form-check-label">Fantasía</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input type="checkbox" id="historia" name="categoriasPreferidas"
+                                               value="Historia" class="form-check-input">
+                                        <label for="historia" class="form-check-label">Historia</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input type="checkbox" id="horror" name="categoriasPreferidas" value="Horror"
+                                               class="form-check-input">
+                                        <label for="horror" class="form-check-label">Horror</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input type="checkbox" id="infantil" name="categoriasPreferidas"
+                                               value="Infantil" class="form-check-input">
+                                        <label for="infantil" class="form-check-label">Infantil</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input type="checkbox" id="misterio" name="categoriasPreferidas"
+                                               value="Misterio" class="form-check-input">
+                                        <label for="misterio" class="form-check-label">Misterio</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-check">
+                                        <input type="checkbox" id="novelas" name="categoriasPreferidas" value="Novelas"
+                                               class="form-check-input">
+                                        <label for="novelas" class="form-check-label">Novelas</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input type="checkbox" id="poesia" name="categoriasPreferidas" value="Poesia"
+                                               class="form-check-input">
+                                        <label for="poesia" class="form-check-label">Poesía</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input type="checkbox" id="romance" name="categoriasPreferidas" value="Romance"
+                                               class="form-check-input">
+                                        <label for="romance" class="form-check-label">Romance</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-check">
+                                        <input type="checkbox" id="teatro" name="categoriasPreferidas" value="Teatro"
+                                               class="form-check-input">
+                                        <label for="teatro" class="form-check-label">Teatro</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input type="checkbox" id="temas-sociales" name="categoriasPreferidas"
+                                               value="Temas Sociales" class="form-check-input">
+                                        <label for="temas-sociales" class="form-check-label">Temas Sociales</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input type="checkbox" id="viajes" name="categoriasPreferidas"
+                                               value="Viajes y aventura" class="form-check-input">
+                                        <label for="viajes" class="form-check-label">Viajes y aventura</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <button id="btn-registrarme" class="btn btn-primary w-100" type="submit">Registrarme</button>
+                    <p th:if="${error != null}" class="alert alert-danger mt-3" th:text="'Error: ' + ${error}"></p>
+                </form>
+            </div>
 
-          <p th:if="${error != null}" class="alert alert-danger mt-3" th:text="'Error: ' + ${error}"></p>
-        </form>
-
-        <!-- Hipervínculo para iniciar sesión -->
-        <div class="text-center mt-3">
-          <a th:href="@{/login}" class="text-decoration-none">¿Ya tienes una cuenta? Inicia sesión aquí</a>
+            <div class="text-center mt-2">
+                <a th:href="@{/login}" class="text-decoration-none">¿Ya tienes una cuenta? Inicia sesión aquí</a>
+            </div>
         </div>
-      </div>
     </div>
-  </div>
+    </div>
 </main>
 
 <!-- /.container -->

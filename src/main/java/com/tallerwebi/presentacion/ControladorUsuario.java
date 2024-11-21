@@ -22,13 +22,14 @@ import java.util.List;
 @Controller
 public class ControladorUsuario {
 
-    @Autowired
-    private ServicioClub servicioClub;
+
+    private ServicioNotificacion servicioNotificacion;
     private ServicioUsuario servicioUsuario;
 
     @Autowired
-    public ControladorUsuario(ServicioUsuario servicioUsuario){
+    public ControladorUsuario(ServicioUsuario servicioUsuario,ServicioNotificacion servicioNotificacion){
         this.servicioUsuario = servicioUsuario;
+        this.servicioNotificacion = servicioNotificacion;
     }
 
     @RequestMapping(path = "/perfil/{id}", method = RequestMethod.GET)
@@ -62,6 +63,7 @@ public class ControladorUsuario {
 
         if(usuarioASeguir!=null && usuarioActual!=null && !usuarioASeguir.equals(usuarioActual)){
             servicioUsuario.seguirUsuario(usuarioASeguir, usuarioActual);
+            servicioNotificacion.crearNotificacion(usuarioASeguir, "nuevoSeguidor", null);
             return "redirect:/perfil/" + idUsuarioASeguir;
         }else{
             return "redirect:/home";

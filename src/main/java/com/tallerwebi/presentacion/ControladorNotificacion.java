@@ -17,8 +17,12 @@ import java.util.List;
 @Controller
 public class ControladorNotificacion {
 
-    @Autowired
     private ServicioNotificacion servicioNotificacion;
+
+    @Autowired
+    public ControladorNotificacion(ServicioNotificacion servicioNotificacion){
+        this.servicioNotificacion = servicioNotificacion;
+    }
 
     @RequestMapping(path = "/notificacion/listar", method = RequestMethod.GET)
     @Transactional
@@ -30,7 +34,7 @@ public class ControladorNotificacion {
             return new ModelAndView("redirect:/login");
         }
 
-        List<Notificacion> notificaciones = servicioNotificacion.obtenerElListadoDeNotificaciones();
+        List<Notificacion> notificaciones = servicioNotificacion.obtenerElListadoDeNotificacionesDeUnUsuario(usuario);
 
         model.put("usuario", usuario);
         model.put("notificaciones", notificaciones);

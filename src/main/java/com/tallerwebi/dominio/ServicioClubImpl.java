@@ -39,12 +39,6 @@ public class ServicioClubImpl implements ServicioClub {
         }
         repositorioClub.guardar(club);
 
-        Notificacion notificacion = new Notificacion();
-        notificacion.setFecha(LocalDate.now());
-        notificacion.setEvento("Se creo un nuevo club: " + club.getNombre());
-
-        repositorioNotificacion.crearNotificacion(notificacion);
-
         return true;
     }
 
@@ -63,9 +57,6 @@ public class ServicioClubImpl implements ServicioClub {
         if (club == null) {
             throw new NoExisteEseClub("No existe un club con ese ID");
         }
-        Hibernate.initialize(club.getPuntuaciones());
-        Hibernate.initialize(club.getPublicaciones());
-        Hibernate.initialize(club.getAdminsSecundarios());
         return club;
     }
 
@@ -89,6 +80,11 @@ public class ServicioClubImpl implements ServicioClub {
     @Override
     public void borrarRegistroUsuarioEnElClub(Usuario usuario, Club club){
         if (usuario != null && club != null) {
+
+            if(club.getAdminsSecundarios().contains(usuario)){
+                club.getAdminsSecundarios().remove(usuario);
+                usuario.getClubsAdminSecundarios().remove(club);
+            }
             usuario.getClubsInscriptos().remove(club);
             club.getIntegrantes().remove(usuario);
             club.setCantidadMiembros(club.getCantidadMiembros() - 1);
@@ -108,12 +104,6 @@ public class ServicioClubImpl implements ServicioClub {
         }
         club.getIntegrantes().clear();
         repositorioClub.guardar(club);
-
-        Notificacion notificacion = new Notificacion();
-        notificacion.setFecha(LocalDate.now());
-        notificacion.setEvento("Se elimino un club existente: " + club.getNombre());
-
-        repositorioNotificacion.crearNotificacion(notificacion);
 
         repositorioClub.eliminar(club);
     }

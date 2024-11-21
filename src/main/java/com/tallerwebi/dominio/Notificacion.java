@@ -2,6 +2,7 @@ package com.tallerwebi.dominio;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "notificacion")
@@ -9,14 +10,18 @@ public class Notificacion {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private LocalDate fecha;
+    private LocalDateTime fecha;
     private String evento;
+
+    @ManyToOne
+    @JoinColumn(name = "usuario_id", nullable = false)
+    private Usuario usuario;
 
     public Notificacion(){
 
     }
 
-    public Notificacion(Long id, LocalDate fecha, String evento) {
+    public Notificacion(Long id, LocalDateTime fecha, String evento) {
         this.id = id;
         this.fecha = fecha;
         this.evento = evento;
@@ -30,11 +35,11 @@ public class Notificacion {
         return id;
     }
 
-    public LocalDate getFecha() {
+    public LocalDateTime getFecha() {
         return fecha;
     }
 
-    public void setFecha(LocalDate fecha) {
+    public void setFecha(LocalDateTime fecha) {
         this.fecha = fecha;
     }
 
@@ -44,6 +49,14 @@ public class Notificacion {
 
     public void setEvento(String evento) {
         this.evento = evento;
+    }
+
+    public void setUsuario(Usuario usuario){
+        this.usuario = usuario;
+    }
+
+    public Usuario getUsuario(){
+        return usuario;
     }
 
 }

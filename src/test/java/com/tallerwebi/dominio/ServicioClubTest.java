@@ -45,19 +45,14 @@ public class ServicioClubTest {
 
     @Test
     public void dadoQueUsoElMetodoAgregarYNoTengoElClubAgregadoEnLaBaseDeDatosEsteDevuelveTrueYLoAlmacena() throws ClubExistente {
-        when(repositorioClubMock.buscarClubPor(clubMock.getId())).thenReturn(null);;
+        when(repositorioClubMock.buscarClubPor(any())).thenReturn(null);
 
         Boolean agregado = servicioClub.agregar(clubMock);
 
         assertThat(agregado, is(true));
+
         verify(repositorioClubMock, times(1)).guardar(clubMock);
 
-        ArgumentCaptor<Notificacion> captorNotificacion = ArgumentCaptor.forClass(Notificacion.class);
-        verify(repositorioNotificacionMock, times(1)).crearNotificacion(captorNotificacion.capture());
-
-        Notificacion notificacionCapturada = captorNotificacion.getValue();
-        assertThat(notificacionCapturada.getEvento(), is("Se creo un nuevo club: " + clubMock.getNombre()));
-        assertThat(notificacionCapturada.getFecha(), is(LocalDate.now()));
     }
 
     @Test
@@ -195,12 +190,7 @@ public class ServicioClubTest {
         verify(repositorioClubMock, times(1)).guardar(club);
         verify(repositorioClubMock, times(1)).eliminar(club);
 
-        ArgumentCaptor<Notificacion> captorNotificacion = ArgumentCaptor.forClass(Notificacion.class);
-        verify(repositorioNotificacionMock, times(1)).crearNotificacion(captorNotificacion.capture());
 
-        Notificacion notificacionCapturada = captorNotificacion.getValue();
-        assertThat(notificacionCapturada.getEvento(), is("Se elimino un club existente: " + clubMock.getNombre()));
-        assertThat(notificacionCapturada.getFecha(), is(LocalDate.now()));
     }
 
     @Test

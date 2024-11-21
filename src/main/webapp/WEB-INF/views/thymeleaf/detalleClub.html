@@ -5,232 +5,257 @@
     <title>Detalles del Club</title>
 
     <link rel="stylesheet" th:href="@{/webjars/bootstrap/5.2.0/css/bootstrap.min.css}"/>
-    <link rel="stylesheet" th:href="@{/css/main.css}"/>
-    <link rel="stylesheet" th:href="@{/css/detalleClub.css}"/>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-<style>
-    .filtro{
-    display: none !important;
-    }
-</style>
+    <style>
+        .filtro {
+            display: none !important;
+        }
+
+        .rating {
+            display: flex;
+            flex-direction: row-reverse; /* Invertir el orden de las estrellas */
+            justify-content: center;
+        }
+
+        input[type="radio"] {
+            display: none; /* Ocultar los radio buttons */
+        }
+
+        label i.fas.fa-star {
+            color: #ccc; /* Color gris para estrellas no seleccionadas */
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        input[type="radio"]:checked ~ label i.fas.fa-star,
+        input[type="radio"]:checked + label i.fas.fa-star {
+            color: gold; /* Color dorado para la estrella seleccionada y las anteriores */
+        }
+
+        label:hover ~ label i.fas.fa-star,
+        label:hover i.fas.fa-star {
+            color: gold; /* Color dorado al pasar el ratón sobre las estrellas */
+        }
+
+        li {
+            list-style-type: none;
+        }
+    </style>
 </head>
 <body>
-<!-- USUARIO SIN LOGUEAR -->
-<header>
-    <div th:if="${usuario == null}">
-        <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
-            <a class="navbar-brand" th:href="@{/home}">DeUltima</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
-                    aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
 
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <div class="d-flex ms-auto">
-                    <a th:href="@{/login}" class="btn btn-primary me-2">Iniciar sesión</a>
-                    <a th:href="@{/registro}" class="btn btn-primary">Registrarse</a>
-                </div>
-            </div>
-        </nav>
-    </div>
-
-    <!-- USUARIO ADMIN -->
-    <div th:if="${usuario != null and usuario.rol == 'admin'}">
-        <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
-            <a class="navbar-brand" th:href="@{/home}">DeUltima</a>
-            <h1>Bienvenido ADMIN</h1>
-
-            <div class="d-flex ms-auto">
-
-                <a th:href="@{/logout}">Cerrar sesión</a>
-
-            </div>
-        </nav>
-
-        <p class="lead text-center" th:text="${club.estaReportado}" style="padding-top: 75px;"></p>
-
-    </div>
-
-    <!-- USUARIO NORMAL -->
-    <div th:if="${usuario != null and usuario.rol == 'usuario'}">
-        <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
-            <a class="navbar-brand" th:href="@{/home}">DeUltima</a>
-            <div class="d-flex ms-auto align-items-center">
-                <a th:href="@{/crearClub}" class="btn btn-primary me-2">Crear nuevo club</a>
-                <div class="dropdown">
-                    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton"
-                            data-bs-toggle="dropdown" aria-expanded="false">
-                        Menú
-                    </button>
-                    <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                        <li><a class="dropdown-item" th:href="@{/perfil/{id}(id=${usuario.id})}">Perfil</a></li>
-                        <li><a class="dropdown-item" th:href="@{/misClubs/{usuarioId}(usuarioId=${usuario.id})}">Mis clubs</a></li>
-                        <li><a class="dropdown-item" th:href="@{/ranking}">Ranking</a></li>
-                        <li><a class="dropdown-item" th:href="@{/logout}">Cerrar sesión</a></li>
-                    </ul>
-                </div>
-            </div>
-        </nav>
-    </div>
-
-</header>
+<div th:insert="fragments/header :: header"></div>
 
 <main>
 
     <div class="container mt-5 pt-5">
-        <h1 class="text-center mb-4" th:text="${club.nombre}"></h1>
-        <p class="text-center text-muted" th:text="${club.genero}"></p>
-        <p class="lead text-center" th:text="${club.descripcion}"></p>
-
-
-        <div class="text-center">
-            <img th:src="@{${club.imagen}}" alt="Imagen del club" class="img-fluid rounded"
-                 style="max-width: 300px; height: auto;">
-        </div>
-    </div>
-
-    <div th:if="${usuario != null}">
-        <div class="text-center mb-4">
-            <a th:href="@{/club/{clubId}/reportar(clubId=${club.id})}" class="btn btn-primary mt-4">Reportar Club</a>
-        </div>
-        <!-- Recorremos los clubes a los que el usuario está inscripto -->
-        <div th:each="clubsInscripto : ${usuario.clubsInscriptos}">
-            <!-- Si el usuario está inscripto en este club, mostramos el botón de abandonar -->
-            <div th:if="${clubsInscripto.id == club.id}">
-                    <form th:action="@{/club/puntuar/{id}(id=${club.id})}" method="post" id="puntuacionForm">
-                        <div class="rating">
-                            <input type="radio" name="puntuacion" value="5" id="star5" onchange="puntuar()"
-                                   th:checked="${puntuacion != null AND puntuacion.puntuacion == 5}">
-                            <label for="star5" title="5 estrellas"><i class="fas fa-star"></i></label>
-
-                            <input type="radio" name="puntuacion" value="4" id="star4" onchange="puntuar()"
-                                   th:checked="${puntuacion != null AND puntuacion.puntuacion == 4}">
-                            <label for="star4" title="4 estrellas"><i class="fas fa-star"></i></label>
-
-                            <input type="radio" name="puntuacion" value="3" id="star3" onchange="puntuar()"
-                                   th:checked="${puntuacion != null AND puntuacion.puntuacion == 3}">
-                            <label for="star3" title="3 estrellas"><i class="fas fa-star"></i></label>
-
-                            <input type="radio" name="puntuacion" value="2" id="star2" onchange="puntuar()"
-                                   th:checked="${puntuacion != null AND puntuacion.puntuacion == 2}">
-                            <label for="star2" title="2 estrellas"><i class="fas fa-star"></i></label>
-
-                            <input type="radio" name="puntuacion" value="1" id="star1" onchange="puntuar()"
-                                   th:checked="${puntuacion != null AND puntuacion.puntuacion == 1}">
-                            <label for="star1" title="1 estrella"><i class="fas fa-star"></i></label>
-                        </div>
-                    </form>
-
-                <div th:if="${puntuacion != null}">
-                    <a th:href="@{/club/despuntuar/{id}(id=${club.id})}" class="btn btn-success text-center btn-lg mt-4">Eliminar puntuación</a>
-                </div>
-
-                <form th:action="@{/club/{clubId}/abandonar(clubId=${club.id})}" method="post" class="text-center mt-4">
-                    <button type="submit" class="btn btn-success btn-lg">Abandonar Club</button>
-                </form>
-            </div>
-        </div>
-
-        <!-- Si el usuario NO está inscripto en este club, mostramos el botón de inscribirse -->
-        <div th:if="${#lists.isEmpty(usuario.clubsInscriptos) or !usuario.clubsInscriptos.contains(club)}">
-            <div th:if="${usuario.rol == 'usuario' or usuario.rol == 'admin'}">
-                <form th:action="@{/club/{clubId}/anotarse(clubId=${club.id})}" method="post" class="text-center mt-4">
-                    <button type="submit" class="btn btn-success btn-lg">Inscribirse en el Club</button>
-                </form>
-            </div>
-        </div>
-    </div>
-
-    <div th:if="${usuario != null}">
-        <!-- Recorremos los clubes a los que el usuario está inscripto -->
-        <div th:each="clubsInscripto : ${usuario.clubsInscriptos}">
-            <!-- Si el usuario está inscripto en este club, mostramos el botón de abandonar -->
-            <div th:if="${clubsInscripto.id == club.id}">
-                <div class="text-center mb-4">
-                    <a th:href="@{/club/{clubId}/irANuevaPublicacion(clubId=${club.id})}" class="btn btn-primary mt-4">Crear nueva publicación</a>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div th:if="${usuario != null and (club.adminPrincipal == usuario or club.adminsSecundarios.contains(usuario))}">
-        <div class="d-flex justify-content-center">
-            <button type="button" class="btn btn-primary text-center mb-4" data-bs-toggle="modal" data-bs-target="#modalUsuarios">
-                Administrar usuarios
-            </button>
-        </div>
-
-        <div class="modal fade" id="modalUsuarios" tabindex="-1" aria-labelledby="modalUsuariosLabel" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="modalUsuariosLabel">Buscar Usuario</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <div class="row">
+            <!-- Columna para la imagen, título, descripción y género -->
+            <div class="col-md-8">
+                <div class="row">
+                    <div class="col-md-4">
+                        <img th:src="@{${club.imagen}}" alt="Imagen del club" class="img-fluid rounded"
+                             style="max-width: 100%; height: auto;">
                     </div>
-                    <div class="modal-body">
-                        <!-- Input para buscar usuarios -->
-                        <div class="mb-3">
-                            <input type="text" class="form-control" id="usuarioNombre" placeholder="Ingrese nombre del usuario">
-                        </div>
 
-                        <ul class="list-group" id="listaUsuarios">
+                    <div class="col-md-8">
+                        <h1 class="mb-4" th:text="${club.nombre}"></h1>
+                        <p class="text-muted" th:text="${club.genero}"></p>
+                        <p class="lead" th:text="${club.descripcion}"></p>
 
-                            <li class="list-group-item d-flex justify-content-between align-items-center usuario-item" th:each="integrante : ${club.integrantes}">
-                                <span class="usuario-nombre" th:text="${integrante.nombreUsuario}"></span>
-                                <div class="ms-auto d-flex gap-2">
-
-                                    <form action="#" method="POST"
-                                          th:action="@{/club/{clubId}/agregarAdmin/{usuarioId}(clubId=${club.id}, usuarioId=${integrante.id})}"
-                                          th:if="${usuario == club.adminPrincipal and integrante.id != usuario.id and not club.adminsSecundarios.contains(integrante)}">
-                                        <input type="hidden" th:name="idUsuario" th:value="${integrante.id}" />
-                                        <button type="submit" class="btn btn-primary btn-sm">Agregar admin</button>
+                        <!-- Aquí va el código de puntuación y botones (como antes) -->
+                        <div th:if="${usuario != null}">
+                            <!-- Recorremos los clubes a los que el usuario está inscripto -->
+                            <div th:if="${#lists.isEmpty(usuario.clubsInscriptos) or !usuario.clubsInscriptos.contains(club)}">
+                                <div th:if="${usuario.rol == 'usuario' or usuario.rol == 'administrador'}">
+                                    <form th:action="@{/club/{clubId}/anotarse(clubId=${club.id})}" method="post" class="text-center mt-4">
+                                        <button type="submit" class="btn btn-success btn-lg">Inscribirse en el Club</button>
                                     </form>
-
-                                    <form action="#" method="POST"
-                                          th:action="@{/club/{clubId}/sacarAdmin/{usuarioId}(clubId=${club.id}, usuarioId=${integrante.id})}"
-                                          th:if="${usuario == club.adminPrincipal and integrante.id != usuario.id and club.adminsSecundarios.contains(integrante)}">
-                                        <input type="hidden" th:name="idUsuario" th:value="${integrante.id}" />
-                                        <button type="submit" class="btn btn-primary btn-sm">Quitar admin</button>
-                                    </form>
-
-                                    <form action="#" method="POST"
-                                          th:action="@{/club/{clubId}/echarUsuario/{usuarioId}(clubId=${club.id}, usuarioId=${integrante.id})}"
-                                          th:if="${(usuario == club.adminPrincipal or (club.adminsSecundarios.contains(usuario) and not (club.adminsSecundarios.contains(integrante) or integrante == club.adminPrincipal))) and usuario != integrante}">
-                                        <input type="hidden" th:name="idUsuario" th:value="${integrante.id}" />
-                                        <button type="submit" class="btn btn-primary btn-sm">Echar</button>
-                                    </form>
-
-                                    <p th:if="${integrante == club.adminPrincipal}">ADMIN PRINCIPAL</p>
-                                    <p th:if="${club.adminsSecundarios.contains(integrante)}">ADMIN SECUNDARIO</p>
                                 </div>
-                            </li>
+                            </div>
+                            <div th:each="clubsInscripto : ${usuario.clubsInscriptos}">
+                                <div th:if="${clubsInscripto.id == club.id}">
+                                    <div class="d-flex align-items-center mb-4">
+                                        <p class="mb-0 me-3">Puntúa este club:</p>
 
+                                        <form th:action="@{/club/puntuar/{id}(id=${club.id})}" method="post"
+                                              id="puntuacionForm">
+                                            <div class="rating">
+                                                <input type="radio" name="puntuacion" value="5" id="star5"
+                                                       onchange="puntuar()"
+                                                       th:checked="${puntuacion != null AND puntuacion.puntuacion == 5}">
+                                                <label for="star5" title="5 estrellas"><i
+                                                        class="fas fa-star"></i></label>
 
-                        </ul>
+                                                <input type="radio" name="puntuacion" value="4" id="star4"
+                                                       onchange="puntuar()"
+                                                       th:checked="${puntuacion != null AND puntuacion.puntuacion == 4}">
+                                                <label for="star4" title="4 estrellas"><i
+                                                        class="fas fa-star"></i></label>
+
+                                                <input type="radio" name="puntuacion" value="3" id="star3"
+                                                       onchange="puntuar()"
+                                                       th:checked="${puntuacion != null AND puntuacion.puntuacion == 3}">
+                                                <label for="star3" title="3 estrellas"><i
+                                                        class="fas fa-star"></i></label>
+
+                                                <input type="radio" name="puntuacion" value="2" id="star2"
+                                                       onchange="puntuar()"
+                                                       th:checked="${puntuacion != null AND puntuacion.puntuacion == 2}">
+                                                <label for="star2" title="2 estrellas"><i
+                                                        class="fas fa-star"></i></label>
+
+                                                <input type="radio" name="puntuacion" value="1" id="star1"
+                                                       onchange="puntuar()"
+                                                       th:checked="${puntuacion != null AND puntuacion.puntuacion == 1}">
+                                                <label for="star1" title="1 estrella"><i
+                                                        class="fas fa-star"></i></label>
+                                            </div>
+                                        </form>
+                                        <div th:if="${puntuacion != null}">
+                                            <a th:href="@{/club/despuntuar/{id}(id=${club.id})}"
+                                               class="btn btn-lg btn-success w-100">Eliminar puntuación</a>
+                                        </div>
+                                    </div>
+
+                                    <div th:if="${usuario.clubsInscriptos.contains(club)}" class="d-flex justify-content-between mb-4">
+                                        <form th:action="@{/club/{clubId}/abandonar(clubId=${club.id})}" method="post"
+                                              class="w-50 me-2">
+                                            <button type="submit" class="btn btn-lg btn-success w-100">Abandonar Club
+                                            </button>
+                                        </form>
+                                        <a th:href="@{/club/{clubId}/reportar(clubId=${club.id})}"
+                                           class="btn btn-lg btn-primary w-50 ms-2">Reportar Club</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
+                </div>
+            </div>
+
+
+            <div class="col-md-4">
+                <!-- Caja de contenido que ocupará el espacio restante -->
+                <div class="p-4 border rounded-3 shadow-sm">
+                    <div th:if="${usuario != null and (club.adminPrincipal == usuario or club.adminsSecundarios.contains(usuario))}">
+                        <div class="text-center">
+                            <h5>Panel de moderación</h5>
+                            <button type="button" class="btn btn-primary text-center mb-4" data-bs-toggle="modal"
+                                    data-bs-target="#modalUsuarios">
+                                Administrar usuarios
+                            </button>
+                        </div>
+                    </div>
+                    <div th:if="${usuario == null or (club.adminPrincipal != usuario and !club.adminsSecundarios.contains(usuario))}">
+                        <div class="text-center">
+                            <h5>Lista de usuarios:</h5>
+                            <ul>
+                                <li th:each="integrante : ${club.integrantes}">
+                                    <span th:text="${integrante.nombreUsuario}"></span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modalUsuarios" tabindex="-1" aria-labelledby="modalUsuariosLabel"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalUsuariosLabel">Buscar Usuario</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- Input para buscar usuarios -->
+                    <div class="mb-3">
+                        <input type="text" class="form-control" id="usuarioNombre"
+                               placeholder="Ingrese nombre del usuario">
+                    </div>
+
+                    <ul class="list-group" id="listaUsuarios">
+
+                        <li class="list-group-item d-flex justify-content-between align-items-center usuario-item"
+                            th:each="integrante : ${club.integrantes}">
+                            <span class="usuario-nombre" th:text="${integrante.nombreUsuario}"></span>
+                            <div class="ms-auto d-flex gap-2">
+
+                                <form action="#" method="POST"
+                                      th:action="@{/club/{clubId}/agregarAdmin/{usuarioId}(clubId=${club.id}, usuarioId=${integrante.id})}"
+                                      th:if="${usuario == club.adminPrincipal and integrante.id != usuario.id and not club.adminsSecundarios.contains(integrante)}">
+                                    <input type="hidden" th:name="idUsuario" th:value="${integrante.id}"/>
+                                    <button type="submit" class="btn btn-primary btn-sm">Asignar nivel Moderador</button>
+                                </form>
+
+                                <form action="#" method="POST"
+                                      th:action="@{/club/{clubId}/sacarAdmin/{usuarioId}(clubId=${club.id}, usuarioId=${integrante.id})}"
+                                      th:if="${usuario == club.adminPrincipal and integrante.id != usuario.id and club.adminsSecundarios.contains(integrante)}">
+                                    <input type="hidden" th:name="idUsuario" th:value="${integrante.id}"/>
+                                    <button type="submit" class="btn btn-primary btn-sm">Remover nivel Moderador</button>
+                                </form>
+
+                                <form action="#" method="POST"
+                                      th:action="@{/club/{clubId}/echarUsuario/{usuarioId}(clubId=${club.id}, usuarioId=${integrante.id})}"
+                                      th:if="${(usuario == club.adminPrincipal or (club.adminsSecundarios.contains(usuario) and not (club.adminsSecundarios.contains(integrante) or integrante == club.adminPrincipal))) and usuario != integrante}">
+                                    <input type="hidden" th:name="idUsuario" th:value="${integrante.id}"/>
+                                    <button type="submit" class="btn btn-primary btn-sm">Expulsar usuario</button>
+                                </form>
+
+                                <p th:if="${integrante == club.adminPrincipal}">Administrador</p>
+                                <p th:if="${club.adminsSecundarios.contains(integrante)}">Moderador</p>
+                            </div>
+                        </li>
+
+
+                    </ul>
                 </div>
             </div>
         </div>
 
     </div>
 
-    <h1 class="mb-4 text">Foro y sus Publicaciones</h1>
-    <table class="table table-striped table-bordered">
-        <thead class="thead-dark">
-        <tr>
-            <th>Título</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr th:each="publicacion : ${club.publicaciones}">
-            <td>
-                <a th:href="@{/club/{clubId}/detallePublicacion/{publicacionId}(clubId=${club.id}, publicacionId=${publicacion.id})}"
-                   th:text="${publicacion.titulo}" class="text-decoration-none"></a>
-            </td>
-        </tr>
-        </tbody>
-    </table>
+    <div class="container mt-2 pt-2">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1 class="text">Foro y sus Publicaciones</h1>
+            <div th:if="${usuario != null}">
+                <!-- Recorremos los clubes a los que el usuario está inscripto -->
+                <div th:each="clubsInscripto : ${usuario.clubsInscriptos}">
+                    <!-- Si el usuario está inscripto en este club, mostramos el botón de crear publicación -->
+                    <div th:if="${clubsInscripto.id == club.id}">
+                        <a th:href="@{/club/{clubId}/irANuevaPublicacion(clubId=${club.id})}"
+                           class="btn btn-primary">Crear nueva publicación</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <table class="table table-striped table-bordered">
+            <thead class="thead-dark">
+            <tr>
+                <th>Título</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="publicacion : ${club.publicaciones}">
+                <td>
+                    <a th:href="@{/club/{clubId}/detallePublicacion/{publicacionId}(clubId=${club.id}, publicacionId=${publicacion.id})}"
+                       th:text="${publicacion.titulo}" class="text-decoration-none"></a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
 </main>
+
+<script>
+    function puntuar() {
+        document.getElementById("puntuacionForm").submit();
+    }
+</script>
 
 <script th:src="@{/webjars/bootstrap/5.2.0/js/bootstrap.bundle.min.js}"></script>
 <script th:src="@{/js/buscarPorNombreDeUsuario.js}"></script>

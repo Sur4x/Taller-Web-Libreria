@@ -64,19 +64,13 @@ public class ServicioReporteTest {
         Reporte reporte = new Reporte();
         Club club = new Club();
         club.setNombre("Club de Lectura");
-        reporte.setId(1L);
         reporte.setClub(club);
+
         when(repositorioReporteMock.buscarReportePorId(any())).thenReturn(null);
 
         servicioReporte.guardarReporte(reporte);
 
         verify(repositorioReporteMock, times(1)).guardar(reporte);
-
-        verify(repositorioNotificacionMock).crearNotificacion(argThat(notificacion ->
-                notificacion.getFecha().equals(LocalDate.now()) &&
-                        notificacion.getEvento().equals("Se realizó un reporte a un club existente: Club de Lectura")
-        ));
-
     }
 
     @Test
@@ -104,11 +98,6 @@ public class ServicioReporteTest {
         servicioReporte.eliminarReporte(1L);
 
         verify(repositorioReporteMock,times(1)).eliminar(reporte);
-
-        verify(repositorioNotificacionMock).crearNotificacion(argThat(notificacion ->
-                notificacion.getFecha().equals(LocalDate.now()) &&
-                        notificacion.getEvento().equals("Se elimino un reporte realizado al club: Club de Lectura que tenia como motivo: Testing")
-        ));
     }
 
     @Test

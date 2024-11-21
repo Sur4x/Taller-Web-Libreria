@@ -1,5 +1,6 @@
 package com.tallerwebi.presentacion;
 
+import com.tallerwebi.dominio.ServicioNotificacion;
 import com.tallerwebi.dominio.ServicioUsuario;
 import com.tallerwebi.dominio.Usuario;
 import com.tallerwebi.dominio.excepcion.NoExisteEseUsuario;
@@ -24,6 +25,7 @@ public class ControladorUsuarioTest {
     private HttpServletRequest requestMock;
     private HttpSession sessionMock;
     private ServicioUsuario servicioUsuarioMock;
+    private ServicioNotificacion servicioNotificacionMock;
     private ControladorUsuario controladorUsuario;
     private Usuario usuarioMock;
 
@@ -32,7 +34,8 @@ public class ControladorUsuarioTest {
         requestMock = mock(HttpServletRequest.class); //mockeo el request
         sessionMock = mock(HttpSession.class); //aca mockeo la sesion
         servicioUsuarioMock = mock(ServicioUsuario.class); //mockeo el servicio
-        controladorUsuario = new ControladorUsuario(servicioUsuarioMock); //le paso al controlador el servicio mockeado
+        servicioNotificacionMock = mock(ServicioNotificacion.class);
+        controladorUsuario = new ControladorUsuario(servicioUsuarioMock, servicioNotificacionMock); //le paso al controlador el servicio mockeado
         usuarioMock = mock(Usuario.class); //Mockeo un usuario
     }
 
@@ -130,14 +133,6 @@ public class ControladorUsuarioTest {
         verify(servicioUsuarioMock,times(2)).buscarUsuarioPor(any());
         verify(servicioUsuarioMock,times(1)).seguirUsuario(usuarioASeguir,usuarioSeguidor);
     }
-
-
-
-
-
-
-
-
 
     @Test
     public void dadoElMetodoDejarDeSeguirUsuarioCuandoQuieroUsarloSinEstarLogueadoMeRedireccionaALaVistaLogin() throws NoExisteEseUsuario {

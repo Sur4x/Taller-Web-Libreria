@@ -4,9 +4,9 @@ import java.util.List;
 
 public interface RepositorioNotificacion {
 
-    void crearNotificacion(Notificacion notificacion);
+    void guardar(Notificacion notificacion);
 
     Notificacion buscarNotificacionPor(Long id);
 
-    List<Notificacion> listarTodasLasNotificaciones();
+    List<Notificacion> listarTodasLasNotificacionesDeUnUsuario(Long id);
 }

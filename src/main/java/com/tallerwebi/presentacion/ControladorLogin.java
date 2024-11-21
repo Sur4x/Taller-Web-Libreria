@@ -16,6 +16,7 @@ import org.springframework.web.servlet.ModelAndView;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.transaction.Transactional;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -31,8 +32,9 @@ public class ControladorLogin {
     private ServicioNoticia servicioNoticia;
     @Autowired
     private ServicioPublicacion servicioPublicacion;
+
     @Autowired
-    public ControladorLogin(ServicioLogin servicioLogin){
+    public ControladorLogin(ServicioLogin servicioLogin) {
         this.servicioLogin = servicioLogin;
     }
 
@@ -63,12 +65,12 @@ public class ControladorLogin {
     public ModelAndView registrarme(@ModelAttribute("usuario") Usuario usuario) {
 
         ModelMap model = new ModelMap();
-        try{
+        try {
             servicioLogin.registrar(usuario);
-        } catch (UsuarioExistente e){
+        } catch (UsuarioExistente e) {
             model.put("error", "El usuario ya existe");
             return new ModelAndView("registro", model);
-        } catch (Exception e){
+        } catch (Exception e) {
             model.put("error", "Error al registrar el nuevo usuario");
             return new ModelAndView("registro", model);
         }
@@ -87,29 +89,32 @@ public class ControladorLogin {
         Usuario usuario = (Usuario) request.getSession().getAttribute("usuario");
 
         ModelMap model = new ModelMap();
-        try {
-            List<Club> clubs = servicioClub.obtenerTodosLosClubs(); //ESTO ES LOGICA DEL CLUB NO DEL LOGIN MOVERLO
-
-            model.put("clubs",clubs);
-        }catch (NoExistenClubs e){
-            model.put("error", "No existen clubs para mostrar");
-        }
-
-        if (usuario != null){
-            Usuario usuarioBuscado = servicioUsuario.buscarUsuarioPor(usuario.getId());
-            model.put("usuario", usuarioBuscado);
-            Set<Usuario> usuariosSeguidos = servicioUsuario.obtenerUsuariosSeguidos(usuarioBuscado);
-            List<Publicacion> publicacionesRecientes = servicioPublicacion.obtenerPublicacionesDeUsuariosSeguidos(usuariosSeguidos);
-            model.addAttribute("publicacionesRecientes", publicacionesRecientes);
-        }else{
-            model.put("usuario", null);
-        }
+        List<Club> clubs = servicioClub.obtenerTodosLosClubs(); //ESTO ES LOGICA DEL CLUB NO DEL LOGIN MOVERLO
 
         List<Noticia> noticias = servicioNoticia.obtenerNoticiasRandom(3);
         model.addAttribute("noticias", noticias);
 
-        return new ModelAndView("home", model);
+        if (usuario != null) {
+            model.addAttribute("usuario", usuario);
+            Set<Usuario> usuariosSeguidos = servicioUsuario.obtenerUsuariosSeguidos(usuario);
+            List<Publicacion> publicacionesRecientes = servicioPublicacion.obtenerPublicacionesDeUsuariosSeguidos(usuariosSeguidos);
+            model.addAttribute("publicacionesRecientes", publicacionesRecientes);
 
+            if (!usuario.getCategoriasPreferidas().isEmpty()) {
+                List<String> categoriasPreferidas = usuario.getCategoriasPreferidas();
+                List<Club> clubsFiltrados = new ArrayList<>();
+
+                for (Club club : clubs) {
+                    if (categoriasPreferidas.contains(club.getGenero())) {
+                        clubsFiltrados.add(club);
+                    }
+                }
+                model.addAttribute("clubs", clubsFiltrados);
+                return new ModelAndView("home", model);
+            }
+        }
+        model.addAttribute("clubs", clubs);
+        return new ModelAndView("home", model);
     }
 
     @RequestMapping(path = "/", method = RequestMethod.GET)
@@ -117,6 +122,7 @@ public class ControladorLogin {
         return new ModelAndView("redirect:/login");
     }
 }
+
 
 
 

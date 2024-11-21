@@ -13,6 +13,12 @@ public class Usuario {
     private String email;
     private String password;
 
+    //Colección para guardar categorias preferidas del usuario
+    @ElementCollection
+    @CollectionTable(name = "usuario_categorias", joinColumns = @JoinColumn(name = "usuario_id"))
+    @Column(name = "categoria")
+    private List<String> categoriasPreferidas = new ArrayList<>();
+
     @Transient //ESTO HACE QUE ESTE ATRIBUTO NO SE GUARDE EN LA BDD
     private String confirmPassword;
 
@@ -56,6 +62,9 @@ public class Usuario {
             inverseJoinColumns = @JoinColumn(name = "club_id")  // Llave foránea para el club
     )
     private List<Club> clubsAdminSecundarios = new ArrayList<>();
+
+    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Notificacion> notificaciones = new ArrayList<>();
 
 
     public Usuario(){};
@@ -170,6 +179,22 @@ public class Usuario {
 
     public void setClubsAdminSecundarios(List<Club> clubsAdminSecundarios) {
         this.clubsAdminSecundarios = clubsAdminSecundarios;
+    }
+
+    public void setNotificaciones(List<Notificacion> notificaciones){
+        this.notificaciones = notificaciones;
+    }
+
+    public List<Notificacion> getNotificaciones() {
+        return notificaciones;
+    }
+
+    public List<String> getCategoriasPreferidas() {
+        return categoriasPreferidas;
+    }
+
+    public void setCategoriasPreferidas(List<String> categoriasPreferidas) {
+        this.categoriasPreferidas = categoriasPreferidas;
     }
 
     @Override

@@ -2,44 +2,16 @@
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Publicación</title>
+    <link rel="stylesheet" th:href="@{/webjars/bootstrap/5.2.0/css/bootstrap.min.css}"/>
 </head>
 
-<link rel="stylesheet" th:href="@{/webjars/bootstrap/5.2.0/css/bootstrap.min.css}"/>
-<link rel="stylesheet" th:href="@{/css/main.css}"/>
 <body>
-<header>
-    <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
-        <div class="collapse navbar-collapse d-flex justify-content-between" id="navbarNav">
-            <a class="navbar-brand" th:href="@{/home}">DeUltima</a>
-            <form class="d-flex" th:action="@{/buscar}" method="GET">
-                <input type="text" name="query" class="form-control me-2" placeholder="Buscar Club" aria-label="Buscar">
-                <button type="submit" class="btn btn-outline-light">Buscar</button>
-            </form>
-            <div th:if="${usuario == null}">
-                <a th:href="@{/login}" class="btn btn-primary me-2">Iniciar sesión</a>
-                <a th:href="@{/registro}" class="btn btn-primary">Registrarse</a>
-            </div>
-            <div th:if="${usuario != null}">
-                <a th:href="@{/crearClub}" class="btn btn-primary me-2">Crear nuevo club</a>
-                <div class="dropdown">
-                    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton"
-                            data-bs-toggle="dropdown" aria-expanded="false">Menú
-                    </button>
-                    <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                        <li><a class="dropdown-item" th:href="@{/perfil/{id}(id=${usuario.id})}">Perfil</a></li>
-                        <li><a class="dropdown-item" th:href="@{/misClubs/{usuarioId}(usuarioId=${usuario.id})}">Mis clubs</a></li>
-                        <li><a class="dropdown-item" th:href="@{/ranking}">Ranking</a></li>
-                        <li><a class="dropdown-item" th:href="@{/logout}">Cerrar sesión</a></li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </nav>
-</header>
 
-<main class="mt-6">
+<div th:insert="fragments/header :: header"></div>
 
+<main class="container mt-5 pt-5">
 
     <div class="container mt-4">
         <p class="text-center mb-4" th:text="${publicacion.mensaje}"></p>
@@ -53,8 +25,9 @@
     </div>
 
     <div th:if="${mensaje != null}">
-        <p th:text="${mensaje}"></p>
+        <div class="alert alert-info" role="alert" th:text="${mensaje}"></div>
     </div>
+
     <div class="container mt-4">
         <h2>Comentarios de la comunidad:</h2>
 
@@ -64,42 +37,50 @@
 
         <ul class="list-group">
             <li th:if="${comentarios != null}" class="list-group-item" th:each="comentario : ${comentarios}">
-                <div class="d-flex justify-content-between align-items-center">
-                    <h5 class="mb-1" th:text="${comentario.autor.nombreUsuario}"></h5>
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <h5 class="mb-0" th:text="${comentario.autor.nombreUsuario}"></h5>
                 </div>
                 <p class="mb-1" th:text="${comentario.texto}">Texto del comentario</p>
 
                 <div th:if="${usuario != null}">
-                    <!-- Botón de Like (se muestra si el usuario NO ha dado like) -->
-                    <form th:if="${!comentario.tienelikeDeEsteUsuario(usuario)}"
-                          th:action="@{/club/{clubId}/detallePublicacion/{publicacionId}/likear/{comentarioId}(clubId=${club.id}, publicacionId=${publicacion.id}, comentarioId=${comentario.id})}"
-                          method="post">
-                        <button type="submit" class="btn btn-primary btn-sm">Like</button>
-                    </form>
+                    <div class="d-flex">
+                        <!-- Botón de Like (si el usuario NO ha dado like) -->
+                        <form th:if="${!comentario.tienelikeDeEsteUsuario(usuario)}"
+                              th:action="@{/club/{clubId}/detallePublicacion/{publicacionId}/likear/{comentarioId}(clubId=${club.id}, publicacionId=${publicacion.id}, comentarioId=${comentario.id})}"
+                              method="post">
+                            <button type="submit" class="btn btn-outline-primary btn-sm me-2">Like</button>
+                        </form>
 
-                    <!-- Botón de Unlike (se muestra si el usuario SÍ ha dado like) -->
-                    <form th:if="${comentario.tienelikeDeEsteUsuario(usuario)}"
-                          th:action="@{/club/{clubId}/detallePublicacion/{publicacionId}/deslikear/{comentarioId}(clubId=${club.id}, publicacionId=${publicacion.id}, comentarioId=${comentario.id})}"
-                          method="post">
-                        <button type="submit" class="btn btn-secondary btn-sm">Eliminar like</button>
-                    </form>
-                </div>
+                        <!-- Botón de Unlike (si el usuario SÍ ha dado like) -->
+                        <form th:if="${comentario.tienelikeDeEsteUsuario(usuario)}"
+                              th:action="@{/club/{clubId}/detallePublicacion/{publicacionId}/deslikear/{comentarioId}(clubId=${club.id}, publicacionId=${publicacion.id}, comentarioId=${comentario.id})}"
+                              method="post">
+                            <button type="submit" class="btn btn-outline-secondary btn-sm">Eliminar like</button>
+                        </form>
+                    </div>
 
-                <!-- Contador de Likes -->
-                <span id="like-count-[[${comentario.id}]]" th:text="${comentario.likes.size()}"></span> Me gusta
-                <div th:if="${usuario != null and comentario.autor.id == usuario.id}" >
-                    <form th:action="@{/club/{clubId}/detallePublicacion/{publicacionId}/eliminarComentario/{comentarioId}(clubId=${club.id},publicacionId=${publicacion.id},comentarioId=${comentario.id})}" method="post" style="display: inline;">
-                        <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('¿Estás seguro de que deseas eliminar este comentario?');">
-                            Eliminar
-                        </button>
-                    </form>
+                    <!-- Contador de Likes -->
+                    <div class="mt-2">
+                        <span th:text="${comentario.likes.size()}"></span> Me gusta
+                    </div>
+
+                    <!-- Eliminar comentario (si es el autor del comentario) -->
+                    <div th:if="${usuario != null and comentario.autor.id == usuario.id}">
+                        <form th:action="@{/club/{clubId}/detallePublicacion/{publicacionId}/eliminarComentario/{comentarioId}(clubId=${club.id},publicacionId=${publicacion.id},comentarioId=${comentario.id})}"
+                              method="post" class="mt-2" style="display: inline;">
+                            <button type="submit" class="btn btn-danger btn-sm"
+                                    onclick="return confirm('¿Estás seguro de que deseas eliminar este comentario?');">
+                                Eliminar
+                            </button>
+                        </form>
+                    </div>
                 </div>
             </li>
         </ul>
     </div>
+
     <div th:if="${usuario != null}">
         <div th:each="clubsInscripto : ${usuario.clubsInscriptos}">
-            <!-- Si el usuario está inscripto en este club, mostramos el botón de abandonar -->
             <div th:if="${clubsInscripto.id == club.id}">
                 <div class="container mt-4">
                     <h3>Agregar Nuevo Comentario</h3>
@@ -119,6 +100,7 @@
     </div>
 
 </main>
+
 <script th:src="@{/webjars/bootstrap/5.2.0/js/bootstrap.bundle.min.js}"></script>
 
 </body>

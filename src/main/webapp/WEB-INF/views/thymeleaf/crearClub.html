@@ -8,33 +8,8 @@
     <link rel="stylesheet" th:href="@{/css/main.css}"/>
 </head>
 <body>
-<header>
-    <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
-        <div class="collapse navbar-collapse d-flex justify-content-between" id="navbarNav">
-            <a class="navbar-brand" th:href="@{/home}">DeUltima</a>
-            <form class="d-flex" th:action="@{/buscar}" method="GET">
-                <input type="text" name="query" class="form-control me-2" placeholder="Buscar Club" aria-label="Buscar">
-                <button type="submit" class="btn btn-outline-light">Buscar</button>
-            </form>
-            <div th:if="${usuario == null}">
-                <a th:href="@{/login}" class="btn btn-primary me-2">Iniciar sesión</a>
-                <a th:href="@{/registro}" class="btn btn-primary">Registrarse</a>
-            </div>
-            <div th:if="${usuario != null}">
-                <a th:href="@{/crearClub}" class="btn btn-primary me-2">Crear nuevo club</a>
-                <div class="dropdown">
-                    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">Menú</button>
-                    <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                        <li><a class="dropdown-item" th:href="@{/perfil/{id}(id=${usuario.id})}">Perfil</a></li>
-                        <li><a class="dropdown-item" th:href="@{/misClubs/{usuarioId}(usuarioId=${usuario.id})}">Mis clubs</a></li>
-                        <li><a class="dropdown-item" th:href="@{/ranking}">Ranking</a></li>
-                        <li><a class="dropdown-item" th:href="@{/logout}">Cerrar sesión</a></li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </nav>
-</header>
+
+<div th:insert="fragments/header :: header"></div>
 
 <div class="container mt-5 pt-5">
     <h1 class="text-center mb-4">Cree su nuevo club</h1>
@@ -56,16 +31,26 @@
         </div>
 
         <div class="mb-3">
-            <label for="genero" class="form-label">Género</label>
+            <label for="genero" class="form-label">Categoría</label>
             <select id="genero" th:field="*{genero}" class="form-select" required>
-                <option value="" disabled selected>Seleccione un género</option>
-                <option value="Aventura">Aventura</option>
+                <option value="" disabled selected>Seleccione una categoría</option>
+                <option value="Novelas Contemporaneas">Novelas Contemporaneas</option>
+                <option value="Clasicos Literarios">Clasicos Literarios</option>
+                <option value="Fantasia">Fantasia</option>
+                <option value="Ciencia Ficcion">Ciencia Ficcion</option>
                 <option value="Romance">Romance</option>
                 <option value="Misterio">Misterio</option>
-                <option value="Terror">Terror</option>
-                <option value="Auto-ayuda">Auto-ayuda</option>
-                <option value="Ciencia ficcion">Ciencia ficción</option>
-                <option value="Historia">Historia</option>
+                <option value="Horror">Horror</option>
+                <option value="Autodesarrollo">Autodesarrollo</option>
+                <option value="Viajes y aventura">Viajes y aventura</option>
+                <option value="Infantil">Infantil</option>
+                <option value="Poesia">Poesia</option>
+                <option value="Teatro">Teatro</option>
+                <option value="Ciencia y tecnologia">Ciencia y tecnologia</option>
+                <option value="Cocina y gastronomia">Cocina y gastronomia</option>
+                <option value="Arte">Arte</option>
+                <option value="Temas Sociales">Temas Sociales</option>
+                <option value="Deportes">Deportes</option>
             </select>
         </div>
 

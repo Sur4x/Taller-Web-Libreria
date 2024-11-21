@@ -47,6 +47,7 @@ public class HibernateConfig {
         properties.setProperty("hibernate.show_sql", "true");//muestra en la consola las sentencias de la tablas
         properties.setProperty("hibernate.format_sql", "true");
         properties.setProperty("hibernate.hbm2ddl.auto", "update"); //create = cada jetty run crea una nueva BDD.
+        properties.setProperty("hibernate.enable_lazy_load_no_trans", "true");
         //update = mantiene los datos
         return properties;
     }

@@ -22,12 +22,14 @@ public class ControladorClub {
     private ServicioClub servicioClub;
     private ServicioUsuario servicioUsuario;
     private ServicioPuntuacion servicioPuntuacion;
+    private ServicioNotificacion servicioNotificacion;
 
     @Autowired
-    public ControladorClub(ServicioClub servicioClub, ServicioUsuario servicioUsuario,ServicioPuntuacion servicioPuntuacion) {
+    public ControladorClub(ServicioClub servicioClub, ServicioUsuario servicioUsuario,ServicioPuntuacion servicioPuntuacion,ServicioNotificacion servicioNotificacion) {
         this.servicioClub = servicioClub;
         this.servicioUsuario = servicioUsuario;
         this.servicioPuntuacion = servicioPuntuacion;
+        this.servicioNotificacion = servicioNotificacion;
     }
 
     @RequestMapping(path = "/crearClub")
@@ -122,15 +124,25 @@ public class ControladorClub {
     @RequestMapping(path = "/club/{clubId}/abandonar", method = RequestMethod.POST)
     public ModelAndView abandonarClub(@PathVariable("clubId") Long id, HttpServletRequest request) throws NoExisteEseClub, NoExisteEseUsuario {
         Usuario usuario = (Usuario) request.getSession().getAttribute("usuario");
+        Usuario usuarioBuscado = servicioUsuario.buscarUsuarioPor(usuario.getId());
         Club club = servicioClub.buscarClubPor(id);
-        servicioClub.borrarRegistroUsuarioEnElClub(usuario, club);
+        servicioClub.borrarRegistroUsuarioEnElClub(usuarioBuscado, club);
+        request.getSession().setAttribute("usuario", usuarioBuscado);
         return new ModelAndView("redirect:/home");
     }
 
     @RequestMapping(path = "/club/eliminar/{id}", method = RequestMethod.POST)
-    public ModelAndView eliminarClub(@PathVariable("id") Long id) throws NoExisteEseClub {
+    public ModelAndView eliminarClub(@PathVariable("id") Long id, HttpServletRequest request) throws NoExisteEseClub, NoExisteEseUsuario {
+        Usuario usuario = (Usuario) request.getSession().getAttribute("usuario");
+        //Usuario usuarioBuscado = servicioUsuario.buscarUsuarioPor(usuario.getId());
         Club club = servicioClub.buscarClubPor(id);
         if (club != null) {
+
+            for (Usuario integrante : club.getIntegrantes()){
+                Usuario usuarioEncontrado = servicioUsuario.buscarUsuarioPor(integrante.getId());
+                servicioNotificacion.crearNotificacion(usuarioEncontrado, "clubEliminado", club.getNombre());
+            }
+            club.setAdminPrincipal(null);
             servicioClub.eliminarClub(club);
             return new ModelAndView("redirect:/home");
         } else {
@@ -172,6 +184,7 @@ public class ControladorClub {
 
         if (inscripto){
             servicioClub.echarUsuarioDeUnClub(club, usuarioPorEchar);
+            servicioNotificacion.crearNotificacion(usuarioPorEchar,"usuarioEchado",club.getNombre());
         }
 
         Puntuacion puntuacion = servicioPuntuacion.buscarPuntuacion(club, usuario);

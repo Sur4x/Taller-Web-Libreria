@@ -10,5 +10,10 @@ public interface ServicioNotificacion {
 
     Notificacion buscarNotificacionPorId(Long id) throws NoExisteNingunaNotificacion;
 
-    List<Notificacion> obtenerElListadoDeNotificaciones();
+    List<Notificacion> obtenerElListadoDeNotificacionesDeUnUsuario(Usuario usuario);
+
+    void crearNotificacion(Usuario usuario, String tipoNotificacion, String nombreClub);
+
+    void crearNotificacion(Usuario usuario, String tipoNotificacion, String nombreClub, String mensajeReporte);
+
 }
