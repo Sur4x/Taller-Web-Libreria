@@ -56,7 +56,7 @@ public class ControladorLogin {
             request.getSession().setAttribute("usuario", usuarioBuscado);
             return new ModelAndView("redirect:/home");
         } else {
-            model.put("error", "Usuario o clave incorrecta");
+            model.put("mensaje", "Usuario o clave incorrecta");
         }
         return new ModelAndView("login", model);
     }
@@ -68,13 +68,15 @@ public class ControladorLogin {
         try {
             servicioLogin.registrar(usuario);
         } catch (UsuarioExistente e) {
-            model.put("error", "El usuario ya existe");
+            model.put("mensaje", "El correo ingresado ya está registrado.");
             return new ModelAndView("registro", model);
         } catch (Exception e) {
-            model.put("error", "Error al registrar el nuevo usuario");
+            model.put("mensaje", "Error al registrar el nuevo usuario");
             return new ModelAndView("registro", model);
         }
-        return new ModelAndView("redirect:/login");
+        model.put("datosLogin", new DatosLogin());
+        model.put("mensaje", "Registro exitoso");
+        return new ModelAndView("login", model);
     }
 
     @RequestMapping(path = "/registro", method = RequestMethod.GET)
@@ -89,7 +91,7 @@ public class ControladorLogin {
         Usuario usuario = (Usuario) request.getSession().getAttribute("usuario");
 
         ModelMap model = new ModelMap();
-        List<Club> clubs = servicioClub.obtenerTodosLosClubs(); //ESTO ES LOGICA DEL CLUB NO DEL LOGIN MOVERLO
+        List<Club> clubs = servicioClub.obtenerTodosLosClubs();
 
         List<Noticia> noticias = servicioNoticia.obtenerNoticiasRandom(5);
         model.addAttribute("noticias", noticias);

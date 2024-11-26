@@ -14,6 +14,7 @@ import org.springframework.web.servlet.ModelAndView;
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 
 @Controller
@@ -23,13 +24,15 @@ public class ControladorClub {
     private ServicioUsuario servicioUsuario;
     private ServicioPuntuacion servicioPuntuacion;
     private ServicioNotificacion servicioNotificacion;
+    private ServicioNoticia servicioNoticia;
 
     @Autowired
-    public ControladorClub(ServicioClub servicioClub, ServicioUsuario servicioUsuario,ServicioPuntuacion servicioPuntuacion,ServicioNotificacion servicioNotificacion) {
+    public ControladorClub(ServicioClub servicioClub, ServicioUsuario servicioUsuario, ServicioPuntuacion servicioPuntuacion, ServicioNotificacion servicioNotificacion, ServicioNoticia servicioNoticia) {
         this.servicioClub = servicioClub;
         this.servicioUsuario = servicioUsuario;
         this.servicioPuntuacion = servicioPuntuacion;
         this.servicioNotificacion = servicioNotificacion;
+        this.servicioNoticia = servicioNoticia;
     }
 
     @RequestMapping(path = "/crearClub")
@@ -49,34 +52,39 @@ public class ControladorClub {
     public ModelAndView crearNuevoClub(@ModelAttribute("club") Club club, HttpServletRequest request, @RequestParam("imagen") MultipartFile imagen) throws ClubExistente {
         Usuario usuario = (Usuario) request.getSession().getAttribute("usuario");
         ModelMap modelo = new ModelMap();
+        try {
+            servicioClub.agregar(club);
 
-        if (!imagen.isEmpty()) {
-            // Usar una ruta absoluta o un directorio dentro de static
-            String uploadDir = System.getProperty("user.dir") + "/uploads/";  // Usando la raíz del proyecto
-            String imagePath = uploadDir + imagen.getOriginalFilename();
-            File dir = new File(uploadDir);
+            if (!imagen.isEmpty()) {
+                // Usar una ruta absoluta o un directorio dentro de static
+                String uploadDir = System.getProperty("user.dir") + "/uploads/";  // Usando la raíz del proyecto
+                String imagePath = uploadDir + imagen.getOriginalFilename();
+                File dir = new File(uploadDir);
 
-            // Crear la carpeta si no existe
-            if (!dir.exists()) {
-                dir.mkdirs();
+                // Crear la carpeta si no existe
+                if (!dir.exists()) {
+                    dir.mkdirs();
+                }
+
+                try {
+                    imagen.transferTo(new File(imagePath)); // Guardar el archivo
+                    club.setImagen("/uploads/" + imagen.getOriginalFilename()); // Usar la URL para mostrar la imagen
+                } catch (IOException e) {
+                    throw new RuntimeException("Error al guardar la imagen", e);
+                }
             }
 
-            try {
-                imagen.transferTo(new File(imagePath)); // Guardar el archivo
-                club.setImagen("/uploads/" + imagen.getOriginalFilename()); // Usar la URL para mostrar la imagen
-            } catch (IOException e) {
-                throw new RuntimeException("Error al guardar la imagen", e);
-            }
-        }
-        club.setAdminPrincipal(usuario);
-        Boolean agregado = servicioClub.agregar(club);
-        servicioClub.registrarUsuarioEnElClub(usuario,club);
-        if (agregado && usuario != null) {
+            club.setAdminPrincipal(usuario);
+
+            servicioClub.registrarUsuarioEnElClub(usuario, club);
+
             modelo.put("usuario", usuario);
             modelo.put("clubId", club.getId());
+            modelo.put("mensaje", "Club creado exitosamente");
             return new ModelAndView("redirect:/club/{clubId}", modelo);
-        } else {
-            return new ModelAndView("redirect:/home");
+        } catch (YaExisteUnClubConEseNombre e) {
+            modelo.put("mensaje", e.getMessage());
+            return new ModelAndView("crearClub", modelo);
         }
     }
 
@@ -100,35 +108,46 @@ public class ControladorClub {
     public ModelAndView buscarClubPorNombre(@RequestParam("query") String query, HttpServletRequest request) throws NoExistenClubs {
         Usuario usuario = (Usuario) request.getSession().getAttribute("usuario");
         ModelMap model = new ModelMap();
-        List<Club> clubs = servicioClub.buscarClubPorNombre(query);
-
-        if (clubs.isEmpty()) {
-            model.put("usuario", usuario);
-            model.put("noResultados", true);
-        } else {
-            model.put("usuario", usuario);
-            model.put("noResultados", false);
-            model.put("clubs", clubs);
+        model.put("usuario", usuario);
+        List<Club> clubs = null;
+        try {
+            clubs = servicioClub.buscarClubPorNombre(query);
+        } catch (NoSeEncontraroClubsConEseNombre e) {
+            model.put("clubs", servicioClub.obtenerTodosLosClubs());
+            model.put("error", e.getMessage());
+            return new ModelAndView("busqueda", model);
         }
-        return new ModelAndView("home", model);
+        model.put("clubsEncontrados", clubs);
+        return new ModelAndView("busqueda", model);
     }
 
     @RequestMapping(path = "/club/{clubId}/anotarse", method = RequestMethod.POST)
     public ModelAndView anotarUsuarioAClub(@PathVariable("clubId") Long id, HttpServletRequest request) throws NoExisteEseClub, NoExisteEseUsuario {
+        ModelMap model = new ModelMap();
         Usuario usuario = (Usuario) request.getSession().getAttribute("usuario");
         Club club = servicioClub.buscarClubPor(id);
         servicioClub.registrarUsuarioEnElClub(usuario, club);
-        return new ModelAndView("redirect:/club/{clubId}");
+        model.put("club", club);
+        model.put("usuario", usuario);
+        model.put("puntuacion", new Puntuacion());
+        model.put("mensaje", "Usted se inscribio corractamente en el club.");
+        return new ModelAndView("detalleClub", model);
     }
 
     @RequestMapping(path = "/club/{clubId}/abandonar", method = RequestMethod.POST)
     public ModelAndView abandonarClub(@PathVariable("clubId") Long id, HttpServletRequest request) throws NoExisteEseClub, NoExisteEseUsuario {
+        ModelMap model = new ModelMap();
         Usuario usuario = (Usuario) request.getSession().getAttribute("usuario");
         Usuario usuarioBuscado = servicioUsuario.buscarUsuarioPor(usuario.getId());
         Club club = servicioClub.buscarClubPor(id);
         servicioClub.borrarRegistroUsuarioEnElClub(usuarioBuscado, club);
         request.getSession().setAttribute("usuario", usuarioBuscado);
-        return new ModelAndView("redirect:/home");
+
+        model.put("club", club);
+        model.put("usuario", usuarioBuscado);
+        model.put("puntuacion", new Puntuacion());
+        model.put("mensaje", "Usted abandono corractamente en el club.");
+        return new ModelAndView("detalleClub", model);
     }
 
     @RequestMapping(path = "/club/eliminar/{id}", method = RequestMethod.POST)
@@ -138,7 +157,7 @@ public class ControladorClub {
         Club club = servicioClub.buscarClubPor(id);
         if (club != null) {
 
-            for (Usuario integrante : club.getIntegrantes()){
+            for (Usuario integrante : club.getIntegrantes()) {
                 Usuario usuarioEncontrado = servicioUsuario.buscarUsuarioPor(integrante.getId());
                 servicioNotificacion.crearNotificacion(usuarioEncontrado, "clubEliminado", club.getNombre());
             }
@@ -158,7 +177,9 @@ public class ControladorClub {
         if (usuario != null) {
             Usuario usuarioActual = servicioUsuario.buscarUsuarioPor(usuario.getId());
             model.put("usuario", usuarioActual);
-        } else {model.put("usuario", null);}
+        } else {
+            model.put("usuario", null);
+        }
 
         List<Club> clubsMiembros = servicioClub.obtenerClubsConMasMiembros();
         List<Club> clubsPuntuacion = servicioClub.obtenerClubsConMejorPuntuacion();
@@ -182,16 +203,16 @@ public class ControladorClub {
         Usuario usuarioPorEchar = servicioUsuario.buscarUsuarioPor(usuarioId);
         Boolean inscripto = servicioClub.usuarioInscriptoEnUnClub(club, usuarioPorEchar);
 
-        if (inscripto){
+        if (inscripto) {
             servicioClub.echarUsuarioDeUnClub(club, usuarioPorEchar);
-            servicioNotificacion.crearNotificacion(usuarioPorEchar,"usuarioEchado",club.getNombre());
+            servicioNotificacion.crearNotificacion(usuarioPorEchar, "usuarioEchado", club.getNombre());
         }
 
         Puntuacion puntuacion = servicioPuntuacion.buscarPuntuacion(club, usuario);
 
-        modelo.put("usuario",usuario);
-        modelo.put("club",club);
-        modelo.put("puntuacion",puntuacion);
+        modelo.put("usuario", usuario);
+        modelo.put("club", club);
+        modelo.put("puntuacion", puntuacion);
 
         return new ModelAndView("redirect:/club/" + clubId, modelo);
 
@@ -206,15 +227,15 @@ public class ControladorClub {
         Usuario nuevoAdmin = servicioUsuario.buscarUsuarioPor(usuarioId);
         Boolean inscripto = servicioClub.usuarioInscriptoEnUnClub(club, nuevoAdmin);
 
-        if (inscripto){
+        if (inscripto) {
             servicioClub.hacerAdminAUnUsuarioDeUnClub(club, nuevoAdmin);
         }
 
         Puntuacion puntuacion = servicioPuntuacion.buscarPuntuacion(club, usuario);
 
-        modelo.put("usuario",usuario);
-        modelo.put("club",club);
-        modelo.put("puntuacion",puntuacion);
+        modelo.put("usuario", usuario);
+        modelo.put("club", club);
+        modelo.put("puntuacion", puntuacion);
 
         return new ModelAndView("redirect:/club/" + clubId, modelo);
     }
@@ -228,15 +249,15 @@ public class ControladorClub {
         Usuario usuarioNormal = servicioUsuario.buscarUsuarioPor(usuarioId);
         Boolean inscripto = servicioClub.usuarioInscriptoEnUnClub(club, usuarioNormal);
 
-        if (inscripto){
+        if (inscripto) {
             servicioClub.sacarAdminAUnUsuarioDeUnClub(club, usuarioNormal);
         }
 
         Puntuacion puntuacion = servicioPuntuacion.buscarPuntuacion(club, usuario);
 
-        modelo.put("usuario",usuario);
-        modelo.put("club",club);
-        modelo.put("puntuacion",puntuacion);
+        modelo.put("usuario", usuario);
+        modelo.put("club", club);
+        modelo.put("puntuacion", puntuacion);
 
         return new ModelAndView("redirect:/club/" + clubId, modelo);
     }

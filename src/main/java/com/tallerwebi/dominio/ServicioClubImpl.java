@@ -32,13 +32,11 @@ public class ServicioClubImpl implements ServicioClub {
     }
 
     @Override
-    public Boolean agregar(Club club) throws ClubExistente {
-        Club clubExistente = repositorioClub.buscarClubPor(club.getId());
-        if (clubExistente != null) {
-            throw new ClubExistente("El club ya existe");
+    public Boolean agregar(Club club) throws YaExisteUnClubConEseNombre {
+        if (repositorioClub.existeUnClubConEsteNombre(club.getNombre())) {
+            throw new YaExisteUnClubConEseNombre();
         }
         repositorioClub.guardar(club);
-
         return true;
     }
 
@@ -59,8 +57,12 @@ public class ServicioClubImpl implements ServicioClub {
     }
 
     @Override
-    public List<Club> buscarClubPorNombre(String nombre) {
-        return repositorioClub.buscarClubPorNombre(nombre);
+    public List<Club> buscarClubPorNombre(String nombre) throws NoSeEncontraroClubsConEseNombre {
+        List<Club> clubs = repositorioClub.buscarClubPorNombre(nombre);
+        if (clubs.isEmpty()){
+            throw new NoSeEncontraroClubsConEseNombre();
+        }
+        return clubs;
     }
 
     @Override

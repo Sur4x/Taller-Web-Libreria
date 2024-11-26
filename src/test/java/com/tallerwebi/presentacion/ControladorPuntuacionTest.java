@@ -5,6 +5,7 @@ import com.tallerwebi.dominio.excepcion.NoExisteEseClub;
 import com.tallerwebi.dominio.excepcion.NoExisteEseUsuario;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -49,14 +50,14 @@ public class ControladorPuntuacionTest {
         when(servicioClubMock.buscarClubPor(club.getId())).thenReturn(club);
         when(servicioPuntuacionMock.obtenerPuntuacionPromedio(club)).thenReturn(0.0);
 
-        String vista = controladorPuntuacion.puntuarClub(idClub, puntuacion, requestMock);
+        ModelAndView vista = controladorPuntuacion.puntuarClub(idClub, puntuacion, requestMock);
 
         verify(servicioUsuarioMock,times(1)).buscarUsuarioPor(1L);
         verify(servicioClubMock,times(1)).buscarClubPor(1L);
         verify(servicioPuntuacionMock,times(1)).agregarPuntuacion(club, usuarioMock,puntuacion);
         verify(servicioPuntuacionMock,times(0)).obtenerPuntuacionPromedio(club);
         verify(servicioPuntuacionMock,times(0)).actualizarPromedio(club);
-        assertThat(vista, equalTo("redirect:/club/" + idClub));
+        assertThat(vista.getViewName(), equalTo("detalleClub"));
     }
 
     @Test
@@ -78,14 +79,14 @@ public class ControladorPuntuacionTest {
         when(servicioClubMock.buscarClubPor(club.getId())).thenReturn(club);
         when(servicioPuntuacionMock.obtenerPuntuacionPromedio(club)).thenReturn(4.0);
 
-        String vista = controladorPuntuacion.puntuarClub(idClub, puntuacion, requestMock);
+        ModelAndView vista = controladorPuntuacion.puntuarClub(idClub, puntuacion, requestMock);
 
         verify(servicioUsuarioMock,times(1)).buscarUsuarioPor(1L);
         verify(servicioClubMock,times(1)).buscarClubPor(1L);
         verify(servicioPuntuacionMock,times(1)).agregarPuntuacion(club, usuarioMock,puntuacion);
         verify(servicioPuntuacionMock,times(1)).obtenerPuntuacionPromedio(club);
         verify(servicioPuntuacionMock,times(1)).actualizarPromedio(club);
-        assertThat(vista, equalTo("redirect:/club/" + idClub));
+        assertThat(vista.getViewName(), equalTo("detalleClub"));
     }
 
 
@@ -100,11 +101,11 @@ public class ControladorPuntuacionTest {
         when(servicioUsuarioMock.buscarUsuarioPor(any())).thenReturn(usuarioMock);
         when(servicioClubMock.buscarClubPor(any())).thenReturn(club);
 
-        String vista = controladorPuntuacion.despuntuarClub(1L,requestMock);
+        ModelAndView vista = controladorPuntuacion.despuntuarClub(1L,requestMock);
 
         verify(servicioPuntuacionMock,times(1)).removerPuntuacion(club,usuarioMock);
         verify(servicioUsuarioMock,times(1)).buscarUsuarioPor(usuarioMock.getId());
         verify(servicioClubMock,times(1)).buscarClubPor(1L);
-        assertThat(vista, equalTo("redirect:/club/1"));
+        assertThat(vista.getViewName(), equalTo("detalleClub"));
     }
 }

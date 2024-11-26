@@ -6,14 +6,14 @@ import java.util.List;
 
 public interface ServicioClub {
 
-    Boolean agregar(Club club) throws ClubExistente;
+    Boolean agregar(Club club) throws ClubExistente, YaExisteUnClubConEseNombre;
 
     List<Club> obtenerTodosLosClubs() throws NoExistenClubs;
 
     Club buscarClubPor(Long id) throws NoExisteEseClub;
 
     // Método para buscar clubes por nombre o coincidencia parcial
-    List<Club> buscarClubPorNombre(String nombre);
+    List<Club> buscarClubPorNombre(String nombre) throws NoSeEncontraroClubsConEseNombre;
 
     void registrarUsuarioEnElClub(Usuario usuario, Club club);
 

@@ -16,8 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.*;
 import static org.hamcrest.text.IsEqualIgnoringCase.equalToIgnoringCase;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -34,6 +33,7 @@ public class ControladorClubTest {
     private ServicioPuntuacion servicioPuntuacionMock;
     private ServicioNotificacion servicioNotificacionMock;
     private ControladorClub controladorClub;
+    private ServicioNoticia servicioNoticiaMock;
 
     @BeforeEach
     public void init() {
@@ -45,7 +45,8 @@ public class ControladorClubTest {
         servicioUsuarioMock = mock(ServicioUsuario.class);
         servicioPuntuacionMock = mock(ServicioPuntuacion.class);
         servicioNotificacionMock = mock(ServicioNotificacionImpl.class);
-        controladorClub = new ControladorClub(servicioClubMock, servicioUsuarioMock,servicioPuntuacionMock,servicioNotificacionMock); // Controlador con mocks
+        servicioNoticiaMock = mock(ServicioNoticiaImpl.class);
+        controladorClub = new ControladorClub(servicioClubMock, servicioUsuarioMock,servicioPuntuacionMock,servicioNotificacionMock,servicioNoticiaMock); // Controlador con mocks
     }
 
     @Test
@@ -71,10 +72,10 @@ public class ControladorClubTest {
     }
 
     @Test
-    public void dadoElMetodoCrearNuevoClubCuandoSeCreaCorrectamenteMeRedirireccionaAlaVistaDelClubEspecifico() throws ClubExistente, NoExisteEseUsuario {
+    public void dadoElMetodoCrearNuevoClubCuandoSeCreaCorrectamenteMeRedirireccionaAlaVistaDelClubEspecifico() throws ClubExistente, NoExisteEseUsuario, YaExisteUnClubConEseNombre {
         when(requestMock.getSession()).thenReturn(sessionMock);
         when(sessionMock.getAttribute("usuario")).thenReturn(usuarioMock);
-        when(servicioClubMock.agregar(any(Club.class))).thenReturn(true);
+        when(servicioClubMock.agregar(clubMock)).thenReturn(true);
         MultipartFile imagenMock = mock(MultipartFile.class);
 
         ModelAndView model = controladorClub.crearNuevoClub(new Club(), requestMock, imagenMock);
@@ -84,14 +85,17 @@ public class ControladorClubTest {
 
 
     @Test
-    public void dadoElMetodoCrearNuevoClubCuandoNoSeCreaCorrectamenteMeRedirireccionaAlaVistaHome() throws ClubExistente, NoExisteEseUsuario {
+    public void dadoElMetodoCrearNuevoClubCuandoIntentoCrearUnoConElMismoNombreQueOtroNoPuedo() throws ClubExistente, NoExisteEseUsuario, YaExisteUnClubConEseNombre {
+        //Tengo que esperar la excepcion
         when(requestMock.getSession()).thenReturn(sessionMock);
         when(sessionMock.getAttribute("usuario")).thenReturn(usuarioMock);
-        when(servicioClubMock.agregar(any(Club.class))).thenReturn(false);
+        when(servicioClubMock.agregar(clubMock)).thenThrow(new YaExisteUnClubConEseNombre());
         MultipartFile imagenMock = mock(MultipartFile.class);
 
-        ModelAndView model = controladorClub.crearNuevoClub(new Club(), requestMock, imagenMock);
-        assertThat(model.getViewName(), equalToIgnoringCase("redirect:/home"));
+        ModelAndView model = controladorClub.crearNuevoClub(clubMock, requestMock, imagenMock);
+
+        assertThat(model.getModel().get("mensaje"), equalTo("Ya existe un club con ese nombre, intente otro."));
+        assertThat(model.getViewName(), equalTo("crearClub"));
     }
 
     @Test
@@ -121,30 +125,32 @@ public class ControladorClubTest {
     }
 
     @Test
-    public void dadoElMetodoBuscarClubPorNombreCuandoBuscoAlgoQueTengaResultadoMeRedireccionaAlHomeConUnaListaEnElModelo() throws NoExistenClubs {
+    public void dadoElMetodoBuscarClubPorNombreCuandoBuscoAlgoQueTengaResultadoMeRedireccionaAlaVistaBusquedaConUnaListaEnElModelo() throws NoExistenClubs, NoSeEncontraroClubsConEseNombre {
         when(requestMock.getSession()).thenReturn(sessionMock);
         ArrayList<Club> clubs = new ArrayList<>();
-        clubs.add(new Club());
+        clubs.add(clubMock);
         when(servicioClubMock.buscarClubPorNombre(any())).thenReturn(clubs);
 
         ModelAndView modelo = controladorClub.buscarClubPorNombre("palabraPorBuscar",requestMock);
 
-        assertThat(modelo.getViewName(), equalTo("home"));
-        assertThat(modelo.getModel().get("clubs"), equalTo(clubs));
+        assertThat(modelo.getViewName(), equalTo("busqueda"));
+        assertThat(modelo.getModel().get("clubsEncontrados"), equalTo(clubs));
         verify(servicioClubMock,times(1)).buscarClubPorNombre("palabraPorBuscar");
     }
 
     @Test
-    public void dadoElMetodoBuscarClubPorNombreCuandoBuscoAlgoQueNOTengaResultadoMeRedireccionaAlHomeConUnaListaVaciaEnElModelo() throws NoExistenClubs {
+    public void dadoElMetodoBuscarClubPorNombreCuandoBuscoAlgoQueNOTengaResultadoMeRedireccionaABusquedaConUnaListaVaciaEnElModelo() throws NoExistenClubs, NoSeEncontraroClubsConEseNombre {
+        //ESPERO LA EXCEPCION.
         when(requestMock.getSession()).thenReturn(sessionMock);
-        ArrayList<Club> clubs = new ArrayList<>();
-        when(servicioClubMock.buscarClubPorNombre(any())).thenReturn(clubs);
+        when(servicioClubMock.buscarClubPorNombre("queryInvalido")).thenThrow(new NoSeEncontraroClubsConEseNombre());
 
-        ModelAndView modelo = controladorClub.buscarClubPorNombre("palabraPorBuscar",requestMock);
+        ModelAndView modelo = controladorClub.buscarClubPorNombre("queryInvalido",requestMock);
 
-        assertThat(modelo.getViewName(), equalTo("home"));
-        assertThat(modelo.getModel().get("clubs"), equalTo(null));
-        verify(servicioClubMock,times(1)).buscarClubPorNombre("palabraPorBuscar");
+
+        assertThat(modelo.getViewName(), equalTo("busqueda"));
+        //assertThat(modelo.getModel().get("clubs"), is(empty()));
+        verify(servicioClubMock, times(1)).obtenerTodosLosClubs();
+        assertEquals("No existe ningun club con ese nombre.", modelo.getModel().get("error"));
     }
 
     @Test
@@ -155,7 +161,7 @@ public class ControladorClubTest {
 
         ModelAndView modelo = controladorClub.anotarUsuarioAClub(clubMock.getId(), requestMock);
 
-        assertThat(modelo.getViewName(), equalTo("redirect:/club/{clubId}"));
+        assertThat(modelo.getViewName(), equalTo("detalleClub"));
         verify(servicioClubMock,times(1)).registrarUsuarioEnElClub(usuarioMock, clubMock);
     }
 
@@ -168,7 +174,8 @@ public class ControladorClubTest {
 
         ModelAndView modelo = controladorClub.abandonarClub(clubMock.getId(), requestMock);
 
-        assertThat(modelo.getViewName(), equalTo("redirect:/home"));
+        assertThat(modelo.getViewName(), equalTo("detalleClub"));
+        assertThat(modelo.getModel().get("mensaje"), equalTo("Usted abandono corractamente en el club."));
         verify(servicioClubMock,times(1)).borrarRegistroUsuarioEnElClub(usuarioMock, clubMock);
     }
 

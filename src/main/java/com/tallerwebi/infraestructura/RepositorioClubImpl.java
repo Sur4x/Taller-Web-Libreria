@@ -90,6 +90,15 @@ public class RepositorioClubImpl implements RepositorioClub {
     }
 
     @Override
+    public boolean existeUnClubConEsteNombre(String nombre) {
+        String hql = "SELECT COUNT(c) FROM Club c WHERE c.nombre = :nombre";
+        Query query = this.sessionFactory.getCurrentSession().createQuery(hql);
+        query.setParameter("nombre", nombre);
+        Long count = (Long) query.getSingleResult();
+        return count > 0;
+    }
+
+    @Override
     public void actualizarPromedioDeUnClub(Long idClub, Double nuevoPromedio) {
         String hql = "UPDATE Club c SET c.puntuacionPromedio = :nuevoPromedio WHERE c.id = :idClub";
         Query query = this.sessionFactory.getCurrentSession().createQuery(hql);

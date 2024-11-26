@@ -29,7 +29,6 @@ public class ServicioPuntuacionImp implements ServicioPuntuacion{
             usuario.getPuntuaciones().add(puntuacionClub);
             repositorioPuntuacion.guardarPuntuacion(puntuacionClub);
         }
-
     }
 
     @Override

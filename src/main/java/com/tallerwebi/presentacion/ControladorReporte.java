@@ -86,6 +86,7 @@ public class ControladorReporte {
             return new ModelAndView("redirect:/home");
         }
     }
+
     //esto va en el controlador reporte
     @RequestMapping(path = "/club/eliminar/reporte/{id}", method = RequestMethod.POST)
     public ModelAndView eliminarReporteDeUnClub(@PathVariable("id") Long id) throws NoExisteEseClub {

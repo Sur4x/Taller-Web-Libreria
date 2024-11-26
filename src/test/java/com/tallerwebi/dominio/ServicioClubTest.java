@@ -44,7 +44,7 @@ public class ServicioClubTest {
     }
 
     @Test
-    public void dadoQueUsoElMetodoAgregarYNoTengoElClubAgregadoEnLaBaseDeDatosEsteDevuelveTrueYLoAlmacena() throws ClubExistente {
+    public void dadoQueUsoElMetodoAgregarYNoTengoElClubAgregadoEnLaBaseDeDatosEsteDevuelveTrueYLoAlmacena() throws ClubExistente, YaExisteUnClubConEseNombre {
         when(repositorioClubMock.buscarClubPor(any())).thenReturn(null);
 
         Boolean agregado = servicioClub.agregar(clubMock);
@@ -56,13 +56,13 @@ public class ServicioClubTest {
     }
 
     @Test
-    public void dadoQueUsoElMetodoAgregarYYaTengoElClubEnLaBaseDeDatosArrojaLaExcepcionClubExistente() throws ClubExistente {
-        when(repositorioClubMock.buscarClubPor(clubMock.getId())).thenReturn(clubMock);
+    public void dadoQueUsoElMetodoAgregarYYaTengoElClubEnLaBaseDeDatosArrojaLaExcepcionYaExisteUnClubConEseNombre() throws YaExisteUnClubConEseNombre {
+        when(repositorioClubMock.existeUnClubConEsteNombre(clubMock.getNombre())).thenReturn(true);
         //Se fuerza la excepcion cuando se llama al metodo agregar
-        ClubExistente excepcionEsperada = assertThrows(ClubExistente.class, () -> servicioClub.agregar(clubMock));
+        YaExisteUnClubConEseNombre excepcionEsperada = assertThrows(YaExisteUnClubConEseNombre.class, () -> servicioClub.agregar(clubMock));
 
         verify(repositorioClubMock, times(0)).guardar(clubMock);
-        assertEquals(excepcionEsperada.getMessage(), "Ya existe un club con ese nombre");
+        assertEquals(excepcionEsperada.getMessage(), "Ya existe un club con ese nombre, intente otro.");
     }
 
     @Test
@@ -99,7 +99,7 @@ public class ServicioClubTest {
     }
 
     @Test
-    public void dadoQueUsoElMetodoBuscarClubPorNombreYTengoAlmacenado2ClubsConEseNombreMeLoDevuelveEnUnaLista(){
+    public void dadoQueUsoElMetodoBuscarClubPorNombreYTengoAlmacenado2ClubsConEseNombreMeLoDevuelveEnUnaLista() throws NoSeEncontraroClubsConEseNombre {
         Club clubMock2 = mock(Club.class);
         List<Club> clubsEncontrados = new ArrayList<>();
         clubsEncontrados.add(clubMock);
@@ -114,13 +114,13 @@ public class ServicioClubTest {
     }
 
     @Test
-    public void dadoQueUsoElMetodoBuscarClubPorNombreYNoTengoAlmacenadoNingunClubsConEseNombreDevuelveUnaListaVacia(){
+    public void dadoQueUsoElMetodoBuscarClubPorNombreYNoTengoAlmacenadoNingunClubsConEseNombreDevuelveUnaListaVacia() throws NoSeEncontraroClubsConEseNombre {
         when(repositorioClubMock.buscarClubPorNombre("test")).thenReturn(new ArrayList<>());
 
-        List<Club> clubsEsperados = servicioClub.buscarClubPorNombre("test");
+        //servicioClub.buscarClubPorNombre("test");
+        NoSeEncontraroClubsConEseNombre excepcionEsperada = assertThrows(NoSeEncontraroClubsConEseNombre.class, () -> servicioClub.buscarClubPorNombre(clubMock.getNombre()));
 
-        assertThat(clubsEsperados, is(empty()));
-        verify(repositorioClubMock, times(1)).buscarClubPorNombre("test");
+        assertEquals(excepcionEsperada.getMessage(), "No existe ningun club con ese nombre.");
     }
 
     @Test

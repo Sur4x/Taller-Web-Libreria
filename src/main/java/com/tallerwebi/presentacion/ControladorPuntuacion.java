@@ -5,9 +5,11 @@ import com.tallerwebi.dominio.excepcion.NoExisteEseClub;
 import com.tallerwebi.dominio.excepcion.NoExisteEseUsuario;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -26,7 +28,8 @@ public class ControladorPuntuacion {
     }
 
     @RequestMapping(path = "/club/puntuar/{id}")
-    public String puntuarClub(@PathVariable Long id, @RequestParam Integer puntuacion, HttpServletRequest request) throws NoExisteEseClub, NoExisteEseUsuario {
+    public ModelAndView puntuarClub(@PathVariable Long id, @RequestParam Integer puntuacion, HttpServletRequest request) throws NoExisteEseClub, NoExisteEseUsuario {
+        ModelMap model = new ModelMap();
         Usuario usuario = (Usuario) request.getSession().getAttribute("usuario");
         Usuario usuarioActual = servicioUsuario.buscarUsuarioPor(usuario.getId());
         Club club = servicioClub.buscarClubPor(id);
@@ -37,19 +40,30 @@ public class ControladorPuntuacion {
 
         int votos = club.getPuntuaciones().size();
         if (votos >= 3) {
-            Double puntuacionPromedio = servicioPuntuacion.obtenerPuntuacionPromedio(club);
+            servicioPuntuacion.obtenerPuntuacionPromedio(club);
             servicioPuntuacion.actualizarPromedio(club);
         }
-        return "redirect:/club/" + id;
+
+        model.put("club", club);
+        model.put("usuario", usuarioActual);
+        model.put("puntuacion", servicioPuntuacion.buscarPuntuacion(club, usuarioActual));
+        model.put("mensaje", "Usted puntuo correctamente al club");
+        return new ModelAndView("detalleClub", model);
     }
 
     @RequestMapping(path = "/club/despuntuar/{id}")
-    public String despuntuarClub(@PathVariable Long id, HttpServletRequest request) throws NoExisteEseClub, NoExisteEseUsuario {
+    public ModelAndView despuntuarClub(@PathVariable Long id, HttpServletRequest request) throws NoExisteEseClub, NoExisteEseUsuario {
+        ModelMap model = new ModelMap();
         Usuario usuario = (Usuario) request.getSession().getAttribute("usuario");
         Usuario usuarioActual = servicioUsuario.buscarUsuarioPor(usuario.getId());
         Club club = servicioClub.buscarClubPor(id);
         servicioPuntuacion.removerPuntuacion(club, usuarioActual);
-        return "redirect:/club/" + id;
+
+        model.put("club", club);
+        model.put("usuario", usuarioActual);
+        model.put("puntuacion", servicioPuntuacion.buscarPuntuacion(club, usuarioActual));
+        model.put("mensaje", "Usted elimino su puntuacion correctamente del club");
+        return new ModelAndView("detalleClub", model);
     }
 
 }

@@ -7,8 +7,8 @@
 
   <!-- Bootstrap core CSS -->
   <link rel="stylesheet" th:href="@{/webjars/bootstrap/5.2.0/css/bootstrap.min.css}" />
-  <!-- Custom CSS -->
-  <link rel="stylesheet" th:href="@{/css/main.css}" />
+
+  <link rel="stylesheet" th:href="@{/css/popup.css}">
 </head>
 
 <body class="bg-light">
@@ -48,7 +48,15 @@
   </div>
 </main>
 
+<div id="errorPopup"
+     class="popup"
+     th:if="${mensaje}"
+     th:text="${mensaje}"
+     th:data-mensaje="${mensaje}">
+</div>
+
 <!-- Bootstrap core JS -->
 <script type="text/javascript" th:src="@{/webjars/bootstrap/5.2.0/js/bootstrap.bundle.min.js}"></script>
+<script th:src="@{/js/popup.js}"></script>
 </body>
 </html>
