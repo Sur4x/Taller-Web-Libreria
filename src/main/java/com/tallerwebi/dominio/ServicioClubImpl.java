@@ -180,4 +180,9 @@ public class ServicioClubImpl implements ServicioClub {
         repositorioClub.guardar(club);
         repositorioUsuario.guardar(usuario);
     }
+
+    public void guardarReporteEnUnClub(Reporte reporte, Club club){
+        club.getReportes().add(reporte);
+        repositorioClub.guardar(club);
+    }
 }

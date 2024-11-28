@@ -1,10 +1,14 @@
 package com.tallerwebi.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.filter.CharacterEncodingFilter;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
@@ -15,6 +19,8 @@ import org.thymeleaf.spring5.view.ThymeleafViewResolver;
 import org.thymeleaf.templatemode.TemplateMode;
 
 import javax.servlet.MultipartConfigElement;
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 
 @EnableWebMvc
 @Configuration
@@ -24,6 +30,11 @@ public class SpringWebConfig implements WebMvcConfigurer {
     // Spring + Thymeleaf need this
     @Autowired
     private ApplicationContext applicationContext;
+
+
+    @EnableScheduling
+    public class SchedulingConfig {
+    }
 
     @Override
     public void addResourceHandlers(final ResourceHandlerRegistry registry) {

@@ -30,12 +30,21 @@ public class ControladorComentario {
     @RequestMapping(path = "/club/{clubId}/crearNuevoComentario/{publicacionId}")
     public ModelAndView crearNuevoComentario(@ModelAttribute Comentario comentario, @PathVariable("publicacionId") Long publicacionId, @PathVariable("clubId") Long clubId, HttpServletRequest request) throws NoExisteEseClub {
         Usuario usuario = (Usuario) request.getSession().getAttribute("usuario");
+        ModelMap modelo = new ModelMap();
 
         Publicacion publicacion = servicioPublicacion.buscarPublicacionPorId(publicacionId);
         if (publicacion != null && usuario != null) {
             servicioComentario.setearAutorYPublicacionEnUnComentario(comentario, usuario, publicacion);
             servicioComentario.guardarComentario(comentario, publicacion);
-            return new ModelAndView("redirect:/club/" + clubId + "/detallePublicacion" + "/" + publicacionId);
+
+            modelo.put("mensaje", "Comentario creado exitosamente");
+            modelo.put("comentarios", publicacion.getComentarios());
+            modelo.put("comentario", new Comentario());
+            modelo.put("publicacion", publicacion);
+            modelo.put("usuario", usuario);
+            modelo.put("club", this.servicioClub.buscarClubPor(clubId));
+
+            return new ModelAndView("detallePublicacion", modelo);
         } else {
             return new ModelAndView("redirect:/login");
         }
@@ -44,7 +53,7 @@ public class ControladorComentario {
     //esto va en el controlador Comentario
     @RequestMapping(path = "/club/{clubId}/detallePublicacion/{publicacionId}/eliminarComentario/{comentarioId}")
     public ModelAndView IrAEliminarComentario(@PathVariable("clubId") Long clubId, @PathVariable("publicacionId") Long publicacionId, @PathVariable("comentarioId") Long comentarioId, HttpServletRequest request) throws NoExisteEseClub {
-        ModelMap model = new ModelMap();
+        ModelMap modelo = new ModelMap();
         Usuario usuario = (Usuario) request.getSession().getAttribute("usuario");
 
         Club club = servicioClub.buscarClubPor(clubId);
@@ -53,10 +62,18 @@ public class ControladorComentario {
 
         if (usuario != null && club != null && publicacion != null && comentario != null) {
             servicioComentario.eliminarComentario(comentario);
-            model.put("error", "Comentario eliminado correctamente.");
+            modelo.put("mensaje", "Comentario eliminado correctamente.");
+
         } else {
-            model.put("error", "Error al eliminar el comentario.");
+            modelo.put("mensaje", "Error al eliminar el comentario.");
         }
-        return new ModelAndView("redirect:/club/" + clubId + "/detallePublicacion/" + publicacionId, model);
+
+        modelo.put("comentarios", publicacion.getComentarios());
+        modelo.put("comentario", new Comentario());
+        modelo.put("publicacion", publicacion);
+        modelo.put("usuario", usuario);
+        modelo.put("club", this.servicioClub.buscarClubPor(clubId));
+
+        return new ModelAndView("detallePublicacion", modelo);
     }
 }

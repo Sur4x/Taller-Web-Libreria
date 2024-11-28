@@ -20,12 +20,14 @@ public class ControladorPublicacion {
     private ServicioPublicacion servicioPublicacion;
     private ServicioClub servicioClub;
     private ServicioUsuario servicioUsuario;
+    private ServicioPuntuacion servicioPuntuacion;
 
     @Autowired
-    public ControladorPublicacion(ServicioPublicacion servicioPublicacion,ServicioClub servicioClub, ServicioUsuario servicioUsuario){
+    public ControladorPublicacion(ServicioPublicacion servicioPublicacion,ServicioClub servicioClub, ServicioUsuario servicioUsuario,ServicioPuntuacion servicioPuntuacion){
         this.servicioPublicacion = servicioPublicacion;
         this.servicioClub = servicioClub;
         this.servicioUsuario = servicioUsuario;
+        this.servicioPuntuacion = servicioPuntuacion;
     }
 
     @RequestMapping(path = "/club/{clubId}/irANuevaPublicacion")
@@ -45,8 +47,17 @@ public class ControladorPublicacion {
     @RequestMapping(path = "/club/{clubId}/nuevaPublicacion", method = RequestMethod.POST)
     public ModelAndView realizarPublicacion(@PathVariable("clubId") Long id, @ModelAttribute("publicacion") Publicacion publicacion, HttpServletRequest request) throws NoExisteEseClub {
         Usuario usuario = (Usuario) request.getSession().getAttribute("usuario");
+        ModelMap modelo = new ModelMap();
+
         servicioPublicacion.agregarNuevaPublicacion(publicacion, id, usuario);
-        return new ModelAndView("redirect:/club/{clubId}");
+        modelo.put("mensaje", "Nueva publicacion creada");
+
+        Club club = servicioClub.buscarClubPor(id);
+        modelo.put("club", club);
+        modelo.put("usuario", usuario);
+        modelo.put("puntuacion", servicioPuntuacion.buscarPuntuacion(club, usuario));
+
+        return new ModelAndView("detalleClub", modelo);
     }
 
     @RequestMapping(path = "/club/{clubId}/eliminarPublicacion/{publicacionId}")

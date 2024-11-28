@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" th:href="@{/webjars/bootstrap/5.2.0/css/bootstrap.min.css}"/>
+    <link rel="stylesheet" th:href="@{/css/main.css}"/>
+</head>
+<body>
+
+<div th:insert="fragments/header :: header"></div>
+
+<h1 class="mb-4 text-center">Crear nuevo evento</h1>
+
+<form th:action="@{/club/{clubId}/crearEvento(clubId=${clubId})}" method="post" class="p-4 shadow-sm rounded bg-light">
+    <div class="form-group">
+        <label for="nombre">Nombre del Evento</label>
+        <input type="text" id="nombre" name="nombre" class="form-control" placeholder="Nombre del evento" required>
+    </div>
+
+    <div class="form-group">
+        <label for="descripcion">Descripción</label>
+        <textarea id="descripcion" name="descripcion" class="form-control" rows="3" placeholder="Descripción del evento" required></textarea>
+    </div>
+
+    <div class="form-group">
+        <label for="fechaYHora">Fecha y Hora</label>
+        <input type="datetime-local" id="fechaYHora" name="fechaYHora" class="form-control">
+    </div>
+
+    <button type="submit" class="btn btn-primary">Crear Evento</button>
+</form>
+
+
+<script th:src="@{/webjars/bootstrap/5.2.0/js/bootstrap.bundle.min.js}"></script>
+</body>
+</html>

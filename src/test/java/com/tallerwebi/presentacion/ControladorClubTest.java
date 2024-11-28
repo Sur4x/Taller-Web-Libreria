@@ -34,6 +34,7 @@ public class ControladorClubTest {
     private ServicioNotificacion servicioNotificacionMock;
     private ControladorClub controladorClub;
     private ServicioNoticia servicioNoticiaMock;
+    private ServicioEvento servicioEventoMock;
 
     @BeforeEach
     public void init() {
@@ -44,9 +45,10 @@ public class ControladorClubTest {
         servicioClubMock = mock(ServicioClub.class);
         servicioUsuarioMock = mock(ServicioUsuario.class);
         servicioPuntuacionMock = mock(ServicioPuntuacion.class);
-        servicioNotificacionMock = mock(ServicioNotificacionImpl.class);
-        servicioNoticiaMock = mock(ServicioNoticiaImpl.class);
-        controladorClub = new ControladorClub(servicioClubMock, servicioUsuarioMock,servicioPuntuacionMock,servicioNotificacionMock,servicioNoticiaMock); // Controlador con mocks
+        servicioNotificacionMock = mock(ServicioNotificacion.class);
+        servicioNoticiaMock = mock(ServicioNoticia.class);
+        servicioEventoMock = mock(ServicioEvento.class);
+        controladorClub = new ControladorClub(servicioClubMock, servicioUsuarioMock,servicioPuntuacionMock,servicioNotificacionMock,servicioNoticiaMock, servicioEventoMock); // Controlador con mocks
     }
 
     @Test
@@ -181,7 +183,7 @@ public class ControladorClubTest {
 
 
     @Test
-    public void dadoElMetodoEliminarClubCuandoLoEliminaExitosamenteMeRedireccionaALaVistaHome() throws NoExisteEseClub, NoExisteEseUsuario {
+    public void dadoElMetodoEliminarClubCuandoLoEliminaExitosamenteMeRedireccionaALaVistaHome() throws NoExisteEseClub, NoExisteEseUsuario, NoExistenClubs {
         when(requestMock.getSession()).thenReturn(sessionMock);
         when(sessionMock.getAttribute("usuario")).thenReturn(usuarioMock);
 
@@ -194,7 +196,7 @@ public class ControladorClubTest {
     }
 
     @Test
-    public void dadoElMetodoEliminarClubCuandoLoNoEliminaExitosamenteMeRedireccionaALaVistaHome() throws NoExisteEseClub, NoExisteEseUsuario {
+    public void dadoElMetodoEliminarClubCuandoLoNoEliminaExitosamenteMeRedireccionaALaVistaHome() throws NoExisteEseClub, NoExisteEseUsuario, NoExistenClubs {
         when(requestMock.getSession()).thenReturn(sessionMock);
         when(sessionMock.getAttribute("usuario")).thenReturn(usuarioMock);
 

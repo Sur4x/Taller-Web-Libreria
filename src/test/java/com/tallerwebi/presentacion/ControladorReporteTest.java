@@ -2,7 +2,9 @@ package com.tallerwebi.presentacion;
 
 import com.tallerwebi.dominio.*;
 import com.tallerwebi.dominio.excepcion.NoExisteEseClub;
+import com.tallerwebi.dominio.excepcion.NoExisteEseUsuario;
 import com.tallerwebi.dominio.excepcion.ReporteExistente;
+import com.tallerwebi.dominio.excepcion.YaExisteUnReporteDeEsteUsuario;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.web.servlet.ModelAndView;
@@ -29,7 +31,10 @@ public class ControladorReporteTest {
     private Club clubMock;
     private ServicioClub servicioClubMock;
     private ServicioReporte servicioReporteMock;
+    private ServicioUsuario servicioUsuarioMock;
+    private ServicioPuntuacion servicioPuntuacionMock;
     private ControladorReporte controladorReporte;
+
 
     @BeforeEach
     public void init() {
@@ -39,7 +44,9 @@ public class ControladorReporteTest {
         clubMock = mock(Club.class);
         servicioClubMock = mock(ServicioClub.class);
         servicioReporteMock = mock(ServicioReporte.class);
-        controladorReporte = new ControladorReporte(servicioClubMock, servicioReporteMock);
+        servicioUsuarioMock = mock(ServicioUsuario.class);
+        servicioPuntuacionMock = mock(ServicioPuntuacion.class);
+        controladorReporte = new ControladorReporte(servicioClubMock, servicioReporteMock,servicioUsuarioMock,servicioPuntuacionMock);
     }
 
     @Test
@@ -67,7 +74,7 @@ public class ControladorReporteTest {
     }
 
     @Test
-    public void dadoElMetodoRealizarNuevoReporteSiExisteElClubAlQueQuieroReportarMeDireccionaALaVistaEspecificaDelClub() throws NoExisteEseClub, ReporteExistente {
+    public void dadoElMetodoRealizarNuevoReporteSiExisteElClubAlQueQuieroReportarMeDireccionaALaVistaEspecificaDelClub() throws NoExisteEseClub, ReporteExistente, YaExisteUnReporteDeEsteUsuario, NoExisteEseUsuario {
         Reporte reporte = new Reporte(); //creo el reporte
         when(requestMock.getSession()).thenReturn(sessionMock);
         when(sessionMock.getAttribute("usuario")).thenReturn(usuarioMock); //mockeo el usuario
@@ -80,7 +87,7 @@ public class ControladorReporteTest {
     }
 
     @Test
-    public void dadoElMetodoRealizarNuevoReporteSiNOExisteElClubAlQueQuieroReportarMeDireccionaALaVistaHome() throws NoExisteEseClub, ReporteExistente {
+    public void dadoElMetodoRealizarNuevoReporteSiNOExisteElClubAlQueQuieroReportarMeDireccionaALaVistaHome() throws NoExisteEseClub, ReporteExistente, YaExisteUnReporteDeEsteUsuario, NoExisteEseUsuario {
         Reporte reporte = new Reporte();
         when(requestMock.getSession()).thenReturn(sessionMock);
         when(sessionMock.getAttribute("usuario")).thenReturn(usuarioMock);

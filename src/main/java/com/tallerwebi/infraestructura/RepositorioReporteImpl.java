@@ -65,4 +65,13 @@ public class RepositorioReporteImpl implements RepositorioReporte {
         selectQuery.setParameter("idClub", idClub);
         return (Integer) selectQuery.getSingleResult();
     }
+
+    public Boolean comprobarSiElUsuarioReportoPreviamente(Long idUsuario, Long idClub){
+        String hql = "SELECT COUNT(r) FROM Reporte r WHERE r.usuario.id = :idUsuario AND r.club.id = :idClub";
+        Query query = this.sessionFactory.getCurrentSession().createQuery(hql);
+        query.setParameter("idUsuario", idUsuario);
+        query.setParameter("idClub", idClub);
+        Long count = (Long) query.getSingleResult(); // Obtiene el resultado único (el conteo)
+        return count != null && count > 0;
+    }
 }

@@ -83,7 +83,11 @@ public class ServicioUsuarioImpl implements ServicioUsuario{
 
     @Override
     public Set<Usuario> obtenerUsuariosSeguidos(Usuario usuario){
-        Hibernate.initialize(usuario.getSeguidos());
         return usuario.getSeguidos();
+    }
+
+    public void guardarReporteEnUnUsuario(Reporte reporte, Usuario usuario){
+        usuario.getReportes().add(reporte);
+        repositorioUsuario.guardar(usuario);
     }
 }

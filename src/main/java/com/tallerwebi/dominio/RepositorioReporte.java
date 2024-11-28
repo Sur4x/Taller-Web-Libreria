@@ -13,4 +13,6 @@ public interface RepositorioReporte {
     List<Reporte> obtenerTodosLosReportesDeUnClub(Club club);
 
     Integer incrementarCantidadDeReportesEnUnClubObteniendoSuCantidadTotalDeReportes(Long idClub);
+
+    Boolean comprobarSiElUsuarioReportoPreviamente(Long idUsuario, Long idClub);
 }

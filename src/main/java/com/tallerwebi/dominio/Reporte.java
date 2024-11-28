@@ -8,20 +8,34 @@ public class Reporte {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String motivo;
-
-    private String descripcion;
+    @ManyToOne
+    @JoinColumn(name = "usuario_id", nullable = false) // Relación con Usuario
+    private Usuario usuario;
 
     @ManyToOne
     @JoinColumn(name = "club_id")
     private Club club;
 
+    private String motivo;
+    private String descripcion;
+    private String estado;
+
     public Reporte() {
+        estado = "pendiente";
+    }
+
+    public Usuario getUsuario() {
+        return usuario;
+    }
+
+    public void setUsuario(Usuario usuario) {
+        this.usuario = usuario;
     }
 
     public Reporte(Long id, String motivo, String descripcion, Club club) {
         this.id = id;
         this.motivo = motivo;
+        this.estado = "pendiente";
         this.descripcion = descripcion;
         this.club = club;
     }
@@ -43,6 +57,14 @@ public class Reporte {
         this.motivo = motivo;
     }
 
+    public String getEstado() {
+        return estado;
+    }
+
+    public void setEstado(String estado) {
+        this.estado = estado;
+    }
+
     public String getDescripcion() {
         return descripcion;
     }
@@ -58,4 +80,7 @@ public class Reporte {
     public void setClub(Club club) {
         this.club = club;
     }
+
+
+
 }

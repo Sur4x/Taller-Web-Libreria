@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="refresh" content="20">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Evento</title>
+    <link rel="stylesheet" th:href="@{/webjars/bootstrap/5.2.0/css/bootstrap.min.css}"/>
+    <link rel="stylesheet" th:href="@{/css/popup.css}">
+</head>
+
+<body>
+
+<div th:insert="fragments/header :: header"></div>
+
+<main class="container mt-5 pt-5">
+
+    <body>
+    <div class="container mt-5">
+
+        <h1 th:text="${evento.nombre}"></h1>
+        <h2 th:text="${evento.descripcion}"></h2>
+
+        <div th:if="${club.getAdminPrincipal().equals(usuario) || club.getAdminsSecundarios().contains(usuario)}">
+        <a th:href="@{/club/{clubId}/evento/{eventoId}/finalizarEvento(clubId=${club.id}, eventoId=${evento.id})}"><button type="submit" class="btn btn-primary">Finalizar evento</button></a>
+        </div>
+        <!-- Contenedor para el chat -->
+        <div class="card mt-2">
+            <div class="card-header">
+                <h4>Chat</h4>
+            </div>
+            <div class="card-body">
+                <!-- Caja para los mensajes -->
+                <div id="chat-box" class="mb-3" style="height: 300px; overflow-y: scroll;">
+                    <!-- Mensajes estáticos, en un caso real, se cargarían dinámicamente -->
+                    <div th:if="${#lists.isEmpty(mensajes)}">
+                        <p>No hay mensajes todavía</p>
+                    </div>
+
+                    <ul class="list-group">
+                        <li th:if="${mensajes != null}" class="list-group-item" th:each="mensaje : ${mensajes}">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <!-- Enlace al perfil del autor -->
+                                <p class="mb-1" th:text="${mensaje.fechaEnvio}">Fecha</p>
+                                <a th:href="@{/perfil/{id}(id=${mensaje.remitente.id})}"
+                                   class="mb-0"
+                                   style="text-decoration: none;"
+                                   th:text="${mensaje.remitente.nombreUsuario}">
+                                </a>
+                            </div>
+                            <p class="mb-1" th:text="${mensaje.texto}">Mensaje</p>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Formulario para enviar un mensaje -->
+                <form th:action="@{/club/{clubId}/evento/{eventoId}/crearMensaje(clubId=${club.id}, eventoId=${evento.id})}" method="POST">
+                    <div class="input-group">
+                        <input type="text" class="form-control" name="texto" placeholder="Escribe un mensaje..." required>
+                        <button type="submit" class="btn btn-primary">Enviar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Enlace a los scripts de Bootstrap -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+    </body>
+
+</main>
+
+
+<div id="errorPopup"
+     class="popup"
+     th:if="${mensaje}"
+     th:text="${mensaje}"
+     th:data-mensaje="${mensaje}">
+</div>
+
+
+<script th:src="@{/webjars/bootstrap/5.2.0/js/bootstrap.bundle.min.js}"></script>
+<script th:src="@{/js/popup.js}"></script>
+
+<script>
+    window.onload = function() {
+        var chatBox = document.getElementById("chat-box");
+        chatBox.scrollTop = chatBox.scrollHeight;
+    }
+</script>
+</body>
+</html>

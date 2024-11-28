@@ -36,4 +36,6 @@ public interface ServicioClub {
     void hacerAdminAUnUsuarioDeUnClub(Club club, Usuario nuevoAdmin);
 
     void sacarAdminAUnUsuarioDeUnClub(Club club, Usuario usuario);
+
+    void guardarReporteEnUnClub(Reporte reporte, Club club);
 }

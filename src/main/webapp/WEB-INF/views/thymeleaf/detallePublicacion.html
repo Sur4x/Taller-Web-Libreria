@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Publicación</title>
     <link rel="stylesheet" th:href="@{/webjars/bootstrap/5.2.0/css/bootstrap.min.css}"/>
+    <link rel="stylesheet" th:href="@{/css/popup.css}">
 </head>
 
 <body>
@@ -30,10 +31,6 @@
             <a th:href="@{/club/{clubId}/eliminarPublicacion/{publicacionId}(clubId=${club.id}, publicacionId=${publicacion.id})}"
                class="btn btn-danger mt-4">Eliminar publicación</a>
         </div>
-    </div>
-
-    <div th:if="${mensaje != null}">
-        <div class="alert alert-info" role="alert" th:text="${mensaje}"></div>
     </div>
 
     <div class="container mt-4">
@@ -114,7 +111,16 @@
 
 </main>
 
-<script th:src="@{/webjars/bootstrap/5.2.0/js/bootstrap.bundle.min.js}"></script>
 
+<div id="errorPopup"
+     class="popup"
+     th:if="${mensaje}"
+     th:text="${mensaje}"
+     th:data-mensaje="${mensaje}">
+</div>
+
+
+<script th:src="@{/webjars/bootstrap/5.2.0/js/bootstrap.bundle.min.js}"></script>
+<script th:src="@{/js/popup.js}"></script>
 </body>
 </html>

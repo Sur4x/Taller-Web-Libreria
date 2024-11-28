@@ -27,6 +27,7 @@ public class ControladorPublicacionTest {
     private ServicioPublicacion servicioPublicacionMock;
     private ServicioClub servicioClubMock;
     private ServicioUsuario servicioUsuarioMock;
+    private ServicioPuntuacion servicioPuntuacionMock;
     private Club clubMock;
 
     @BeforeEach
@@ -37,7 +38,8 @@ public class ControladorPublicacionTest {
         this.servicioPublicacionMock = mock(ServicioPublicacionImpl.class);
         this.servicioClubMock = mock(ServicioClubImpl.class);
         this.servicioUsuarioMock = mock(ServicioUsuarioImpl.class);
-        controladorPublicacion = new ControladorPublicacion(servicioPublicacionMock,servicioClubMock,servicioUsuarioMock);
+        this.servicioPuntuacionMock = mock(ServicioPuntuacionImp.class);
+        controladorPublicacion = new ControladorPublicacion(servicioPublicacionMock,servicioClubMock,servicioUsuarioMock,servicioPuntuacionMock);
         clubMock = mock(Club.class);
     }
 

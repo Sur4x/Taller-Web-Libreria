@@ -58,7 +58,6 @@ public class RepositorioClubImpl implements RepositorioClub {
         sessionFactory.getCurrentSession().delete(club);
     }
 
-
     @Override
     public List<Club> obtenerClubsConMasMiembros() {
         String hql = "FROM Club c ORDER BY c.cantidadMiembros DESC";

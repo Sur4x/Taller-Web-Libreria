@@ -22,7 +22,6 @@ import java.util.List;
 @Controller
 public class ControladorUsuario {
 
-
     private ServicioNotificacion servicioNotificacion;
     private ServicioUsuario servicioUsuario;
 
@@ -34,23 +33,36 @@ public class ControladorUsuario {
 
     @RequestMapping(path = "/perfil/{id}", method = RequestMethod.GET)
     public ModelAndView irAPerfil(@PathVariable("id") Long id, HttpServletRequest request) throws NoExisteEseUsuario {
-            ModelMap model = new ModelMap();
-            Usuario usuario = servicioUsuario.buscarUsuarioPor(id);
-            Usuario usuarioSesion = (Usuario) request.getSession().getAttribute("usuario");
-            if (usuarioSesion != null) {
-                Usuario usuarioActual = servicioUsuario.buscarUsuarioPor(usuarioSesion.getId());
-                boolean sigueAlUsuario = usuarioActual.getSeguidos().contains(usuario);
-                Integer cantidadSeguidores = usuarioActual.getSeguidores().size();
-                Integer cantidadSeguidos = usuarioActual.getSeguidos().size();
-                model.put("usuario", usuario);
-                model.addAttribute("sigueAlUsuario", sigueAlUsuario);
-                model.addAttribute("usuarioActual", usuarioActual);
-                model.addAttribute("seguidores", cantidadSeguidores);
-                model.addAttribute("seguidos", cantidadSeguidos);
-            }
-        model.put("usuario", usuario);
-        return new ModelAndView("perfil", model);
+        ModelMap model = new ModelMap();
+
+        Usuario usuarioPerfil = servicioUsuario.buscarUsuarioPor(id);
+
+        Usuario usuarioSesion = (Usuario) request.getSession().getAttribute("usuario");
+
+        if (usuarioSesion != null) {
+            usuarioSesion = servicioUsuario.buscarUsuarioPor(usuarioSesion.getId());
+
+            boolean sigueAlUsuario = servicioUsuario.obtenerUsuariosSeguidos(usuarioSesion).contains(usuarioPerfil);
+
+            model.addAttribute("usuario", usuarioSesion);
+            model.addAttribute("usuarioPerfil", usuarioPerfil);
+            model.addAttribute("sigueAlUsuario", sigueAlUsuario);
+            model.addAttribute("usuarioActual", usuarioSesion);
+            model.addAttribute("cantidadSeguidores", usuarioPerfil.getSeguidores().size());
+            model.addAttribute("cantidadSeguidos", usuarioPerfil.getSeguidos().size());
+
+            model.addAttribute("seguidores", usuarioPerfil.getSeguidores());
+            model.addAttribute("seguidos", usuarioPerfil.getSeguidos());
+        } else {
+            model.put("usuario", null);
+            model.put("usuarioPerfil", usuarioPerfil);
+            model.addAttribute("cantidadSeguidores", usuarioPerfil.getSeguidores().size());
+            model.addAttribute("cantidadSeguidos", usuarioPerfil.getSeguidos().size());
+            model.addAttribute("seguidores", usuarioPerfil.getSeguidores());
+            model.addAttribute("seguidos", usuarioPerfil.getSeguidos());
         }
+        return new ModelAndView("perfil", model);
+    }
 
     @RequestMapping(path = "perfil/{id}/seguir")
     public String seguirUsuario(@PathVariable("id") Long idUsuarioASeguir, HttpServletRequest request) throws NoExisteEseUsuario {
@@ -105,5 +117,3 @@ public class ControladorUsuario {
 
     }
 }
-
-

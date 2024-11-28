@@ -38,6 +38,9 @@ public class Club {
     @ManyToMany(mappedBy = "clubsAdminSecundarios")
     private List<Usuario> adminsSecundarios = new ArrayList<>();
 
+    @OneToMany(mappedBy = "club")
+    private List<Evento> eventos;
+
     public Club() {
         this.reportes = new ArrayList<>();
         this.cantidadDeReportes = 0;
@@ -171,6 +174,14 @@ public class Club {
 
     public void setAdminsSecundarios(List<Usuario> adminsSecundarios) {
         this.adminsSecundarios = adminsSecundarios;
+    }
+
+    public List<Evento> getEventos() {
+        return eventos;
+    }
+
+    public void setEventos(List<Evento> eventos) {
+        this.eventos = eventos;
     }
 
     @Override

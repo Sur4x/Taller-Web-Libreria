@@ -2,6 +2,7 @@ package com.tallerwebi.dominio;
 
 import com.tallerwebi.dominio.excepcion.NoExisteEseClub;
 import com.tallerwebi.dominio.excepcion.ReporteExistente;
+import com.tallerwebi.dominio.excepcion.YaExisteUnReporteDeEsteUsuario;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,13 +32,7 @@ public class ServicioReporteImpl implements ServicioReporte{
     }
 
     @Override
-    @Transactional
-    public void guardarReporte(Reporte reporte) throws ReporteExistente {
-        Reporte reporteAGuardar = repositorioReporte.buscarReportePorId(reporte.getId());
-
-        if(reporteAGuardar != null){
-            throw new ReporteExistente("El reporte ya fue realizado");
-        }
+    public void guardarReporte(Reporte reporte) {
         repositorioReporte.guardar(reporte);
     }
 
@@ -90,6 +85,21 @@ public class ServicioReporteImpl implements ServicioReporte{
         reporte.setClub(club);
         club.getReportes().add(reporte);
         repositorioReporte.guardar(reporte);
+    }
+
+    public Boolean comprobarSiElUsuarioReportoPreviamente(Long idUsuario, Long idClub) throws YaExisteUnReporteDeEsteUsuario {
+        Boolean poseeReporte = repositorioReporte.comprobarSiElUsuarioReportoPreviamente(idUsuario,idClub);
+
+        if (poseeReporte){
+            throw new YaExisteUnReporteDeEsteUsuario();
+        }
+        return false;
+    }
+
+    public void setearUsuarioYClubAUnReporte(Reporte reporte, Club club, Usuario usuario){
+        reporte.setClub(club);
+        reporte.setUsuario(usuario);
+        reporte.setEstado("pendiente");
     }
 
 }

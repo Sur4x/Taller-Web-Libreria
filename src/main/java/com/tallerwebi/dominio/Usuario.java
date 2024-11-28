@@ -66,6 +66,11 @@ public class Usuario {
     @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Notificacion> notificaciones = new ArrayList<>();
 
+    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Reporte> reportes = new HashSet<>();
+
+    @OneToMany(mappedBy = "remitente")
+    private List<Mensaje> mensajes = new ArrayList<>(); //MENSAJE
 
     public Usuario(){};
     public Usuario(String nombreUsuario, String email,String password, List<Club> clubsInscriptos) {
@@ -73,6 +78,14 @@ public class Usuario {
         this.email = email;
         this.password = password;
         this.clubsInscriptos = clubsInscriptos;
+    }
+
+    public Set<Reporte> getReportes() {
+        return reportes;
+    }
+
+    public void setReportes(Set<Reporte> reportes) {
+        this.reportes = reportes;
     }
 
     public Long getId() {
@@ -195,6 +208,14 @@ public class Usuario {
 
     public void setCategoriasPreferidas(List<String> categoriasPreferidas) {
         this.categoriasPreferidas = categoriasPreferidas;
+    }
+
+    public List<Mensaje> getMensajes() {
+        return mensajes;
+    }
+
+    public void setMensajes(List<Mensaje> mensajes) {
+        this.mensajes = mensajes;
     }
 
     @Override

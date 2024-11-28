@@ -19,4 +19,6 @@ public interface ServicioUsuario {
     List<Usuario> obtenerUsuariosConMasSeguidores();
 
     Set<Usuario> obtenerUsuariosSeguidos(Usuario usuario);
+
+    void guardarReporteEnUnUsuario(Reporte reporte, Usuario usuario);
 }

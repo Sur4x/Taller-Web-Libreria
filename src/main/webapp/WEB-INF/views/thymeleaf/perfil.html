@@ -17,37 +17,42 @@
 <main class="mt-5">
     <div class="container">
         <div class="profile-info d-flex align-items-center">
-            <h1 class="me-4" th:text="${usuario.nombreUsuario}">Nombre de Usuario</h1>
+            <h1 class="me-4" th:text="${usuarioPerfil != null ? usuarioPerfil.nombreUsuario : 'Usuario no encontrado'}">Nombre de Usuario</h1>
             <div class="d-flex align-items-center me-4">
                 <h3 class="mb-0">Seguidores:</h3>
-                <p class="mb-0 ms-2 fs-3" th:text="${seguidores}">0</p>
+                <p class="mb-0 ms-2 fs-3">
+                    <a href="#" class="text-decoration-none" data-bs-toggle="modal" data-bs-target="#modalSeguidores" th:text="${cantidadSeguidores}">0</a>
+                </p>
             </div>
             <div class="d-flex align-items-center">
                 <h3 class="mb-0">Seguidos:</h3>
-                <p class="mb-0 ms-2 fs-3" th:text="${seguidos}">0</p>
+                <p class="mb-0 ms-2 fs-3">
+                    <a href="#" class="text-decoration-none" data-bs-toggle="modal" data-bs-target="#modalSeguidos" th:text="${cantidadSeguidos}">0</a>
+                </p>
             </div>
         </div>
 
         <div class="profile-info mt-4">
             <h2>Información General</h2>
             <h3>Correo:</h3>
-            <p th:text="${usuario.email}">correo@ejemplo.com</p>
+            <p th:text="${usuarioPerfil != null ? usuarioPerfil.email : 'No disponible'}">correo@ejemplo.com</p>
 
             <h3>Clubes de Lectura Asociados:</h3>
             <ul>
-                <li th:each="club : ${usuario.clubsInscriptos}">
+                <li th:each="club : ${usuarioPerfil.clubsInscriptos}">
                     <p th:text="${club.nombre}">Nombre del club</p>
                 </li>
             </ul>
         </div>
 
-        <div th:if="${usuario != null and usuarioActual != null}">
-            <div th:if="${usuario.id} != ${usuarioActual.id}">
+        <!-- Solo mostrar botones de acción si el usuario está logueado -->
+        <div th:if="${usuarioPerfil != null and usuarioActual != null}">
+            <div th:if="${usuarioPerfil.id} != ${usuarioActual.id}">
                 <div th:if="${sigueAlUsuario}">
-                    <a class="btn btn-danger" th:href="@{/perfil/{id}/dejarDeSeguir(id=${usuario.id})}">Dejar de seguir</a>
+                    <a class="btn btn-danger" th:href="@{/perfil/{id}/dejarDeSeguir(id=${usuarioPerfil.id})}">Dejar de seguir</a>
                 </div>
-                <div th:if="!${sigueAlUsuario}">
-                    <a class="btn btn-success" th:href="@{/perfil/{id}/seguir(id=${usuario.id})}">Seguir</a>
+                <div th:if="${!sigueAlUsuario}">
+                    <a class="btn btn-success" th:href="@{/perfil/{id}/seguir(id=${usuarioPerfil.id})}">Seguir</a>
                 </div>
             </div>
         </div>
@@ -56,6 +61,94 @@
     </div>
 </main>
 
+<!-- Modal Seguidores -->
+<div class="modal fade" id="modalSeguidores" tabindex="-1" aria-labelledby="seguidoresLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="seguidoresLabel">Seguidores</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <input type="text" class="form-control mb-3" id="filtroSeguidores" placeholder="Filtrar por nombre...">
+                <ul class="list-group" id="listaSeguidores" th:if="${seguidores != null}">
+                    <li class="list-group-item" th:each="seguidor : ${seguidores}">
+                        <a th:href="@{/perfil/{id}(id=${seguidor.id})}" th:text="${seguidor.nombreUsuario}">Nombre</a>
+
+                        <!-- Solo mostrar botones si el usuario está logueado -->
+                        <div th:if="${usuario != null}">
+                            <!-- Si sigue al seguidor, mostrar "Dejar de seguir" -->
+                            <div th:if="${seguidos.contains(seguidor)}">
+                                <form th:action="@{/perfil/{id}/dejarDeSeguir(id=${seguidor.id})}" method="post">
+                                    <button type="submit" class="btn btn-danger btn-sm float-end">Dejar de seguir</button>
+                                </form>
+                            </div>
+                            <!-- Si no sigue al seguidor, mostrar "Seguir" -->
+                            <div th:if="${!seguidos.contains(seguidor)}">
+                                <form th:action="@{/perfil/{id}/seguir(id=${seguidor.id})}" method="post">
+                                    <button type="submit" class="btn btn-success btn-sm float-end">Seguir</button>
+                                </form>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Seguidos -->
+<div class="modal fade" id="modalSeguidos" tabindex="-1" aria-labelledby="seguidosLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="seguidosLabel">Seguidos</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <input type="text" class="form-control mb-3" id="filtroSeguidos" placeholder="Filtrar por nombre...">
+                <ul class="list-group" id="listaSeguidos" th:if="${seguidos != null}">
+                    <li class="list-group-item" th:each="seguido : ${seguidos}">
+                        <a th:href="@{/perfil/{id}(id=${seguido.id})}" th:text="${seguido.nombreUsuario}">Nombre</a>
+
+                        <!-- Solo mostrar botones si el usuario está logueado -->
+                        <div th:if="${usuario != null}">
+                            <!-- Si sigue al seguido, mostrar "Dejar de seguir" -->
+                            <div th:if="${seguidores.contains(seguido)}">
+                                <form th:action="@{/perfil/{id}/dejarDeSeguir(id=${seguido.id})}" method="post">
+                                    <button type="submit" class="btn btn-danger btn-sm float-end">Dejar de seguir</button>
+                                </form>
+                            </div>
+                            <!-- Si no sigue al seguido, mostrar "Seguir" -->
+                            <div th:if="${!seguidores.contains(seguido)}">
+                                <form th:action="@{/perfil/{id}/seguir(id=${seguido.id})}" method="post">
+                                    <button type="submit" class="btn btn-success btn-sm float-end">Seguir</button>
+                                </form>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script th:src="@{/webjars/bootstrap/5.2.0/js/bootstrap.bundle.min.js}"></script>
+
+<script>
+    function filtrarLista(inputId, listaId) {
+        const filtro = document.getElementById(inputId).value.toLowerCase();
+        const items = document.querySelectorAll(`#${listaId} li`);
+
+        items.forEach(item => {
+            const texto = item.textContent.toLowerCase();
+            item.style.display = texto.includes(filtro) ? "" : "none";
+        });
+    }
+
+    document.getElementById('filtroSeguidores').addEventListener('input', () => filtrarLista('filtroSeguidores', 'listaSeguidores'));
+    document.getElementById('filtroSeguidos').addEventListener('input', () => filtrarLista('filtroSeguidos', 'listaSeguidos'));
+</script>
+
 </body>
 </html>

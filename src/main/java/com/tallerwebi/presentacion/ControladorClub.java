@@ -14,8 +14,12 @@ import org.springframework.web.servlet.ModelAndView;
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 @Controller
 public class ControladorClub {
@@ -25,14 +29,16 @@ public class ControladorClub {
     private ServicioPuntuacion servicioPuntuacion;
     private ServicioNotificacion servicioNotificacion;
     private ServicioNoticia servicioNoticia;
+    private ServicioEvento servicioEvento;
 
     @Autowired
-    public ControladorClub(ServicioClub servicioClub, ServicioUsuario servicioUsuario, ServicioPuntuacion servicioPuntuacion, ServicioNotificacion servicioNotificacion, ServicioNoticia servicioNoticia) {
+    public ControladorClub(ServicioClub servicioClub, ServicioUsuario servicioUsuario, ServicioPuntuacion servicioPuntuacion, ServicioNotificacion servicioNotificacion, ServicioNoticia servicioNoticia, ServicioEvento servicioEvento) {
         this.servicioClub = servicioClub;
         this.servicioUsuario = servicioUsuario;
         this.servicioPuntuacion = servicioPuntuacion;
         this.servicioNotificacion = servicioNotificacion;
         this.servicioNoticia = servicioNoticia;
+        this.servicioEvento = servicioEvento;
     }
 
     @RequestMapping(path = "/crearClub")
@@ -93,11 +99,19 @@ public class ControladorClub {
         Usuario usuario = (Usuario) request.getSession().getAttribute("usuario");
         Club club = servicioClub.buscarClubPor(id);
         ModelMap model = new ModelMap();
-        Puntuacion puntuacion = servicioPuntuacion.buscarPuntuacion(club, usuario);
         if (club != null) {
+            Puntuacion puntuacion = servicioPuntuacion.buscarPuntuacion(club, usuario);
+            Evento evento = servicioEvento.obtenerEvento(club);
+            if(evento != null){
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d 'de' MMMM 'a las' HH:mm", new Locale("es", "ES"));
+                String fechaFormateada = evento.getFechaYHora().format(formatter);
+                model.addAttribute("fecha", fechaFormateada);
+                model.addAttribute("evento", evento);
+            }
             model.addAttribute("puntuacion", puntuacion);
             model.put("club", club);
             model.put("usuario", usuario);
+            model.addAttribute("fechaYHoraActual", LocalDateTime.now());
             return new ModelAndView("detalleClub", model);
         } else {
             return new ModelAndView("Redirect: /home", model);
@@ -151,7 +165,8 @@ public class ControladorClub {
     }
 
     @RequestMapping(path = "/club/eliminar/{id}", method = RequestMethod.POST)
-    public ModelAndView eliminarClub(@PathVariable("id") Long id, HttpServletRequest request) throws NoExisteEseClub, NoExisteEseUsuario {
+    public ModelAndView eliminarClub(@PathVariable("id") Long id, HttpServletRequest request) throws NoExisteEseClub, NoExisteEseUsuario, NoExistenClubs {
+        ModelMap modelo = new ModelMap();
         Usuario usuario = (Usuario) request.getSession().getAttribute("usuario");
         //Usuario usuarioBuscado = servicioUsuario.buscarUsuarioPor(usuario.getId());
         Club club = servicioClub.buscarClubPor(id);
@@ -163,7 +178,10 @@ public class ControladorClub {
             }
             club.setAdminPrincipal(null);
             servicioClub.eliminarClub(club);
-            return new ModelAndView("redirect:/home");
+            modelo.put("mensaje", "Club eliminado correctamente");
+            modelo.put("usuario", usuario);
+            modelo.put("clubs",servicioClub.obtenerTodosLosClubs());
+            return new ModelAndView("home", modelo);
         } else {
             return new ModelAndView("redirect:/home");
         }
@@ -213,7 +231,7 @@ public class ControladorClub {
         modelo.put("usuario", usuario);
         modelo.put("club", club);
         modelo.put("puntuacion", puntuacion);
-
+        modelo.put("mensaje", "Usuario echado correctamente.");
         return new ModelAndView("redirect:/club/" + clubId, modelo);
 
     }
@@ -236,7 +254,7 @@ public class ControladorClub {
         modelo.put("usuario", usuario);
         modelo.put("club", club);
         modelo.put("puntuacion", puntuacion);
-
+        modelo.put("mensaje", "Admin confirmado");
         return new ModelAndView("redirect:/club/" + clubId, modelo);
     }
 
@@ -258,7 +276,7 @@ public class ControladorClub {
         modelo.put("usuario", usuario);
         modelo.put("club", club);
         modelo.put("puntuacion", puntuacion);
-
+        modelo.put("mensaje", "admin revocado.");
         return new ModelAndView("redirect:/club/" + clubId, modelo);
     }
 }
