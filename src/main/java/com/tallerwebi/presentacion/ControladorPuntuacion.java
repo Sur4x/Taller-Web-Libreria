@@ -12,6 +12,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Locale;
 
 @Controller
 public class ControladorPuntuacion {
@@ -19,12 +22,14 @@ public class ControladorPuntuacion {
     private ServicioUsuario servicioUsuario;
     private ServicioClub servicioClub;
     private ServicioPuntuacion servicioPuntuacion;
+    private ServicioEvento servicioEvento;
 
     @Autowired
-    public ControladorPuntuacion(ServicioUsuario servicioUsuario, ServicioClub servicioClub, ServicioPuntuacion servicioPuntuacion){
+    public ControladorPuntuacion(ServicioUsuario servicioUsuario, ServicioClub servicioClub, ServicioPuntuacion servicioPuntuacion, ServicioEvento servicioEvento){
         this.servicioUsuario = servicioUsuario;
         this.servicioClub = servicioClub;
         this.servicioPuntuacion = servicioPuntuacion;
+        this.servicioEvento = servicioEvento;
     }
 
     @RequestMapping(path = "/club/puntuar/{id}")
@@ -44,10 +49,20 @@ public class ControladorPuntuacion {
             servicioPuntuacion.actualizarPromedio(club);
         }
 
+        Evento evento = servicioEvento.obtenerEvento(club);
+        if (evento != null) {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d 'de' MMMM 'a las' HH:mm", new Locale("es", "ES"));
+            String fechaFormateada = evento.getFechaYHora().format(formatter);
+            model.addAttribute("fecha", fechaFormateada);
+            model.addAttribute("evento", evento);
+        }
+
         model.put("club", club);
         model.put("usuario", usuarioActual);
         model.put("puntuacion", servicioPuntuacion.buscarPuntuacion(club, usuarioActual));
         model.put("mensaje", "Usted puntuo correctamente al club");
+        model.addAttribute("fechaYHoraActual", LocalDateTime.now());
+        model.addAttribute("evento", evento);
         return new ModelAndView("detalleClub", model);
     }
 
@@ -59,9 +74,18 @@ public class ControladorPuntuacion {
         Club club = servicioClub.buscarClubPor(id);
         servicioPuntuacion.removerPuntuacion(club, usuarioActual);
 
+        Evento evento = servicioEvento.obtenerEvento(club);
+        if (evento != null) {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d 'de' MMMM 'a las' HH:mm", new Locale("es", "ES"));
+            String fechaFormateada = evento.getFechaYHora().format(formatter);
+            model.addAttribute("fecha", fechaFormateada);
+            model.addAttribute("evento", evento);
+        }
+
         model.put("club", club);
         model.put("usuario", usuarioActual);
         model.put("puntuacion", servicioPuntuacion.buscarPuntuacion(club, usuarioActual));
+        model.addAttribute("fechaYHoraActual", LocalDateTime.now());
         model.put("mensaje", "Usted elimino su puntuacion correctamente del club");
         return new ModelAndView("detalleClub", model);
     }

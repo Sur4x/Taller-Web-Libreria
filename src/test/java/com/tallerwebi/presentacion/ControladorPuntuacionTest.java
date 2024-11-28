@@ -24,6 +24,7 @@ public class ControladorPuntuacionTest {
     private ServicioClub servicioClubMock;
     private ServicioUsuario servicioUsuarioMock;
     private ServicioPuntuacion servicioPuntuacionMock;
+    private ServicioEvento servicioEventoMock;
     private ControladorPuntuacion controladorPuntuacion;
 
     @BeforeEach
@@ -34,7 +35,8 @@ public class ControladorPuntuacionTest {
         servicioClubMock = mock(ServicioClub.class);
         servicioUsuarioMock = mock(ServicioUsuario.class);
         servicioPuntuacionMock = mock(ServicioPuntuacion.class);
-        controladorPuntuacion = new ControladorPuntuacion(servicioUsuarioMock,servicioClubMock,servicioPuntuacionMock);
+        servicioEventoMock = mock(ServicioEvento.class);
+        controladorPuntuacion = new ControladorPuntuacion(servicioUsuarioMock,servicioClubMock,servicioPuntuacionMock, servicioEventoMock);
     }
 
     @Test
