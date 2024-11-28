@@ -52,7 +52,7 @@ public class ControladorReporte {
         }
     }
 
-    @RequestMapping(path = "/club/{clubId}/listar/reportes", method = RequestMethod.GET)
+    @RequestMapping(path = "/club/{clubId}/listarReportes", method = RequestMethod.GET)
     @Transactional
     public ModelAndView mostrarReportesPorClub(@PathVariable("clubId") Long clubId, HttpServletRequest request) throws NoExisteEseClub {
         Usuario usuario = (Usuario) request.getSession().getAttribute("usuario");
@@ -67,13 +67,14 @@ public class ControladorReporte {
             throw new NoExisteEseClub("No existe el club con ID " + clubId);
         }
 
-        List<Reporte> reportes = servicioReporte.listarReportesPorClub(club);
-
-        servicioReporte.obtenerTodosLosReportesDeUnClub(club);
+        List<Reporte> reportes = servicioReporte.obtenerTodosLosReportesDeUnClub(club);
+        List<Reporte> reportesAprobados = servicioReporte.obtenerTodosLosReportesAprobadosDeUnClub(club);
 
         model.put("club", club);
         model.put("usuario", usuario);
         model.put("reportes", reportes);
+        model.put("reportesAprobados", reportesAprobados);
+        model.put("cantidadDeReportes", servicioReporte.obtenerCantidadDeReportesDeUnClub(club));
 
         return new ModelAndView("verReportes", model);
     }

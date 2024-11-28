@@ -116,6 +116,12 @@ public class ControladorLogin {
                 return new ModelAndView("home", model);
             }
         }
+
+        if (usuario != null && usuario.getRol().equals("admin")){
+            List<Club> clubsAdmin = servicioClub.obtenerTodosLosClubs();
+            model.addAttribute("clubsAdmin", clubsAdmin);
+        }
+
         model.addAttribute("clubs", clubs);
         return new ModelAndView("home", model);
     }

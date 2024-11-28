@@ -46,33 +46,30 @@ public class ServicioReporteImpl implements ServicioReporte{
     }
 
     @Override
-    public List<Reporte> listarReportesPorClub(Club club){
-        List<Reporte> reportes = repositorioReporte.obtenerTodosLosReportesDeUnClub(club);
-        return reportes != null ? reportes : new ArrayList<>();
+    public List<Reporte> obtenerTodosLosReportesDeUnClub(Club club){
+        return repositorioReporte.obtenerTodosLosReportesDeUnClub(club.getId());
+    }
+
+    @Override
+    public List<Reporte> obtenerTodosLosReportesAprobadosDeUnClub(Club club) {
+
+        return repositorioReporte.obtenerTodosLosReportesAprobadosDeUnClub(club.getId());
     }
 
     //mover a reporte
-    @Override
-    public void incrementarCantidadDeReportesEnUnClubObteniendoSuCantidadTotalDeReportes(Long idClub){
-        repositorioReporte.incrementarCantidadDeReportesEnUnClubObteniendoSuCantidadTotalDeReportes(idClub);
-    }
+//    @Override
+//    public void incrementarCantidadDeReportesEnUnClubObteniendoSuCantidadTotalDeReportes(Long idClub){
+//        repositorioReporte.incrementarCantidadDeReportesEnUnClubObteniendoSuCantidadTotalDeReportes(idClub);
+//    }
 
     @Override
-    public void obtenerTodosLosReportesDeUnClub(Club club) {
-
-        List<Reporte> listaReportes = repositorioReporte.obtenerTodosLosReportesDeUnClub(club);
-
-        if(listaReportes.size() >= 2){
-            club.setEstaReportado("CLUB REPORTADO");
-        }else{
-            club.setEstaReportado("CLUB ACCESIBLE");
-        }
-        repositorioClub.guardar(club);
+    public Integer obtenerCantidadDeReportesDeUnClub(Club club) {
+        return repositorioReporte.obtenerCantidadDeReportesDeUnClub(club.getId());
     }
 
     @Override
     public void agregarNuevoReporteAlClub(Long idClub, Reporte reporte) throws ReporteExistente, NoExisteEseClub {
-        Club club = repositorioClub.buscarClubPor(idClub); // si el club existe
+        Club club = repositorioClub.buscarClubPor(idClub);
 
         if (club == null) {
             throw new NoExisteEseClub("No existe un club con el id proporcionado");

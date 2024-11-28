@@ -201,6 +201,9 @@ public class ControladorClub {
             List<Noticia> noticias = servicioNoticia.obtenerNoticiasRandom(5);
             modelo.put("noticias", noticias);
             modelo.put("clubs", servicioClub.obtenerTodosLosClubs());
+            if(usuario.getRol().equals("admin")){
+                modelo.put("clubsAdmin", servicioClub.obtenerTodosLosClubs());
+            }
             return new ModelAndView("home", modelo);
         } else {
             return new ModelAndView("redirect:/home");

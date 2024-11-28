@@ -44,11 +44,30 @@ public class RepositorioReporteImpl implements RepositorioReporte {
     }
 
     @Override
-    public List<Reporte> obtenerTodosLosReportesDeUnClub(Club idClub) {
-        final Session session = sessionFactory.getCurrentSession();
-        return (List<Reporte>) session.createCriteria(Reporte.class)
-                .add(Restrictions.eq("club", idClub))
-                .list();
+    public List<Reporte> obtenerTodosLosReportesDeUnClub(Long idClub) {
+        String hql = "FROM Reporte r WHERE r.club.id = :idClub AND r.estado = 'pendiente'";
+        Query query = this.sessionFactory.getCurrentSession().createQuery(hql);
+        query.setParameter("idClub", idClub);
+        List<Reporte> reportes = query.getResultList();
+        return reportes;
+    }
+
+    @Override
+    public List<Reporte> obtenerTodosLosReportesAprobadosDeUnClub(Long idClub) {
+        String hql = "FROM Reporte r WHERE r.club.id = :idClub AND r.estado = 'aprobado'";
+        Query query = this.sessionFactory.getCurrentSession().createQuery(hql);
+        query.setParameter("idClub", idClub);
+        List<Reporte> reportes = query.getResultList();
+        return reportes;
+    }
+
+    @Override
+    public Integer obtenerCantidadDeReportesDeUnClub(Long idClub) {
+        String hql = "SELECT COUNT(r) FROM Reporte r WHERE r.club.id = :idClub AND r.estado = 'aprobado'";
+        Query query = this.sessionFactory.getCurrentSession().createQuery(hql);
+        query.setParameter("idClub", idClub);
+        Long result = (Long) query.getSingleResult();
+        return result != null ? result.intValue() : 0;
     }
 
     @Override

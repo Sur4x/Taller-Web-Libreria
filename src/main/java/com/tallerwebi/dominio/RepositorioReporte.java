@@ -10,9 +10,13 @@ public interface RepositorioReporte {
 
     void eliminar(Reporte reporte);
 
-    List<Reporte> obtenerTodosLosReportesDeUnClub(Club club);
+    Integer obtenerCantidadDeReportesDeUnClub(Long idClub);
 
     Integer incrementarCantidadDeReportesEnUnClubObteniendoSuCantidadTotalDeReportes(Long idClub);
 
     Boolean comprobarSiElUsuarioReportoPreviamente(Long idUsuario, Long idClub);
+
+    List<Reporte> obtenerTodosLosReportesDeUnClub(Long id);
+
+    List<Reporte> obtenerTodosLosReportesAprobadosDeUnClub(Long id);
 }

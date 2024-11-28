@@ -5,6 +5,26 @@
   <title>Reportes del Club</title>
   <link rel="stylesheet" th:href="@{/webjars/bootstrap/5.2.0/css/bootstrap.min.css}"/>
   <link rel="stylesheet" th:href="@{/css/main.css}"/>
+  <style>
+    .acciones-column {
+      text-align: center; /* Alinea las celdas a la derecha */
+    }
+
+    .acciones-btn {
+      display: flex;
+      justify-content: space-around; /* Mueve los botones a la derecha */
+    }
+
+    table {
+      table-layout: fixed;
+      width: 100%; /* Se asegura que las tablas ocupen el 100% de su contenedor */
+    }
+
+    th, td {
+      text-align: left;
+      padding: 10px;
+    }
+  </style>
 </head>
 <body>
 
@@ -14,17 +34,19 @@
   <h2 class="mb-4">Reportes del Club</h2>
   <div class="row mb-4 align-items-center">
     <div class="col-md-4">
-      <strong>Nombre del Club:</strong> <span th:text="${club.nombre}">Nombre del Club</span>
+      <strong>Nombre del Club:</strong> <span th:text="${club.nombre}"></span>
     </div>
     <div class="col-md-4">
-      <strong>Estado de Reporte:</strong> <span th:text="${club.estaReportado}">Estado</span>
+      <strong>Cantidad de reportes aprobados:</strong> <span th:text="${cantidadDeReportes}"></span>
     </div>
     <div class="col-md-4">
       <img th:src="@{${club.imagen}}" alt="Imagen del club" class="img-fluid" style="width: 100px; height: 100px;">
     </div>
   </div>
 
-  <table class="table table-striped table-responsive">
+  <!-- Tabla aprobados -->
+  <h3>Reportes aprobados</h3>
+  <table class="table table-striped table-responsive" th:if="${not #lists.isEmpty(reportesAprobados)}">
     <thead>
     <tr>
       <th>Motivo</th>
@@ -32,21 +54,57 @@
     </tr>
     </thead>
     <tbody>
+    <tr th:each="reporte : ${reportesAprobados}">
+      <td th:text="${reporte.motivo}">Motivo del reporte</td>
+      <td th:text="${reporte.descripcion}">Descripción</td>
+      <td class="acciones-column">
+        <!-- No hay botones aquí, solo la columna vacía para alinear -->
+      </td>
+    </tr>
+    </tbody>
+  </table>
+
+  <!-- Mensaje cuando la lista está vacía -->
+  <p th:if="${#lists.isEmpty(reportesAprobados)}">El club no posee reportes aprobados.</p>
+
+
+
+  <!-- Tabla pendientes -->
+  <h3>Reportes pendientes</h3>
+  <table class="table table-striped table-responsive mb-4">
+    <thead>
+    <tr>
+      <th>Motivo</th>
+      <th>Descripción</th>
+      <th class="acciones-column">Acciones</th> <!-- Columna de acciones al final -->
+    </tr>
+    </thead>
+    <tbody>
     <tr th:each="reporte : ${reportes}">
       <td th:text="${reporte.motivo}">Motivo del reporte</td>
       <td th:text="${reporte.descripcion}">Descripción</td>
-      <td>
-        <div class="d-flex justify-content-center">
-          <form th:action="@{/club/eliminar/reporte/{id}(id=${reporte.id})}" method="post" style="display: inline;">
-            <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('¿Eliminar este reporte?');">Eliminar</button>
-          </form>
+      <td class="acciones-column">
+        <div class="acciones-btn">
+          <a th:href="@{/club/{idClub}/listarReportes/aprobarReporte/{idReporte}(idClub=${club.id},idReporte=${reporte.id})}" method="post" style="display: inline;">
+            <button type="submit" class="btn btn-danger btn-sm me-3" onclick="return confirm('¿Estas seguro de aprobar el reporte?');">Aprobar</button>
+          </a>
+
+          <a th:href="@{/club/{idClub}/listarReportes/rechazarReporte/{idReporte}(idClub=${club.id},idReporte=${reporte.id})}" method="post" style="display: inline;">
+            <button type="submit" class="btn btn-danger btn-sm me-2" onclick="return confirm('¿Estas seguro de rechazar el reporte?');">Rechazar</button>
+          </a>
         </div>
       </td>
     </tr>
     </tbody>
   </table>
+
+
 </div>
 
 <script th:src="@{/webjars/bootstrap/5.2.0/js/bootstrap.bundle.min.js}"></script>
 </body>
 </html>
+
+
+
+

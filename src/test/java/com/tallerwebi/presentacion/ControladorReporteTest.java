@@ -129,7 +129,7 @@ public class ControladorReporteTest {
         when(requestMock.getSession()).thenReturn(sessionMock);
         when(sessionMock.getAttribute("usuario")).thenReturn(usuario);
         when(servicioClubMock.buscarClubPor(anyLong())).thenReturn(club);
-        when(servicioReporteMock.listarReportesPorClub(club)).thenReturn(reportes);
+        //when(servicioReporteMock.listarReportesPorClub(club)).thenReturn(reportes);
 
         ModelAndView modelAndView = controladorReporte.mostrarReportesPorClub(1L, requestMock);
 

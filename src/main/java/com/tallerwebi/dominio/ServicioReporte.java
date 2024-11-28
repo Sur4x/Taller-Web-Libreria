@@ -14,15 +14,19 @@ public interface ServicioReporte {
 
     void eliminarReporte(Long id);
 
-    List<Reporte> listarReportesPorClub(Club club) throws NoExisteEseClub;
+    //List<Reporte> listarReportesPorClub(Club club) throws NoExisteEseClub;
 
-    void incrementarCantidadDeReportesEnUnClubObteniendoSuCantidadTotalDeReportes(Long idClub);
+    //void incrementarCantidadDeReportesEnUnClubObteniendoSuCantidadTotalDeReportes(Long idClub);
 
     void agregarNuevoReporteAlClub(Long id, Reporte reporte) throws ReporteExistente, NoExisteEseClub;
 
-    void obtenerTodosLosReportesDeUnClub(Club club);
+    Integer obtenerCantidadDeReportesDeUnClub(Club club);
 
     Boolean comprobarSiElUsuarioReportoPreviamente(Long idUsuario, Long idClub) throws YaExisteUnReporteDeEsteUsuario;
 
     void setearUsuarioYClubAUnReporte(Reporte reporte, Club club, Usuario usuario);
+
+    List<Reporte> obtenerTodosLosReportesDeUnClub(Club club);
+
+    List<Reporte> obtenerTodosLosReportesAprobadosDeUnClub(Club club);
 }
