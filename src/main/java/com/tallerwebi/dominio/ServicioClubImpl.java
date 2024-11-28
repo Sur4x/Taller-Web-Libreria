@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -38,6 +37,11 @@ public class ServicioClubImpl implements ServicioClub {
         }
         repositorioClub.guardar(club);
         return true;
+    }
+
+    @Override
+    public void actualizar(Club club) throws NoExisteEseClub {
+        repositorioClub.guardar(club);
     }
 
     @Override
@@ -184,5 +188,9 @@ public class ServicioClubImpl implements ServicioClub {
     public void guardarReporteEnUnClub(Reporte reporte, Club club){
         club.getReportes().add(reporte);
         repositorioClub.guardar(club);
+    }
+
+    public List<Club> obtenerClubsRandom(Integer cantidad){
+        return repositorioClub.obtenerClubsRandom(cantidad);
     }
 }

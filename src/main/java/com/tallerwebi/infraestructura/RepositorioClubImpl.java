@@ -1,9 +1,6 @@
 package com.tallerwebi.infraestructura;
 
-import com.tallerwebi.dominio.Club;
-import com.tallerwebi.dominio.Puntuacion;
-import com.tallerwebi.dominio.RepositorioClub;
-import com.tallerwebi.dominio.Usuario;
+import com.tallerwebi.dominio.*;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -95,6 +92,14 @@ public class RepositorioClubImpl implements RepositorioClub {
         query.setParameter("nombre", nombre);
         Long count = (Long) query.getSingleResult();
         return count > 0;
+    }
+
+    @Override
+    public List<Club> obtenerClubsRandom(Integer cantidad){
+        String hql = "FROM Club ORDER BY function('RAND')";
+        Query query = this.sessionFactory.getCurrentSession().createQuery(hql);
+        query.setMaxResults(cantidad);
+        return query.getResultList();
     }
 
     @Override

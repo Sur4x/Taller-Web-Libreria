@@ -38,4 +38,8 @@ public interface ServicioClub {
     void sacarAdminAUnUsuarioDeUnClub(Club club, Usuario usuario);
 
     void guardarReporteEnUnClub(Reporte reporte, Club club);
+
+    List<Club> obtenerClubsRandom(Integer cantidad);
+
+    void actualizar(Club club) throws NoExisteEseClub;
 }

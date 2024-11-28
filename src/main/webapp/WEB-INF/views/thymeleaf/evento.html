@@ -21,6 +21,8 @@
         <h1 th:text="${evento.nombre}"></h1>
         <h2 th:text="${evento.descripcion}"></h2>
 
+        <a class="btn btn-secondary mt-4 mb-2" th:href="@{/club/{clubId}/(clubId=${club.id})}">Volver</a>
+
         <div th:if="${club.getAdminPrincipal().equals(usuario) || club.getAdminsSecundarios().contains(usuario)}">
         <a th:href="@{/club/{clubId}/evento/{eventoId}/finalizarEvento(clubId=${club.id}, eventoId=${evento.id})}"><button type="submit" class="btn btn-primary">Finalizar evento</button></a>
         </div>

@@ -102,7 +102,7 @@ public class ControladorReporte {
             servicioReporte.setearUsuarioYClubAUnReporte(reporte, club, usuario);
             servicioReporte.guardarReporte(reporte);
 
-            model.put("mensaje",usuario.getReportes());
+            model.put("mensaje","Reporte enviado exitosamente");
             return new ModelAndView("detalleClub", model);
         } else {
             return new ModelAndView("redirect:/home");

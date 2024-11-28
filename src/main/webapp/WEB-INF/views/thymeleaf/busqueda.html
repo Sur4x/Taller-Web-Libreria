@@ -1,24 +1,37 @@
 <!DOCTYPE html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
 <head>
-  <meta charset="UTF-8">
-  <title>Mostrar usuarios</title>
+    <meta charset="UTF-8">
+    <title>Mostrar usuarios</title>
 
-  <!-- Boostrap core css -->
-  <link rel="stylesheet" th:href="@{/webjars/bootstrap/5.2.0/css/bootstrap.min.css}"/>
+    <!-- Boostrap core css -->
+    <link rel="stylesheet" th:href="@{/webjars/bootstrap/5.2.0/css/bootstrap.min.css}"/>
 </head>
 <body>
 
 <div th:insert="fragments/header :: header"></div>
 
-<h1>TEST</h1>
+<main class="container mt-5 pt-5">
+    <h1 th th:if="${clubsEncontrados!=null}">Nuestros clubs:</h1>
+    <div th:if="${clubsEncontrados == null}">
+        <h4 th:text="${error}" class="alert alert-warning"></h4>
+        <h3>Nuestros clubs:</h3>
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
+            <div th:each="club : ${clubs}" class="col">
+                <a th:id="'club-' + ${club.id}" th:href="@{/club/{id}(id=${club.id})}" class="text-decoration-none">
+                    <div class="card shadow-sm h-100">
+                        <img th:src="@{${club.imagen}}" class="card-img-top" alt="Imagen del club">
+                        <div class="card-body">
+                            <h5 class="card-title text-center" th:text="${club.nombre}">Nombre del club</h5>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
 
-<h1>Clubs encontrados:</h1>
-<div th:if="${clubsEncontrados == null}" >
-    <h4 th:text="${error}" class="alert alert-warning"></h4>
-    <h3>Nuestros clubs:</h3>
-    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
-        <div th:each="club : ${clubs}" class="col">
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4 mb-5">
+        <div th:each="club : ${clubsEncontrados}" class="col">
             <a th:id="'club-' + ${club.id}" th:href="@{/club/{id}(id=${club.id})}" class="text-decoration-none">
                 <div class="card shadow-sm h-100">
                     <img th:src="@{${club.imagen}}" class="card-img-top" alt="Imagen del club">
@@ -29,20 +42,6 @@
             </a>
         </div>
     </div>
-</div>
-
-<div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
-    <div th:each="club : ${clubsEncontrados}" class="col">
-        <a th:id="'club-' + ${club.id}" th:href="@{/club/{id}(id=${club.id})}" class="text-decoration-none">
-            <div class="card shadow-sm h-100">
-                <img th:src="@{${club.imagen}}" class="card-img-top" alt="Imagen del club">
-                <div class="card-body">
-                    <h5 class="card-title text-center" th:text="${club.nombre}">Nombre del club</h5>
-                </div>
-            </div>
-        </a>
-    </div>
-</div>
-
+</main>
 </body>
 </html>

@@ -91,7 +91,7 @@ public class ControladorLogin {
         Usuario usuario = (Usuario) request.getSession().getAttribute("usuario");
 
         ModelMap model = new ModelMap();
-        List<Club> clubs = servicioClub.obtenerTodosLosClubs();
+        List<Club> clubs = servicioClub.obtenerClubsRandom(12);
 
         List<Noticia> noticias = servicioNoticia.obtenerNoticiasRandom(5);
         model.addAttribute("noticias", noticias);

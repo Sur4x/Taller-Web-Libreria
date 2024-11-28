@@ -134,6 +134,20 @@
                                                class="btn btn-lg btn-success w-100">Eliminar puntuación</a>
                                         </div>
                                     </div>
+                                    <div th:if="${club.adminPrincipal.equals(usuario)}"
+                                         class="d-flex justify-content-between mb-4">
+                                        <a th:href="@{/club/{clubId}/editarClub(clubId=${club.id})}"
+                                           class="w-50 me-2">
+                                            <button type="submit" class="btn btn-lg btn-primary w-100">Editar Club
+                                            </button>
+                                        </a>
+                                        <a th:href="@{/club/eliminar/{id}(id=${club.id})}" class="w-50 me-2">
+                                            <button class="btn btn-lg btn-danger w-100 me-2"
+                                                    onclick="return confirm('¿Estás seguro de que deseas eliminar este club?');">
+                                                Eliminar Club
+                                            </button>
+                                        </a>
+                                    </div>
 
                                     <div th:if="${club.adminPrincipal != usuario and usuario.clubsInscriptos.contains(club)}"
                                          class="d-flex justify-content-between mb-4">
@@ -319,6 +333,11 @@
             </tr>
             </thead>
             <tbody>
+
+            <tr th:if="${#lists.isEmpty(club.publicaciones)}">
+                <td colspan="2" class="text-center">No existen publicaciones todavía</td>
+            </tr>
+
             <tr th:each="publicacion : ${club.publicaciones}">
                 <td>
                     <a th:href="@{/club/{clubId}/detallePublicacion/{publicacionId}(clubId=${club.id}, publicacionId=${publicacion.id})}"

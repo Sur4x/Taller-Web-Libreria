@@ -6,6 +6,7 @@ import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -55,10 +56,13 @@ public class ControladorClub {
     }
 
     @RequestMapping(path = "/crearNuevoClub", method = RequestMethod.POST)
-    public ModelAndView crearNuevoClub(@ModelAttribute("club") Club club, HttpServletRequest request, @RequestParam("imagen") MultipartFile imagen) throws ClubExistente {
+    public ModelAndView crearNuevoClub(@ModelAttribute("club") Club club, HttpServletRequest request, @RequestParam("imagen") MultipartFile imagen) throws ClubExistente, NoExisteEseUsuario {
         Usuario usuario = (Usuario) request.getSession().getAttribute("usuario");
         ModelMap modelo = new ModelMap();
+        //Usuario usuarioActual = servicioUsuario.buscarUsuarioPor(usuario.getId());
+
         try {
+            club.setAdminPrincipal(usuario);
             servicioClub.agregar(club);
 
             if (!imagen.isEmpty()) {
@@ -78,9 +82,9 @@ public class ControladorClub {
                 } catch (IOException e) {
                     throw new RuntimeException("Error al guardar la imagen", e);
                 }
+            }else{
+                club.setImagen("/uploads/default.jpg");
             }
-
-            club.setAdminPrincipal(usuario);
 
             servicioClub.registrarUsuarioEnElClub(usuario, club);
 
@@ -102,7 +106,7 @@ public class ControladorClub {
         if (club != null) {
             Puntuacion puntuacion = servicioPuntuacion.buscarPuntuacion(club, usuario);
             Evento evento = servicioEvento.obtenerEvento(club);
-            if(evento != null){
+            if (evento != null) {
                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d 'de' MMMM 'a las' HH:mm", new Locale("es", "ES"));
                 String fechaFormateada = evento.getFechaYHora().format(formatter);
                 model.addAttribute("fecha", fechaFormateada);
@@ -135,6 +139,20 @@ public class ControladorClub {
         return new ModelAndView("busqueda", model);
     }
 
+    @RequestMapping(path = "/buscarTodosLosClubs", method = RequestMethod.GET)
+    public ModelAndView buscarTodosLosClubs(HttpServletRequest request) throws NoExistenClubs {
+        Usuario usuario = (Usuario) request.getSession().getAttribute("usuario");
+        ModelMap model = new ModelMap();
+
+        List<Club> clubs = servicioClub.obtenerTodosLosClubs();
+
+        model.put("clubsEncontrados", clubs);
+        model.put("usuario", usuario);
+
+        return new ModelAndView("busqueda", model);
+    }
+
+
     @RequestMapping(path = "/club/{clubId}/anotarse", method = RequestMethod.POST)
     public ModelAndView anotarUsuarioAClub(@PathVariable("clubId") Long id, HttpServletRequest request) throws NoExisteEseClub, NoExisteEseUsuario {
         ModelMap model = new ModelMap();
@@ -164,7 +182,7 @@ public class ControladorClub {
         return new ModelAndView("detalleClub", model);
     }
 
-    @RequestMapping(path = "/club/eliminar/{id}", method = RequestMethod.POST)
+    @RequestMapping(path = "/club/eliminar/{id}")
     public ModelAndView eliminarClub(@PathVariable("id") Long id, HttpServletRequest request) throws NoExisteEseClub, NoExisteEseUsuario, NoExistenClubs {
         ModelMap modelo = new ModelMap();
         Usuario usuario = (Usuario) request.getSession().getAttribute("usuario");
@@ -180,7 +198,9 @@ public class ControladorClub {
             servicioClub.eliminarClub(club);
             modelo.put("mensaje", "Club eliminado correctamente");
             modelo.put("usuario", usuario);
-            modelo.put("clubs",servicioClub.obtenerTodosLosClubs());
+            List<Noticia> noticias = servicioNoticia.obtenerNoticiasRandom(5);
+            modelo.put("noticias", noticias);
+            modelo.put("clubs", servicioClub.obtenerTodosLosClubs());
             return new ModelAndView("home", modelo);
         } else {
             return new ModelAndView("redirect:/home");
@@ -278,5 +298,45 @@ public class ControladorClub {
         modelo.put("puntuacion", puntuacion);
         modelo.put("mensaje", "admin revocado.");
         return new ModelAndView("redirect:/club/" + clubId, modelo);
+    }
+
+    @RequestMapping(path = "/club/{clubId}/editarClub")
+    public ModelAndView irAEditarClub(@PathVariable("clubId") Long clubId, HttpServletRequest request) throws NoExisteEseClub, NoExisteEseUsuario {
+        Usuario usuario = (Usuario) request.getSession().getAttribute("usuario");
+        usuario = servicioUsuario.buscarUsuarioPor(usuario.getId());
+        ModelMap modelo = new ModelMap();
+        Club club = servicioClub.buscarClubPor(clubId);
+
+        modelo.put("club", club);
+        modelo.put("usuario", usuario);
+
+        return new ModelAndView("editarClub", modelo);
+    }
+
+    @RequestMapping(path = "/club/{clubId}/editar", method = RequestMethod.POST)
+    public ModelAndView editar(@PathVariable("clubId") Long clubId, @ModelAttribute("club") Club club, HttpServletRequest request, @RequestParam("imagen") MultipartFile imagen) throws NoExisteEseClub, YaExisteUnClubConEseNombre, ClubExistente {
+        Usuario usuario = (Usuario) request.getSession().getAttribute("usuario");
+        if (!imagen.isEmpty()) {
+            // Usar una ruta absoluta o un directorio dentro de static
+            String uploadDir = System.getProperty("user.dir") + "/uploads/";  // Usando la raíz del proyecto
+            String imagePath = uploadDir + imagen.getOriginalFilename();
+            File dir = new File(uploadDir);
+
+            // Crear la carpeta si no existe
+            if (!dir.exists()) {
+                dir.mkdirs();
+            }
+
+            try {
+                imagen.transferTo(new File(imagePath)); // Guardar el archivo
+                club.setImagen("/uploads/" + imagen.getOriginalFilename()); // Usar la URL para mostrar la imagen
+            } catch (IOException e) {
+                throw new RuntimeException("Error al guardar la imagen", e);
+            }
+        }
+        club.setAdminPrincipal(usuario);
+        servicioClub.actualizar(club);
+
+        return new ModelAndView("redirect:/club/" + clubId);
     }
 }

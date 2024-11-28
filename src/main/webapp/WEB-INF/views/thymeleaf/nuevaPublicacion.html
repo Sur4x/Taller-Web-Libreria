@@ -10,25 +10,28 @@
 
 <div th:insert="fragments/header :: header"></div>
 
-<h1 class="mb-4 text-center">Crear Nuevo Subtítulo</h1>
+<div class="container mt-5 pt-5">
+    <h1 class="text-center mb-4">Crear nueva publicación</h1>
 
-<p th:if="${error != null}" class="alert alert-danger mt-3" th:text="'Error: ' + ${error}"></p>
+    <p th:if="${error != null}" class="alert alert-danger mt-3" th:text="'Error: ' + ${error}"></p>
 
-<form th:action="@{/club/{clubId}/nuevaPublicacion(clubId=${clubId})}" th:object="${publicacion}" method="post" class="p-4 shadow-sm rounded bg-light" enctype="multipart/form-data">
-    <div class="mb-3">
-        <label for="titulo" class="form-label">Título</label>
-        <input type="text" id="titulo" class="form-control" th:field="*{titulo}" placeholder="Escribe el título aquí" required>
-    </div>
+    <form th:action="@{/club/{clubId}/nuevaPublicacion(clubId=${clubId})}" th:object="${publicacion}" method="post" enctype="multipart/form-data">
+        <div class="mb-3">
+            <label for="titulo" class="form-label">Título</label>
+            <input type="text" id="titulo" class="form-control" th:field="*{titulo}" placeholder="Escribe el título aquí" required>
+        </div>
 
-    <div class="mb-3">
-        <label for="mensaje" class="form-label">Mensaje</label>
-        <textarea id="mensaje" class="form-control" th:field="*{mensaje}" placeholder="Escribe el mensaje aquí" rows="4" required></textarea>
-    </div>
+        <div class="mb-3">
+            <label for="mensaje" class="form-label">Mensaje</label>
+            <textarea id="mensaje" class="form-control" th:field="*{mensaje}" placeholder="Escribe el mensaje aquí" rows="4" required></textarea>
+        </div>
 
-    <button type="submit" class="btn btn-primary w-100">Crear</button>
-</form>
-
+        <button type="submit" class="btn btn-primary">Crear</button>
+        <a class="btn btn-secondary mt-4" th:href="@{/club/{clubId}/(clubId=${clubId})}">Cancelar</a>
+    </form>
+</div>
 
 <script th:src="@{/webjars/bootstrap/5.2.0/js/bootstrap.bundle.min.js}"></script>
+
 </body>
 </html>

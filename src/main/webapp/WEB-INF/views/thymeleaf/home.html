@@ -14,31 +14,42 @@
 <div th:insert="fragments/header :: header"></div>
 
 <main class="container mt-5 pt-5">
+
     <div th:if="${usuario == null or usuario.rol == 'usuario'}">
         <div class="row">
 
             <div class="col-lg-8">
-                <div class="club-container mb-5">
-                    <h2 th:if="${usuario == null or #lists.isEmpty(usuario.categoriasPreferidas)}">Explora nuestros clubes</h2>
-                    <h2 th:if="${usuario != null and !#lists.isEmpty(usuario.categoriasPreferidas)}">Recomendaciones de clubes según tus preferencias</h2>
-                    <div th:if="${#lists.isEmpty(clubs)}">
-                        <h4>No hay clubes registrados</h4>
-                    </div>
-                    <div th:if="${!#lists.isEmpty(clubs)}" class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
-                        <div th:each="club : ${clubs}" class="col">
-                            <a th:id="'club-' + ${club.id}" th:href="@{/club/{id}(id=${club.id})}" class="text-decoration-none">
-                                <div class="card shadow-sm h-100">
-                                    <img th:src="@{${club.imagen}}" class="card-img-top" alt="Imagen del club">
-                                    <div class="card-body">
-                                        <h5 class="card-title text-center" th:text="${club.nombre}">Nombre del club</h5>
-                                    </div>
-                                </div>
-                            </a>
+                <div class="club-container mb-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h2 th:if="${usuario == null or #lists.isEmpty(usuario.categoriasPreferidas)}">
+                                Algunos de nuestros clubs
+                            </h2>
+                            <h2 th:if="${usuario != null and !#lists.isEmpty(usuario.categoriasPreferidas)}">
+                                Recomendaciones de clubs según tus preferencias
+                            </h2>
                         </div>
+                        <a th:href="@{/buscarTodosLosClubs}">
+                            <button type="submit" class="btn btn-primary">Mostrar todos los clubs</button>
+                        </a>
+                    </div>
+                </div>
+                <div th:if="${#lists.isEmpty(clubs)}">
+                    <h4>No hay clubes registrados</h4>
+                </div>
+                <div th:if="${!#lists.isEmpty(clubs)}" class="row row-cols-1 row-cols-md-2 mb-5 row-cols-lg-4 g-4">
+                    <div th:each="club : ${clubs}" class="col">
+                        <a th:id="'club-' + ${club.id}" th:href="@{/club/{id}(id=${club.id})}" class="text-decoration-none">
+                            <div class="card shadow-sm h-100">
+                                <img th:src="@{${club.imagen}}" class="card-img-top" alt="Imagen del club">
+                                <div class="card-body">
+                                    <h5 class="card-title text-center" th:text="${club.nombre}">Nombre del club</h5>
+                                </div>
+                            </div>
+                        </a>
                     </div>
                 </div>
             </div>
-
 
             <!-- Sidebar (Noticias) -->
             <div class="col-lg-4">
@@ -49,15 +60,13 @@
                     <div class="card-body">
                         <ul class="list-group list-group-flush">
                             <li th:each="noticia : ${noticias}" class="list-group-item">
-                                <a th:href="@{${noticia.enlace}}" th:text="${noticia.titulo}"
-                                   class="text-decoration-none"></a>
+                                <a th:href="@{${noticia.enlace}}" th:text="${noticia.titulo}" class="text-decoration-none"></a>
                                 <p th:text="${noticia.contenido}" class="mt-2 text-muted"></p>
-                                <!-- Muestra un resumen del contenido -->
                             </li>
                         </ul>
                     </div>
                 </div>
-                <div th:if="${usuario!=null and usuario.rol == 'usuario'}" class="card">
+                <div th:if="${usuario != null and usuario.rol == 'usuario'}" class="card">
                     <div class="card-header bg-primary text-white">
                         <h4>Mis Clubs</h4>
                     </div>
@@ -66,13 +75,13 @@
                         <ul class="list-group list-group-flush">
                             <li th:each="club : ${usuario.clubsInscriptos}" class="list-group-item d-flex align-items-center">
                                 <a th:href="@{/club/{id}(id=${club.id})}">
-                                    <!-- Imagen más pequeña -->
-                                    <img th:src="@{${club.imagen}}" class="img-fluid me-3" alt="Imagen del club" style="width: 50px; height: 50px; object-fit: cover;">
+                                    <img th:src="@{${club.imagen}}" class="img-fluid me-3" alt="Imagen del club"
+                                         style="width: 50px; height: 50px; object-fit: cover;">
                                 </a>
-                                <!-- Texto del club -->
                                 <div>
                                     <h5 class="mb-0">
-                                        <a th:href="@{/club/{id}(id=${club.id})}" th:text="${club.nombre}" class="text-decoration-none"></a>
+                                        <a th:href="@{/club/{id}(id=${club.id})}" th:text="${club.nombre}"
+                                           class="text-decoration-none"></a>
                                     </h5>
                                 </div>
                             </li>
@@ -129,8 +138,9 @@
                 <tr th:each="club : ${clubs}">
                     <td th:text="${club.id}">1</td>
                     <td>
-                        <a th:href="@{/club/{id}(id=${club.id})}"><img th:src="@{${club.imagen}}" alt="Imagen del club" class="img-fluid"
-                             style="width: 50px; height: 50px;"></a>
+                        <a th:href="@{/club/{id}(id=${club.id})}"><img th:src="@{${club.imagen}}" alt="Imagen del club"
+                                                                       class="img-fluid"
+                                                                       style="width: 50px; height: 50px;"></a>
                     </td>
                     <td th:text="${club.nombre}">Nombre del club</td>
                     <td th:text="${club.descripcion}">Descripción del club</td>
@@ -139,13 +149,14 @@
                         <div class="d-flex justify-content-between">
                             <a th:href="@{/club/{id}/listar/reportes(id=${club.id})}"
                                class="btn btn-primary btn-sm">Ver</a>
-                            <form th:action="@{/club/eliminar/{id}(id=${club.id})}" method="post"
+
+                            <a th:href="@{/club/eliminar/{id}(id=${club.id})}"
                                   style="display: inline;">
                                 <button type="submit" class="btn btn-danger btn-sm"
                                         onclick="return confirm('¿Estás seguro de que deseas eliminar este club?');">
                                     Eliminar
                                 </button>
-                            </form>
+                            </a>
                         </div>
                     </td>
                 </tr>

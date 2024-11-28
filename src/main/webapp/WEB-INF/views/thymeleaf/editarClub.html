@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Crear Club</title>
+    <link rel="stylesheet" href="../../../resources/core/css/mainOld.css">
+    <link rel="stylesheet" th:href="@{/webjars/bootstrap/5.2.0/css/bootstrap.min.css}"/>
+    <link rel="stylesheet" th:href="@{/css/main.css}"/>
+    <link rel="stylesheet" th:href="@{/css/popup.css}">
+</head>
+<body>
+
+<div th:insert="fragments/header :: header"></div>
+
+<div class="container mt-5 pt-5">
+    <h1 class="text-center mb-4">Cree su nuevo club</h1>
+
+    <form th:action="@{/club/{clubId}/editar(clubId=${club.id})}" method="POST" th:object="${club}" enctype="multipart/form-data">
+        <div class="mb-3">
+            <label for="imagen" class="form-label">Imagen del Club</label>
+            <input id="imagen" th:field="*{imagen}" type="file" class="form-control" placeholder="Suba la imagen de su club">
+            <small class="form-text text-muted">Dejar vacío si no desea cambiar la imagen.</small>
+        </div>
+
+        <input id="id" th:field="*{id}" th:type="hidden">
+
+        <div class="mb-3">
+            <label for="nombre" class="form-label">Nombre del Club</label>
+            <input id="nombre" th:field="*{nombre}" type="text" class="form-control" placeholder="Nombre del club" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="descripcion" class="form-label">Descripción</label>
+            <textarea id="descripcion" th:field="*{descripcion}" class="form-control" placeholder="Descripción" rows="3" required></textarea>
+        </div>
+
+        <div class="mb-3">
+            <label for="genero" class="form-label">Categoría</label>
+            <select id="genero" th:field="*{genero}" class="form-select" required>
+                <option value="" disabled>Seleccione una categoría</option>
+                <option value="Novelas Contemporaneas">Novelas Contemporaneas</option>
+                <option value="Clasicos Literarios">Clasicos Literarios</option>
+                <option value="Fantasia">Fantasia</option>
+                <option value="Ciencia Ficcion">Ciencia Ficcion</option>
+                <option value="Romance">Romance</option>
+                <option value="Misterio">Misterio</option>
+                <option value="Horror">Horror</option>
+                <option value="Autodesarrollo">Autodesarrollo</option>
+                <option value="Viajes y aventura">Viajes y aventura</option>
+                <option value="Infantil">Infantil</option>
+                <option value="Poesia">Poesia</option>
+                <option value="Teatro">Teatro</option>
+                <option value="Ciencia y tecnologia">Ciencia y tecnologia</option>
+                <option value="Cocina y gastronomia">Cocina y gastronomia</option>
+                <option value="Arte">Arte</option>
+                <option value="Temas Sociales">Temas Sociales</option>
+                <option value="Deportes">Deportes</option>
+                <option value="Historia">Historia</option>
+            </select>
+        </div>
+
+        <button id="crearClub" type="submit" class="btn btn-primary">Guardar Cambios</button>
+    </form>
+
+</div>
+
+<div id="errorPopup"
+     class="popup"
+     th:if="${mensaje}"
+     th:text="${mensaje}"
+     th:data-mensaje="${mensaje}">
+</div>
+
+<script th:src="@{/webjars/bootstrap/5.2.0/js/bootstrap.bundle.min.js}"></script>
+<script th:src="@{/js/popup.js}"></script>
+</body>
+</html>

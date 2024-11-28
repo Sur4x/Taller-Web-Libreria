@@ -25,5 +25,7 @@ public interface RepositorioClub {
     Double obtenerPromedioDeUnClub(Long id);
 
     boolean existeUnClubConEsteNombre(String nombre);
+
+    List<Club> obtenerClubsRandom(Integer cantidad);
 }
 
