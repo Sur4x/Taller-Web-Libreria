@@ -15,7 +15,6 @@
 
 <main class="container mt-5 pt-5">
 
-    <body>
     <div class="container mt-5">
 
         <h1 th:text="${evento.nombre}"></h1>
@@ -23,9 +22,6 @@
 
         <a class="btn btn-secondary mt-4 mb-2" th:href="@{/club/{clubId}/(clubId=${club.id})}">Volver</a>
 
-        <div th:if="${club.getAdminPrincipal().equals(usuario) || club.getAdminsSecundarios().contains(usuario)}">
-        <a th:href="@{/club/{clubId}/evento/{eventoId}/finalizarEvento(clubId=${club.id}, eventoId=${evento.id})}"><button type="submit" class="btn btn-primary">Finalizar evento</button></a>
-        </div>
         <!-- Contenedor para el chat -->
         <div class="card mt-2">
             <div class="card-header">
@@ -64,11 +60,17 @@
                 </form>
             </div>
         </div>
+
+        <div th:if="${club.getAdminPrincipal().equals(usuario) || club.getAdminsSecundarios().contains(usuario)}">
+            <a th:href="@{/club/{clubId}/evento/{eventoId}/finalizarEvento(clubId=${club.id}, eventoId=${evento.id})}"><button type="submit" class="btn btn-danger mt-2">Finalizar evento</button></a>
+        </div>
     </div>
+
+
 
     <!-- Enlace a los scripts de Bootstrap -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
-    </body>
+
 
 </main>
 

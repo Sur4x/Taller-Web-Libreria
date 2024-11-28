@@ -131,7 +131,7 @@
                                         </form>
                                         <div th:if="${puntuacion != null}">
                                             <a th:href="@{/club/despuntuar/{id}(id=${club.id})}"
-                                               class="btn btn-lg btn-success w-100">Eliminar puntuación</a>
+                                               class="btn btn-lg btn-success w-100 ms-3">Eliminar puntuación</a>
                                         </div>
                                     </div>
                                     <div th:if="${club.adminPrincipal.equals(usuario)}"
