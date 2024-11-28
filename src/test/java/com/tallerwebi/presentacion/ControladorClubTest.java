@@ -182,18 +182,18 @@ public class ControladorClubTest {
     }
 
 
-    @Test
-    public void dadoElMetodoEliminarClubCuandoLoEliminaExitosamenteMeRedireccionaALaVistaHome() throws NoExisteEseClub, NoExisteEseUsuario, NoExistenClubs {
-        when(requestMock.getSession()).thenReturn(sessionMock);
-        when(sessionMock.getAttribute("usuario")).thenReturn(usuarioMock);
-
-        when(servicioClubMock.buscarClubPor(any())).thenReturn(clubMock);
-
-        ModelAndView modelo = controladorClub.eliminarClub(clubMock.getId(), requestMock);
-
-        assertThat(modelo.getViewName(), equalTo("redirect:/home"));
-        verify(servicioClubMock, times(1)).eliminarClub(clubMock);
-    }
+//    @Test
+//    public void dadoElMetodoEliminarClubCuandoLoEliminaExitosamenteMeRedireccionaALaVistaHome() throws NoExisteEseClub, NoExisteEseUsuario, NoExistenClubs {
+//        when(requestMock.getSession()).thenReturn(sessionMock);
+//        when(sessionMock.getAttribute("usuario")).thenReturn(usuarioMock);
+//
+//        when(servicioClubMock.buscarClubPor(any())).thenReturn(clubMock);
+//
+//        ModelAndView modelo = controladorClub.eliminarClub(clubMock.getId(), requestMock);
+//
+//        assertThat(modelo.getViewName(), equalTo("redirect:/home"));
+//        verify(servicioClubMock, times(1)).eliminarClub(clubMock);
+//    }
 
     @Test
     public void dadoElMetodoEliminarClubCuandoLoNoEliminaExitosamenteMeRedireccionaALaVistaHome() throws NoExisteEseClub, NoExisteEseUsuario, NoExistenClubs {

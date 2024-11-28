@@ -1,16 +1,20 @@
 package com.tallerwebi.infraestructura;
 
 import com.tallerwebi.dominio.Club;
+import com.tallerwebi.dominio.Like;
 import com.tallerwebi.dominio.Reporte;
+import com.tallerwebi.dominio.Usuario;
 import com.tallerwebi.integracion.config.HibernateTestConfig;
 import org.hibernate.SessionFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import javax.persistence.Query;
 import javax.transaction.Transactional;
 
 import java.util.List;
@@ -26,32 +30,39 @@ public class RepositorioReporteImplTest {
 
     private RepositorioReporteImpl repositorioReporte;
     private RepositorioClubImpl repositorioClub;
+    private RepositorioUsuarioImpl repositorioUsuario;
 
     @Autowired
     private SessionFactory sessionFactory;
 
     @BeforeEach
     public void setUp() {
-        repositorioReporte = new RepositorioReporteImpl(sessionFactory);
-        repositorioClub = new RepositorioClubImpl(sessionFactory);
+        this.repositorioReporte = new RepositorioReporteImpl(sessionFactory);
+        this.repositorioClub = new RepositorioClubImpl(sessionFactory);
+        this.repositorioUsuario = new RepositorioUsuarioImpl(sessionFactory);
     }
 
-   @Test
-   public void dadoElMetodobuscarReportePorIdSiEncuentraElReporteMeLoDevuelve() {
-
-       Reporte reporte = new Reporte();
-       reporte.setDescripcion("Descripcion de prueba");
-
-       repositorioReporte.guardar(reporte);
-
-       Long id = reporte.getId();
-
-       Reporte reporteEsperado = repositorioReporte.buscarReportePorId(id);
-
-       assertThat(reporteEsperado, is(notNullValue()));
-       assertThat(reporteEsperado.getDescripcion(), equalTo("Descripcion de prueba"));
-   }
     @Test
+    @Rollback
+    @Transactional
+    public void dadoElMetodobuscarReportePorIdSiEncuentraElReporteMeLoDevuelve() {
+
+        Reporte reporte = new Reporte();
+        reporte.setDescripcion("Descripcion de prueba");
+
+        repositorioReporte.guardar(reporte);
+
+        Long id = reporte.getId();
+
+        Reporte reporteEsperado = repositorioReporte.buscarReportePorId(id);
+
+        assertThat(reporteEsperado, is(notNullValue()));
+        assertThat(reporteEsperado.getDescripcion(), equalTo("Descripcion de prueba"));
+    }
+
+    @Test
+    @Rollback
+    @Transactional
     public void dadoQueIntentaGuardarUnReporteEnLaBaseYLoHaceCorrectamente() {
 
         Reporte reporte = new Reporte();
@@ -64,6 +75,8 @@ public class RepositorioReporteImplTest {
     }
 
     @Test
+    @Rollback
+    @Transactional
     public void dadoQueIntentaEliminarUnReporteYLoHaceCorrectamente() {
 
         Reporte reporte = new Reporte();
@@ -80,6 +93,8 @@ public class RepositorioReporteImplTest {
     }
 
     @Test
+    @Rollback
+    @Transactional
     public void dadoQueIntentaObtenerTodosLosReportesDeUnClubYLoHaceCorrectamente() {
         Club club = new Club();
         club.setNombre("Club de Prueba");

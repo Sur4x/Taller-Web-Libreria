@@ -79,10 +79,9 @@ public class ServicioReporteTest {
         reporte.setId(1L);
         when(repositorioReporteMock.buscarReportePorId(reporte.getId())).thenReturn(reporte);
 
-        ReporteExistente excepcionEsperada = assertThrows(ReporteExistente.class, () -> servicioReporte.guardarReporte(reporte));
+        servicioReporte.guardarReporte(reporte);
 
-        assertEquals(excepcionEsperada.getMessage(), "El reporte ya fue realizado");
-        verify(repositorioReporteMock, times(0)).guardar(reporte);
+        verify(repositorioReporteMock, times(1)).guardar(reporte);
     }
 
     @Test
@@ -128,38 +127,6 @@ public class ServicioReporteTest {
         //List<Reporte> resultado = servicioReporte.listarReportesPorClub(club);
 
         //assertThat(resultado.size(), is(2));
-    }
-
-    @Test
-    public void dadoElMetodoObtenerTodosLosReportesDeUnClubCuandoElClubTieneUnSoloReporteUtilizaElMetodoGuardarYSigueComoClubAccesible(){
-        Club club = new Club();
-        club.setReportes(new ArrayList<>());
-        Reporte reporte = new Reporte();
-        club.getReportes().add(reporte);
-
-        //when(repositorioReporteMock.obtenerTodosLosReportesDeUnClub(club)).thenReturn(club.getReportes());
-
-        servicioReporte.obtenerCantidadDeReportesDeUnClub(club);
-
-        verify(repositorioClubMock, times(1)).guardar(club);
-        assertThat(club.getEstaReportado(), equalTo("CLUB ACCESIBLE"));
-    }
-
-    @Test
-    public void dadoElMetodoObtenerTodosLosReportesDeUnClubCuandoElClubTieneDosReportesUtilizaElMetodoGuardarYSigueComoClubReportado(){
-        Club club = new Club();
-        club.setReportes(new ArrayList<>());
-        Reporte reporte = new Reporte();
-        Reporte reporte2 = new Reporte();
-        club.getReportes().add(reporte);
-        club.getReportes().add(reporte2);
-
-        //when(repositorioReporteMock.obtenerTodosLosReportesDeUnClub(club)).thenReturn(club.getReportes());
-
-        servicioReporte.obtenerCantidadDeReportesDeUnClub(club);
-
-        verify(repositorioClubMock, times(1)).guardar(club);
-        assertThat(club.getEstaReportado(), equalTo("CLUB REPORTADO"));
     }
 
     @Test

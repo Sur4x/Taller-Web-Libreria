@@ -70,7 +70,7 @@ public class ControladorPublicacionTest {
 
         ModelAndView modelo = controladorPublicacion.realizarPublicacion(club.getId(),publicacion, requestMock);
 
-        assertThat(modelo.getViewName(), equalToIgnoringCase("redirect:/club/{clubId}"));
+        assertThat(modelo.getViewName(), equalToIgnoringCase("detalleClub"));
     }
 
     @Test

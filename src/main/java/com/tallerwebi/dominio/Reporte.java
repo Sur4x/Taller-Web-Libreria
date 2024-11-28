@@ -9,7 +9,7 @@ public class Reporte {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "usuario_id", nullable = false) // Relación con Usuario
+    @JoinColumn(name = "usuario_id") // Relación con Usuario
     private Usuario usuario;
 
     @ManyToOne

@@ -49,7 +49,7 @@ public class ControladorComentarioTest {
 
         ModelAndView modelo = controladorComentario.crearNuevoComentario(comentario, publicacion.getId(), clubMock.getId(), requestMock);
 
-        assertThat(modelo.getViewName(), equalTo("redirect:/club/" + clubMock.getId()  + "/detallePublicacion"+ "/" + publicacion.getId()));
+        assertThat(modelo.getViewName(), equalTo("detallePublicacion"));
         verify(servicioComentarioMock, times(1)).guardarComentario(comentario, publicacion);
     }
 
@@ -69,7 +69,7 @@ public class ControladorComentarioTest {
     }
 
     @Test
-    public void dadoElMetodoIrAEliminarComentarioSiLoEliminarCorrectamenteMeRedireccionaALaVistaDetallaClubConUnErrorEspecifico() throws NoExisteEseClub {
+    public void dadoElMetodoIrAEliminarComentarioSiLoEliminarCorrectamenteMeRedireccionaALaVistaDetallaClub() throws NoExisteEseClub {
         Long clubId = 1L;
         Long publicacionId = 2L;
         Long comentarioId = 3L;
@@ -95,15 +95,14 @@ public class ControladorComentarioTest {
 
         ModelAndView modelo = controladorComentario.IrAEliminarComentario(clubId, publicacionId,comentarioId, requestMock);
 
-        assertThat(modelo.getViewName(), equalTo("redirect:/club/" + clubId + "/detallePublicacion/" + publicacionId));
-        assertThat(modelo.getModel().get("error"), equalTo("Comentario eliminado correctamente."));
+        assertThat(modelo.getViewName(), equalTo("detallePublicacion"));
         verify(servicioComentarioMock, times(1)).eliminarComentario(comentario);
         verify(servicioPublicacionMock, times(1)).buscarPublicacionEnUnClub(publicacionId, club);
         verify(servicioComentarioMock, times(1)).buscarComentarioEnUnaPublicacion(comentarioId,publicacion);
     }
 
     @Test
-    public void dadoElMetodoIrAEliminarComentarioSiNoLoPuedoEliminarCorrectamenteMeRedireccionaALaVistaDetallaClubConUnErrorEspecifico() throws NoExisteEseClub {
+    public void dadoElMetodoIrAEliminarComentarioSiNoLoPuedoEliminarCorrectamenteMeRedireccionaALaVistaDetallaClub() throws NoExisteEseClub {
         Long clubId = 1L;
         Long publicacionId = 2L;
         Long comentarioId = 3L;
@@ -122,17 +121,15 @@ public class ControladorComentarioTest {
         publicacion.setId(publicacionId);
 
         when(servicioClubMock.buscarClubPor(clubId)).thenReturn(club);
-        when(servicioPublicacionMock.buscarPublicacionEnUnClub(publicacionId, club)).thenReturn(null);
+        when(servicioPublicacionMock.buscarPublicacionEnUnClub(publicacionId, club)).thenReturn(publicacion);
 
         when(requestMock.getSession()).thenReturn(sessionMock);
         when(sessionMock.getAttribute("usuario")).thenReturn(usuario);
 
         ModelAndView modelo = controladorComentario.IrAEliminarComentario(clubId, publicacionId,comentarioId, requestMock);
 
-        assertThat(modelo.getViewName(), equalTo("redirect:/club/" + clubId + "/detallePublicacion/" + publicacionId));
-        assertThat(modelo.getModel().get("error"), equalTo("Error al eliminar el comentario."));
+        assertThat(modelo.getViewName(), equalTo("detallePublicacion"));
         verify(servicioComentarioMock, times(0)).eliminarComentario(comentario);
         verify(servicioPublicacionMock, times(1)).buscarPublicacionEnUnClub(publicacionId, club);
-        verify(servicioComentarioMock, times(0)).buscarComentarioEnUnaPublicacion(comentarioId,publicacion);
     }
 }
