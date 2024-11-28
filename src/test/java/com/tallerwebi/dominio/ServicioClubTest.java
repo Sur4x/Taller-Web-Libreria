@@ -117,7 +117,6 @@ public class ServicioClubTest {
     public void dadoQueUsoElMetodoBuscarClubPorNombreYNoTengoAlmacenadoNingunClubsConEseNombreDevuelveUnaExcepcion() throws NoSeEncontraroClubsConEseNombre {
         when(repositorioClubMock.buscarClubPorNombre("test")).thenReturn(new ArrayList<>());
 
-        servicioClub.buscarClubPorNombre("test");
         NoSeEncontraroClubsConEseNombre excepcionEsperada = assertThrows(NoSeEncontraroClubsConEseNombre.class, () -> servicioClub.buscarClubPorNombre(clubMock.getNombre()));
 
         assertEquals(excepcionEsperada.getMessage(), "No existe ningun club con ese nombre.");

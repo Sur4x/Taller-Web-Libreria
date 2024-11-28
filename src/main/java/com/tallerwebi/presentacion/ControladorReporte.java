@@ -1,11 +1,8 @@
 package com.tallerwebi.presentacion;
 
 import com.tallerwebi.dominio.*;
-import com.tallerwebi.dominio.excepcion.NoExisteEseClub;
-import com.tallerwebi.dominio.excepcion.NoExisteEseUsuario;
-import com.tallerwebi.dominio.excepcion.ReporteExistente;
+import com.tallerwebi.dominio.excepcion.*;
 //import com.tallerwebi.dominio.excepcion.YaExisteUnReporteDeEsteUsuario;
-import com.tallerwebi.dominio.excepcion.YaExisteUnReporteDeEsteUsuario;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
 import java.util.List;
 
 @Controller
@@ -113,7 +111,7 @@ public class ControladorReporte {
     }
 
     @RequestMapping(path = "/club/{idClub}/listarReportes/aprobarReporte/{idReporte}")
-    public ModelAndView aprobarReporte(@PathVariable("idClub") Long idClub, @PathVariable("idReporte") Long idReporte, HttpServletRequest request) throws NoExisteEseClub, NoExisteEseUsuario {
+    public ModelAndView aprobarReporte(@PathVariable("idClub") Long idClub, @PathVariable("idReporte") Long idReporte, HttpServletRequest request) throws NoExisteEseClub, NoExisteEseUsuario, YaExisteUnClubConEseNombre, ClubExistente {
 
         servicioReporte.aprobarReporte(idReporte);
 
@@ -122,13 +120,29 @@ public class ControladorReporte {
         servicioNotificacion.enviarNotificacionDeReporteAprobadoALosAdminDelClub(idClub, reporte);
 
         List<Reporte> reportesAprobados = servicioReporte.obtenerTodosLosReportesAprobadosDeUnClub(club);
+
+        if (reportesAprobados.size() < 3){
+            servicioNotificacion.crearNotificacionReporteAprobado(club, reporte);
+        }
+
         if (reportesAprobados.size() >= 3){
             for (Usuario integrante : club.getIntegrantes()) {
                 Usuario usuarioEncontrado = servicioUsuario.buscarUsuarioPor(integrante.getId());
                 servicioNotificacion.crearNotificacion(usuarioEncontrado, "clubEliminado", club.getNombre());
             }
+
+            for (Usuario admin : club.getAdminsSecundarios()) {
+                //estoy eliminando el club de los admins
+                admin.getClubsAdminSecundarios().remove(club);
+                //me falta eliminar los admins del club
+            }
+
             club.setAdminPrincipal(null);
+
+            //servicioClub.actualizar(club);
+
             servicioClub.eliminarClub(club);
+
             return new ModelAndView("redirect:/home");
         }
 

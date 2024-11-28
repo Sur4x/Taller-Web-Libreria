@@ -5,6 +5,7 @@ import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -12,7 +13,7 @@ import java.util.List;
 
 @Service
 @Transactional
-public class ServicioNotificacionImpl implements ServicioNotificacion{
+public class ServicioNotificacionImpl implements ServicioNotificacion {
 
 
     private RepositorioNotificacion repositorioNotificacion;
@@ -30,10 +31,10 @@ public class ServicioNotificacionImpl implements ServicioNotificacion{
     }
 
     @Override
-    public Notificacion buscarNotificacionPorId(Long id) throws NoExisteNingunaNotificacion{
+    public Notificacion buscarNotificacionPorId(Long id) throws NoExisteNingunaNotificacion {
         Notificacion notificacion = repositorioNotificacion.buscarNotificacionPor(id);
 
-        if(notificacion == null){
+        if (notificacion == null) {
             throw new NoExisteNingunaNotificacion("No hay notificacion registrada con ese id");
         }
         return notificacion;
@@ -41,20 +42,20 @@ public class ServicioNotificacionImpl implements ServicioNotificacion{
 
     @Override
     public List<Notificacion> obtenerElListadoDeNotificacionesDeUnUsuario(Usuario usuario) {
-       List<Notificacion> notificaciones = repositorioNotificacion.listarTodasLasNotificacionesDeUnUsuario(usuario.getId());
-       return notificaciones != null ? notificaciones : new ArrayList<>();
+        List<Notificacion> notificaciones = repositorioNotificacion.listarTodasLasNotificacionesDeUnUsuario(usuario.getId());
+        return notificaciones != null ? notificaciones : new ArrayList<>();
     }
 
     @Override
     public void crearNotificacion(Usuario usuario, String tipoNotificacion, String nombreClub) {
-        crearNotificacion(usuario, tipoNotificacion, nombreClub,null);
+        crearNotificacion(usuario, tipoNotificacion, nombreClub, null);
     }
 
     @Override
-    public void crearNotificacion(Usuario usuario, String tipoNotificacion, String nombreClub, String mensajeReporte){
+    public void crearNotificacion(Usuario usuario, String tipoNotificacion, String nombreClub, String mensajeReporte) {
         Notificacion notificacion = new Notificacion();
         notificacion.setFecha(LocalDateTime.now());
-        switch (tipoNotificacion){
+        switch (tipoNotificacion) {
             case "nuevoReporte":
                 notificacion.setEvento("El reporte en el club " + nombreClub + " fue aprobado" + mensajeReporte);
                 break;
@@ -78,6 +79,29 @@ public class ServicioNotificacionImpl implements ServicioNotificacion{
     @Override
     public void enviarNotificacionDeReporteAprobadoALosAdminDelClub(Long idClub, Reporte reporte) {
 
+    }
+
+    @Override
+    public void crearNotificacionReporteAprobado(Club club, Reporte reporte) {
+
+        List<Usuario> adminsSecundarios = club.getAdminsSecundarios();
+        Usuario adminPrincipalDeClub = club.getAdminPrincipal();
+
+        List<Usuario> usuariosNotificados = new ArrayList<>();
+        usuariosNotificados.add(adminPrincipalDeClub);  // Agregar el admin principal
+        usuariosNotificados.addAll(adminsSecundarios);  // Agregar los administradores secundarios
+
+        // Recorrer la lista de usuarios y enviarles la notificación
+        for (Usuario usuario : usuariosNotificados) {
+            Notificacion notificacion = new Notificacion();
+            notificacion.setFecha(LocalDateTime.now());
+            notificacion.setEvento("En su club con el nombre:  " + club.getNombre() + "<br>" +  " fue aprobado un reporte, decidimos que hay suficientes pruebas para que ustedes tomen medidas concretas: " + "<br>" +  reporte.getMotivo());
+
+            notificacion.setUsuario(usuario);
+            usuario.getNotificaciones().add(notificacion);  // Agregar la notificación al usuario
+            repositorioNotificacion.guardar(notificacion);   // Guardar la notificación en la base de datos
+            repositorioUsuario.guardar(usuario);             // Guardar los cambios en el usuario
+        }
     }
 
 }
