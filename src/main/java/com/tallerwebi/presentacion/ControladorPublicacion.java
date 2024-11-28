@@ -13,6 +13,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 @Controller
 public class ControladorPublicacion {
@@ -80,6 +83,19 @@ public class ControladorPublicacion {
 
         Publicacion publicacion = servicioPublicacion.buscarPublicacionPorId(publicacionId);
         if (publicacion != null) {
+            //cambia el formato de la fecha
+            List<Comentario> comentarios = publicacion.getComentarios();
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
+
+            for (Comentario comentario : comentarios) {
+                LocalDateTime fechaCreacion = comentario.getFechaCreacion();
+                if (fechaCreacion != null) {
+                    // Formatear la fecha directamente
+                    String fechaFormateada = fechaCreacion.format(formatter);
+                    comentario.setFechaCreacionFormateada(fechaFormateada);
+                }
+            }
+
             modelo.put("comentarios", publicacion.getComentarios());
             modelo.put("comentario", new Comentario());
             modelo.put("publicacion", publicacion);

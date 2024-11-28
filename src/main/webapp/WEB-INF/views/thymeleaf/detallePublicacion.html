@@ -51,6 +51,8 @@
                        style="text-decoration: none;"
                        th:text="${comentario.autor.nombreUsuario}">
                     </a>
+
+                    <p th:text="${comentario.fechaCreacionFormateada}">></p>
                 </div>
                 <div class="d-flex justify-content-between align-items-center">
                 <p class="mb-1" th:text="${comentario.texto}">Texto del comentario</p>
@@ -94,7 +96,6 @@
                             </button>
                         </form>
                     </div>
-                </div>
             </li>
         </ul>
     </div>

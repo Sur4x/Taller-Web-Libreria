@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Controller
@@ -35,6 +37,17 @@ public class ControladorNotificacion {
         }
 
         List<Notificacion> notificaciones = servicioNotificacion.obtenerElListadoDeNotificacionesDeUnUsuario(usuario);
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
+
+        for (Notificacion notificacion : notificaciones) {
+            LocalDateTime fecha = notificacion.getFecha();
+            if (fecha != null) {
+                // Convertir la fecha a formato deseado y asignarla a `fechaFormateada`
+                String fechaFormateada = fecha.format(formatter);
+                notificacion.setFechaFormateada(fechaFormateada);
+            }
+        }
 
         model.put("usuario", usuario);
         model.put("notificaciones", notificaciones);

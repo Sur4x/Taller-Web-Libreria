@@ -13,6 +13,9 @@ public class Notificacion {
     private LocalDateTime fecha;
     private String evento;
 
+    @Transient
+    private String fechaFormateada;
+
     @ManyToOne
     @JoinColumn(name = "usuario_id", nullable = false)
     private Usuario usuario;
@@ -59,4 +62,11 @@ public class Notificacion {
         return usuario;
     }
 
+    public String getFechaFormateada() {
+        return fechaFormateada;
+    }
+
+    public void setFechaFormateada(String fechaFormateada) {
+        this.fechaFormateada = fechaFormateada;
+    }
 }

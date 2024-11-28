@@ -21,7 +21,7 @@
         </thead>
         <tbody>
         <tr th:each="notificacion : ${notificaciones}">
-            <td th:text="${notificacion.fecha}">Fecha de notificación</td>
+            <td th:text="${notificacion.fechaFormateada}">Fecha de notificación</td>
             <td th:text="${notificacion.evento}">Evento</td>
         </tr>
         <tr th:if="${#lists.isEmpty(notificaciones)}">

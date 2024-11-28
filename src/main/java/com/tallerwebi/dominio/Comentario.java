@@ -1,6 +1,8 @@
 package com.tallerwebi.dominio;
 
 import javax.persistence.*;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,6 +15,10 @@ public class Comentario {
     private Long id;
 
     private String texto;
+    private LocalDateTime fechaCreacion;
+
+    @Transient
+    private String fechaCreacionFormateada;
 
     @ManyToOne
     @JoinColumn()
@@ -27,11 +33,12 @@ public class Comentario {
 
     public Comentario(){}
 
-    public Comentario(Long id, String texto, Usuario autor, Publicacion publicacion) {
+    public Comentario(Long id, String texto, Usuario autor, Publicacion publicacion, LocalDateTime fechaCreacion) {
         this.id = id;
         this.texto = texto;
         this.autor = autor;
         this.publicacion = publicacion;
+        this.fechaCreacion = fechaCreacion;
     }
 
     public Long getId() {
@@ -81,5 +88,21 @@ public class Comentario {
             }
         }
         return false;
+    }
+
+    public LocalDateTime getFechaCreacion() {
+        return fechaCreacion;
+    }
+
+    public void setFechaCreacion(LocalDateTime fechaCreacion) {
+        this.fechaCreacion = fechaCreacion;
+    }
+
+    public String getFechaCreacionFormateada() {
+        return fechaCreacionFormateada;
+    }
+
+    public void setFechaCreacionFormateada(String fechaCreacionFormateada) {
+        this.fechaCreacionFormateada = fechaCreacionFormateada;
     }
 }
