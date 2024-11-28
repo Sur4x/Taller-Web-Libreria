@@ -45,6 +45,27 @@
             </ul>
         </div>
 
+        <!-- Logros -->
+        <div class="profile-info mt-4">
+            <h3>Logros</h3>
+            <div>
+                <!-- Logro actual -->
+                <h4>Logro Actual:</h4>
+                <p th:text="${logro != null ? logro.descripcion : 'No tienes logros activos.'}"></p>
+                <div th:if="${logro != null}">
+                    <a th:href="@{/logros/cumplido}" class="btn btn-success me-2">Logro Cumplido</a>
+                    <a th:href="@{/logros/nuevo}" class="btn btn-primary">Generar Nuevo Logro</a>
+                </div>
+            </div>
+
+            <!-- Contador de logros cumplidos -->
+            <div class="mt-4">
+                <h4>Logros Cumplidos:</h4>
+                <p>Logros de Libros: <span th:text="${logrosLibrosCumplidos}"></span></p>
+                <p>Logros de Clubes: <span th:text="${logrosClubesCumplidos}"></span></p>
+            </div>
+        </div>
+
         <!-- Solo mostrar botones de acción si el usuario está logueado -->
         <div th:if="${usuarioPerfil != null and usuarioActual != null}">
             <div th:if="${usuarioPerfil.id} != ${usuarioActual.id}">

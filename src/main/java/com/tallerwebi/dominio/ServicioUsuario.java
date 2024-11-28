@@ -21,4 +21,5 @@ public interface ServicioUsuario {
     Set<Usuario> obtenerUsuariosSeguidos(Usuario usuario);
 
     void guardarReporteEnUnUsuario(Reporte reporte, Usuario usuario);
+
 }

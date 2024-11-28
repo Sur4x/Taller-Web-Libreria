@@ -72,6 +72,9 @@ public class Usuario {
     @OneToMany(mappedBy = "remitente")
     private List<Mensaje> mensajes = new ArrayList<>(); //MENSAJE
 
+    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Logro> logros = new ArrayList<>();
+
     public Usuario(){};
     public Usuario(String nombreUsuario, String email,String password, List<Club> clubsInscriptos) {
         this.nombreUsuario = nombreUsuario;
@@ -79,6 +82,19 @@ public class Usuario {
         this.password = password;
         this.clubsInscriptos = clubsInscriptos;
     }
+
+    public Integer getLogrosCompletados() {
+        return logrosCompletados;
+    }
+
+    public void setLogrosCompletados(Integer logrosCompletados) {
+        this.logrosCompletados = logrosCompletados;
+    }
+
+    private Integer logrosCompletados = 0;
+    private Integer proximoLogro = 2; // Inicializa el primer objetivo
+
+
 
     public Set<Reporte> getReportes() {
         return reportes;
@@ -225,6 +241,11 @@ public class Usuario {
         Usuario usuario = (Usuario) o;
         return Objects.equals(id, usuario.id);
     }
+    public void completarLogro() {
+        this.logrosCompletados++;
+        this.proximoLogro += 2; // Incrementa de 2 en 2
+    }
+
 
     @Override
     public int hashCode() {
