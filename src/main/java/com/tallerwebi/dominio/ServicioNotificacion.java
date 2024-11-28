@@ -16,4 +16,5 @@ public interface ServicioNotificacion {
 
     void crearNotificacion(Usuario usuario, String tipoNotificacion, String nombreClub, String mensajeReporte);
 
+    void enviarNotificacionDeReporteAprobadoALosAdminDelClub(Long idClub, Reporte reporte);
 }

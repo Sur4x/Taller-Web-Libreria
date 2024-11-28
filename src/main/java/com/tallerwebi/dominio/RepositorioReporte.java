@@ -19,4 +19,6 @@ public interface RepositorioReporte {
     List<Reporte> obtenerTodosLosReportesDeUnClub(Long id);
 
     List<Reporte> obtenerTodosLosReportesAprobadosDeUnClub(Long id);
+
+    void aprobarReporte(Long idReporte);
 }

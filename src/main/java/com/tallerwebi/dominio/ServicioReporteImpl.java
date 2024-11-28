@@ -40,7 +40,6 @@ public class ServicioReporteImpl implements ServicioReporte{
     public void eliminarReporte(Long id) {
         Reporte reporte = repositorioReporte.buscarReportePorId(id);
         if (reporte != null) {
-
             repositorioReporte.eliminar(reporte);
         }
     }
@@ -54,6 +53,11 @@ public class ServicioReporteImpl implements ServicioReporte{
     public List<Reporte> obtenerTodosLosReportesAprobadosDeUnClub(Club club) {
 
         return repositorioReporte.obtenerTodosLosReportesAprobadosDeUnClub(club.getId());
+    }
+
+    @Override
+    public void aprobarReporte(Long idReporte) {
+        repositorioReporte.aprobarReporte(idReporte);
     }
 
     //mover a reporte

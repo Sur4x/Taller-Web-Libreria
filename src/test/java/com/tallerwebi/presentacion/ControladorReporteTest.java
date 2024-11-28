@@ -33,6 +33,7 @@ public class ControladorReporteTest {
     private ServicioReporte servicioReporteMock;
     private ServicioUsuario servicioUsuarioMock;
     private ServicioPuntuacion servicioPuntuacionMock;
+    private ServicioNotificacion servicioNotificacionMock;
     private ControladorReporte controladorReporte;
 
 
@@ -46,7 +47,8 @@ public class ControladorReporteTest {
         servicioReporteMock = mock(ServicioReporte.class);
         servicioUsuarioMock = mock(ServicioUsuario.class);
         servicioPuntuacionMock = mock(ServicioPuntuacion.class);
-        controladorReporte = new ControladorReporte(servicioClubMock, servicioReporteMock,servicioUsuarioMock,servicioPuntuacionMock);
+        servicioNotificacionMock = mock(ServicioNotificacion.class);
+        controladorReporte = new ControladorReporte(servicioClubMock, servicioReporteMock,servicioUsuarioMock,servicioPuntuacionMock,servicioNotificacionMock);
     }
 
     @Test

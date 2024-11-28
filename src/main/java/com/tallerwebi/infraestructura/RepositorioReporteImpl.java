@@ -62,6 +62,14 @@ public class RepositorioReporteImpl implements RepositorioReporte {
     }
 
     @Override
+    public void aprobarReporte(Long idReporte) {
+        String hql = "UPDATE Reporte r SET r.estado = 'aprobado' WHERE r.id = :idReporte";
+        Query query = this.sessionFactory.getCurrentSession().createQuery(hql);
+        query.setParameter("idReporte", idReporte);
+        query.executeUpdate();
+    }
+
+    @Override
     public Integer obtenerCantidadDeReportesDeUnClub(Long idClub) {
         String hql = "SELECT COUNT(r) FROM Reporte r WHERE r.club.id = :idClub AND r.estado = 'aprobado'";
         Query query = this.sessionFactory.getCurrentSession().createQuery(hql);

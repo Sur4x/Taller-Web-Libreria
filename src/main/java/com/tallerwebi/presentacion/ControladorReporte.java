@@ -26,13 +26,15 @@ public class ControladorReporte {
     private ServicioReporte servicioReporte;
     private ServicioUsuario servicioUsuario;
     private ServicioPuntuacion servicioPuntuacion;
+    private ServicioNotificacion servicioNotificacion;
 
     @Autowired
-    public ControladorReporte(ServicioClub servicioClub, ServicioReporte servicioReporte, ServicioUsuario servicioUsuario, ServicioPuntuacion servicioPuntuacion){
+    public ControladorReporte(ServicioClub servicioClub, ServicioReporte servicioReporte, ServicioUsuario servicioUsuario, ServicioPuntuacion servicioPuntuacion, ServicioNotificacion servicioNotificacion){
         this.servicioClub = servicioClub;
         this.servicioReporte = servicioReporte;
         this.servicioUsuario = servicioUsuario;
         this.servicioPuntuacion = servicioPuntuacion;
+        this.servicioNotificacion = servicioNotificacion;
     }
 
 
@@ -110,12 +112,34 @@ public class ControladorReporte {
         }
     }
 
-    @RequestMapping(path = "/club/eliminar/reporte/{id}", method = RequestMethod.POST)
-    public ModelAndView eliminarReporteDeUnClub(@PathVariable("id") Long id) throws NoExisteEseClub {
-        ModelMap modelo = new ModelMap();
+    @RequestMapping(path = "/club/{idClub}/listarReportes/aprobarReporte/{idReporte}")
+    public ModelAndView aprobarReporte(@PathVariable("idClub") Long idClub, @PathVariable("idReporte") Long idReporte, HttpServletRequest request) throws NoExisteEseClub, NoExisteEseUsuario {
 
+        servicioReporte.aprobarReporte(idReporte);
 
-        servicioReporte.eliminarReporte(id);
-        return new ModelAndView("verReportes", modelo);
+        Reporte reporte = servicioReporte.buscarReportePorId(idReporte);
+        Club club = servicioClub.buscarClubPor(idClub);
+        servicioNotificacion.enviarNotificacionDeReporteAprobadoALosAdminDelClub(idClub, reporte);
+
+        List<Reporte> reportesAprobados = servicioReporte.obtenerTodosLosReportesAprobadosDeUnClub(club);
+        if (reportesAprobados.size() >= 3){
+            for (Usuario integrante : club.getIntegrantes()) {
+                Usuario usuarioEncontrado = servicioUsuario.buscarUsuarioPor(integrante.getId());
+                servicioNotificacion.crearNotificacion(usuarioEncontrado, "clubEliminado", club.getNombre());
+            }
+            club.setAdminPrincipal(null);
+            servicioClub.eliminarClub(club);
+            return new ModelAndView("redirect:/home");
+        }
+
+        return new ModelAndView("redirect:/club/" + idClub + "/listarReportes");
+    }
+
+    @RequestMapping(path = "/club/{idClub}/listarReportes/rechazarReporte/{idReporte}")
+    public ModelAndView rechazarReporte(@PathVariable("idClub") Long idClub, @PathVariable("idReporte") Long idReporte) {
+
+        servicioReporte.eliminarReporte(idReporte);
+
+        return new ModelAndView("redirect:/club/" + idClub + "/listarReportes");
     }
 }

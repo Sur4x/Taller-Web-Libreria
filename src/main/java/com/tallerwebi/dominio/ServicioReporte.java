@@ -29,4 +29,6 @@ public interface ServicioReporte {
     List<Reporte> obtenerTodosLosReportesDeUnClub(Club club);
 
     List<Reporte> obtenerTodosLosReportesAprobadosDeUnClub(Club club);
+
+    void aprobarReporte(Long idReporte);
 }

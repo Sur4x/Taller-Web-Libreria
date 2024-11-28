@@ -75,4 +75,9 @@ public class ServicioNotificacionImpl implements ServicioNotificacion{
         repositorioUsuario.guardar(usuario);
     }
 
+    @Override
+    public void enviarNotificacionDeReporteAprobadoALosAdminDelClub(Long idClub, Reporte reporte) {
+
+    }
+
 }
